@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>대시보드 — 심리 마케팅</title>
+  <meta name="theme-color" content="#07070f" />
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+</head>
+<body>
+
+  <!-- ===================== 상단바 ===================== -->
+  <header class="topbar">
+    <a class="logo" href="index.html">
+      <span class="logo-mark" style="width:30px;height:30px;border-radius:9px;">
+        <svg width="17" height="17" viewBox="0 0 64 64" fill="none"><path d="M32 12c-8 0-14.5 6-14.5 13.6 0 4.4 2.1 8.2 5.5 10.6V46a3 3 0 0 0 3 3h12a3 3 0 0 0 3-3v-9.8c3.4-2.4 5.5-6.2 5.5-10.6C46.5 18 40 12 32 12Z" stroke="#fff" stroke-width="4" stroke-linejoin="round"/><path d="M26.5 26.5c1.8-2.5 4.4-2.5 5.5 0 1.1-2.5 3.7-2.5 5.5 0" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>
+      </span>
+      심리 마케팅 <span class="logo-badge">2.0</span>
+    </a>
+    <div class="topbar-right">
+      <span class="gen-left" id="genLeft">이번 달 생성 <b>0회</b></span>
+      <button class="user-chip" id="userChip">
+        <span class="user-avatar" id="userAvatar">?</span>
+        <span id="userName">...</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="user-menu" id="userMenu">
+    <div class="um-info" id="umEmail">—</div>
+    <button data-goto="history"><span>🕐</span> 히스토리</button>
+    <button data-goto="settings"><span>⚙️</span> 설정</button>
+    <button class="danger" id="logoutBtn"><span>🚪</span> 로그아웃</button>
+  </div>
+
+  <!-- ===================== 사이드바 (데스크톱) ===================== -->
+  <aside class="sidebar">
+    <button class="side-item on" data-goto="home"><span class="ic">🏠</span> 홈</button>
+    <div class="side-label">AI 도구</div>
+    <button class="side-item" data-goto="psychology"><span class="ic">🧠</span> 심리분석 AI</button>
+    <button class="side-item" data-goto="place"><span class="ic">📍</span> 플레이스 자동화</button>
+    <button class="side-item" data-goto="ads"><span class="ic">✍️</span> 광고 생성</button>
+    <button class="side-item" data-goto="performance"><span class="ic">📊</span> 성과 분석</button>
+    <div class="side-label">관리</div>
+    <button class="side-item" data-goto="history"><span class="ic">🕐</span> 히스토리</button>
+    <button class="side-item" data-goto="settings"><span class="ic">⚙️</span> 설정</button>
+    <div class="side-plan">
+      <b>무료 플랜</b>
+      <p>이번 달 <span id="planUsage">0</span> / 30회 사용 중</p>
+      <button class="btn btn-primary btn-sm">프로로 업그레이드</button>
+    </div>
+  </aside>
+
+  <!-- ===================== 메인 ===================== -->
+  <main class="main">
+
+    <!-- ========== 홈 ========== -->
+    <section class="view on" data-view="home">
+      <div class="view-head">
+        <h1 id="greeting">안녕하세요 👋</h1>
+        <p>오늘은 어떤 마케팅을 만들어 볼까요?</p>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-card"><div class="sc-label">📈 이번 달 생성</div><div class="sc-value" id="stMonth">0</div><div class="sc-sub">무료 플랜 월 30회</div></div>
+        <div class="stat-card"><div class="sc-label">🗂️ 누적 생성</div><div class="sc-value" id="stTotal">0</div><div class="sc-sub">가입 후 전체</div></div>
+        <div class="stat-card"><div class="sc-label">⏱️ 절약한 시간</div><div class="sc-value" id="stTime">0분</div><div class="sc-sub">건당 약 47분 기준</div></div>
+        <div class="stat-card"><div class="sc-label">💾 저장된 결과</div><div class="sc-value" id="stSaved">0</div><div class="sc-sub">히스토리 보관</div></div>
+      </div>
+
+      <div class="quick-grid">
+        <button class="quick-card" data-goto="psychology">
+          <span class="qc-icon">🧠</span>
+          <span><b>심리분석 AI</b><span>타겟 고객의 구매 심리를 해부합니다</span></span>
+          <span class="arrow">→</span>
+        </button>
+        <button class="quick-card" data-goto="place">
+          <span class="qc-icon">📍</span>
+          <span><b>플레이스 자동화</b><span>소개글·키워드·소식·리뷰답글 한 번에</span></span>
+          <span class="arrow">→</span>
+        </button>
+        <button class="quick-card" data-goto="ads">
+          <span class="qc-icon">✍️</span>
+          <span><b>광고 생성</b><span>심리 트리거 헤드라인 10개 + 카피 3종</span></span>
+          <span class="arrow">→</span>
+        </button>
+        <button class="quick-card" data-goto="performance">
+          <span class="qc-icon">📊</span>
+          <span><b>성과 분석</b><span>ROAS 계산부터 심리학 처방전까지</span></span>
+          <span class="arrow">→</span>
+        </button>
+      </div>
+
+      <div class="panel-card">
+        <h2>최근 결과 <button class="more" data-goto="history">전체 보기 →</button></h2>
+        <div class="recent-list" id="recentList"></div>
+      </div>
+
+      <div class="panel-card">
+        <h2>💡 오늘의 심리 트리거</h2>
+        <div class="rs-body" id="dailyTip" style="padding: 4px 0 0;"></div>
+      </div>
+    </section>
+
+    <!-- ========== 심리분석 AI ========== -->
+    <section class="view" data-view="psychology">
+      <div class="view-head">
+        <h1>🧠 심리분석 AI <span class="view-badge">12가지 트리거 엔진</span></h1>
+        <p>타겟 고객이 "왜 사는지, 왜 안 사는지"를 분석하고 바로 쓸 전략을 드립니다.</p>
+      </div>
+      <div class="tool-layout">
+        <form class="form-card" id="f-psychology">
+          <div class="form-grid">
+            <div class="field"><label>업종 *</label><select id="psy-industry" data-options="industry"></select></div>
+            <div class="field"><label>상품/서비스명 *</label><input type="text" id="psy-product" placeholder="예) 수제 크루아상" required /></div>
+            <div class="field"><label>타겟 연령대</label><select id="psy-age" data-options="age"></select></div>
+            <div class="field"><label>타겟 성별</label><select id="psy-gender"><option>전체</option><option>여성 중심</option><option>남성 중심</option></select></div>
+            <div class="field"><label>가격대</label><select id="psy-price"><option>중가 (1~5만원)</option><option>저가 (1만원 미만)</option><option>프리미엄 (5만원 이상)</option><option>구독/회원제</option></select></div>
+            <div class="field"><label>마케팅 목표</label><select id="psy-goal"><option>신규 고객 유치</option><option>재방문 늘리기</option><option>객단가 올리기</option><option>인지도 쌓기</option></select></div>
+            <div class="field full"><label>지금 가장 큰 고민 (선택)</label><textarea id="psy-concern" placeholder="예) 손님들이 한 번 오고 다시 안 와요…"></textarea></div>
+          </div>
+          <div class="gen-btn-row">
+            <button type="submit" class="btn btn-primary">🧠 심리 분석 시작</button>
+            <span class="gen-hint">약 5초 · 결과는 히스토리에 자동 저장</span>
+          </div>
+        </form>
+        <div class="loader-card" id="loader-psychology"><span class="loader-brain">🧠</span><div class="loader-msg"></div><div class="loader-bar"><i></i></div></div>
+        <div class="result-wrap" id="result-psychology"></div>
+      </div>
+    </section>
+
+    <!-- ========== 플레이스 자동화 ========== -->
+    <section class="view" data-view="place">
+      <div class="view-head">
+        <h1>📍 플레이스 자동화 <span class="view-badge">4주 플랜 생성</span></h1>
+        <p>네이버 플레이스 소개글·키워드·소식·리뷰 답글을 한 번에 자동 생성합니다.</p>
+      </div>
+      <div class="tool-layout">
+        <form class="form-card" id="f-place">
+          <div class="form-grid">
+            <div class="field"><label>가게 이름 *</label><input type="text" id="place-store" placeholder="예) 달빛베이커리" required /></div>
+            <div class="field"><label>업종 *</label><select id="place-industry" data-options="industry"></select></div>
+            <div class="field"><label>지역/동네 *</label><input type="text" id="place-location" placeholder="예) 연남동" required /></div>
+            <div class="field"><label>대표 메뉴/서비스 *</label><input type="text" id="place-menu" placeholder="예) 소금빵" required /></div>
+            <div class="field full"><label>우리 가게의 강점</label><input type="text" id="place-strength" placeholder="예) 매일 새벽 직접 반죽, 유기농 밀가루만 사용" /></div>
+          </div>
+          <div class="gen-btn-row">
+            <button type="submit" class="btn btn-primary">📍 플레이스 패키지 생성</button>
+            <span class="gen-hint">소개글 2종 + 키워드 15개 + 4주 소식 + 리뷰 답글</span>
+          </div>
+        </form>
+        <div class="loader-card" id="loader-place"><span class="loader-brain">📍</span><div class="loader-msg"></div><div class="loader-bar"><i></i></div></div>
+        <div class="result-wrap" id="result-place"></div>
+      </div>
+    </section>
+
+    <!-- ========== 광고 생성 ========== -->
+    <section class="view" data-view="ads">
+      <div class="view-head">
+        <h1>✍️ 광고 생성 <span class="view-badge">채널 규격 최적화</span></h1>
+        <p>채널에 맞는 심리 트리거 헤드라인과 본문 카피, CTA, 해시태그를 생성합니다.</p>
+      </div>
+      <div class="tool-layout">
+        <form class="form-card" id="f-ads">
+          <div class="form-grid">
+            <div class="field"><label>광고 채널 *</label><select id="ads-channel" data-options="channel"></select></div>
+            <div class="field"><label>상품/서비스 *</label><input type="text" id="ads-product" placeholder="예) 1:1 맞춤 PT 10회권" required /></div>
+            <div class="field"><label>타겟 고객</label><input type="text" id="ads-target" placeholder="예) 운동을 처음 시작하는 30대 직장인" /></div>
+            <div class="field"><label>핵심 강점 (USP)</label><input type="text" id="ads-usp" placeholder="예) 재등록률 87%, 전원 생활체육지도사" /></div>
+            <div class="field"><label>프로모션/혜택 (선택)</label><input type="text" id="ads-promo" placeholder="예) 첫 달 50% 할인" /></div>
+            <div class="field"><label>톤 & 매너</label><select id="ads-tone"><option>친근한</option><option>전문적인</option><option>감성적인</option><option>유머러스한</option><option>긴급한</option></select></div>
+          </div>
+          <div class="gen-btn-row">
+            <button type="submit" class="btn btn-primary">✍️ 광고 세트 생성</button>
+            <span class="gen-hint">헤드라인 10 + 카피 3종 + CTA + 해시태그</span>
+          </div>
+        </form>
+        <div class="loader-card" id="loader-ads"><span class="loader-brain">✍️</span><div class="loader-msg"></div><div class="loader-bar"><i></i></div></div>
+        <div class="result-wrap" id="result-ads"></div>
+      </div>
+    </section>
+
+    <!-- ========== 성과 분석 ========== -->
+    <section class="view" data-view="performance">
+      <div class="view-head">
+        <h1>📊 성과 분석 <span class="view-badge">심리학 처방전</span></h1>
+        <p>광고 수치를 입력하면 지표 계산, 병목 진단, 개선 처방까지 자동으로.</p>
+      </div>
+      <div class="tool-layout">
+        <form class="form-card" id="f-performance">
+          <div class="form-grid">
+            <div class="field"><label>분석 기간</label><input type="text" id="perf-period" placeholder="예) 2026년 9월" /></div>
+            <div class="field"><label>채널</label><select id="perf-channel" data-options="benchmark"></select></div>
+            <div class="field"><label>노출수 *</label><input type="number" id="perf-impressions" min="0" inputmode="numeric" placeholder="예) 50000" required /></div>
+            <div class="field"><label>클릭수 *</label><input type="number" id="perf-clicks" min="0" inputmode="numeric" placeholder="예) 420" required /></div>
+            <div class="field"><label>전환수 (구매·예약·문의) *</label><input type="number" id="perf-conversions" min="0" inputmode="numeric" placeholder="예) 18" required /></div>
+            <div class="field"><label>광고비 (원) *</label><input type="number" id="perf-cost" min="0" inputmode="numeric" placeholder="예) 300000" required /></div>
+            <div class="field"><label>발생 매출 (원)</label><input type="number" id="perf-revenue" min="0" inputmode="numeric" placeholder="예) 1080000" /></div>
+          </div>
+          <div class="gen-btn-row">
+            <button type="submit" class="btn btn-primary">📊 성과 진단 시작</button>
+            <span class="gen-hint">CTR·CVR·CPA·ROAS 자동 계산</span>
+          </div>
+        </form>
+        <div class="loader-card" id="loader-performance"><span class="loader-brain">📊</span><div class="loader-msg"></div><div class="loader-bar"><i></i></div></div>
+        <div class="result-wrap" id="result-performance"></div>
+      </div>
+    </section>
+
+    <!-- ========== 히스토리 ========== -->
+    <section class="view" data-view="history">
+      <div class="view-head">
+        <h1>🕐 히스토리</h1>
+        <p>생성한 결과물은 이 브라우저에 자동 저장됩니다. 눌러서 다시 열고, 다시 복사하세요.</p>
+      </div>
+      <div class="hist-filters" id="histFilters">
+        <button data-f="all" class="on">전체</button>
+        <button data-f="psychology">🧠 심리분석</button>
+        <button data-f="place">📍 플레이스</button>
+        <button data-f="ads">✍️ 광고</button>
+        <button data-f="performance">📊 성과</button>
+      </div>
+      <div class="recent-list" id="histList"></div>
+      <div class="result-wrap" id="histResult" style="margin-top: 20px;"></div>
+    </section>
+
+    <!-- ========== 설정 ========== -->
+    <section class="view" data-view="settings">
+      <div class="view-head">
+        <h1>⚙️ 설정</h1>
+        <p>프로필과 AI 연동, 데이터를 관리합니다.</p>
+      </div>
+
+      <div class="panel-card">
+        <h2>프로필</h2>
+        <div class="setting-row">
+          <div class="sr-main"><b>이름</b><p>결과물과 인사말에 사용됩니다.</p></div>
+          <div class="setting-inline">
+            <input type="text" id="setName" placeholder="이름" maxlength="20" />
+            <button class="btn btn-ghost btn-sm" id="saveNameBtn">저장</button>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div class="sr-main"><b>로그인 방식</b><p id="setProviderDesc">이메일 계정</p></div>
+          <span class="status-chip ok" id="setProviderChip">이메일</span>
+        </div>
+      </div>
+
+      <div class="panel-card">
+        <h2>AI 연동 <span class="status-chip off" id="geminiStatus">내장 엔진</span></h2>
+        <div class="setting-row">
+          <div class="sr-main">
+            <b>Gemini API 키 (선택)</b>
+            <p>키를 넣으면 내장 심리 엔진 대신 실제 생성형 AI(Gemini)가 결과를 작성합니다.<br />키는 이 브라우저에만 저장되며, 생성 요청 시에만 Google로 전송됩니다. <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" style="color: var(--violet-2);">무료 발급 →</a></p>
+          </div>
+          <div class="setting-inline">
+            <input type="password" id="geminiKeyInput" placeholder="AIza..." autocomplete="off" />
+            <button class="btn btn-ghost btn-sm" id="saveGeminiBtn">저장</button>
+            <button class="btn btn-ghost btn-sm" id="clearGeminiBtn">해제</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-card">
+        <h2>소셜 로그인 연동 상태</h2>
+        <div class="setting-row">
+          <div class="sr-main"><b>카카오 로그인</b><p>js/config.js의 KAKAO_JS_KEY 설정 시 실제 연동으로 전환됩니다.</p></div>
+          <span class="status-chip off" id="kakaoChip">데모 모드</span>
+        </div>
+        <div class="setting-row">
+          <div class="sr-main"><b>Google 로그인</b><p>js/config.js의 GOOGLE_CLIENT_ID 설정 시 실제 연동으로 전환됩니다.</p></div>
+          <span class="status-chip off" id="googleChip">데모 모드</span>
+        </div>
+      </div>
+
+      <div class="panel-card">
+        <h2>데이터</h2>
+        <div class="setting-row">
+          <div class="sr-main"><b>히스토리 전체 삭제</b><p>이 브라우저에 저장된 생성 결과를 모두 지웁니다. 되돌릴 수 없어요.</p></div>
+          <button class="btn btn-ghost btn-sm" id="clearHistBtn" style="color: var(--red);">전체 삭제</button>
+        </div>
+        <div class="setting-row">
+          <div class="sr-main"><b>로그아웃</b><p>이 기기에서 로그아웃합니다. 데이터는 유지됩니다.</p></div>
+          <button class="btn btn-ghost btn-sm" id="logoutBtn2">로그아웃</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===================== 하단 탭 (모바일) ===================== -->
+  <nav class="tabbar">
+    <button class="tab-item on" data-goto="home"><span class="ic">🏠</span>홈</button>
+    <button class="tab-item" data-goto="psychology"><span class="ic">🧠</span>심리분석</button>
+    <button class="tab-item" data-goto="place"><span class="ic">📍</span>플레이스</button>
+    <button class="tab-item" data-goto="ads"><span class="ic">✍️</span>광고</button>
+    <button class="tab-item" data-goto="performance"><span class="ic">📊</span>성과</button>
+  </nav>
+
+  <div class="toast-wrap" id="toastWrap"></div>
+
+  <script src="js/config.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/engine.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>
