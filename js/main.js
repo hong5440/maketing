@@ -179,7 +179,7 @@
   const hasKakaoKey = !!CFG.KAKAO_JS_KEY;
   const hasGoogleKey = !!CFG.GOOGLE_CLIENT_ID;
   if (!hasKakaoKey && !hasGoogleKey) {
-    socialNote.textContent = '현재 간편가입은 체험(데모) 모드로 동작합니다 — 실제 카카오/구글 연동은 js/config.js에 키 입력 시 자동 활성화.';
+    socialNote.textContent = '현재 간편가입은 체험(데모) 모드로 동작합니다 — js/config.js의 더미 키를 실제 키로 교체하면 자동 활성화.';
   }
 
   // 카카오: 키가 있으면 SDK 로드

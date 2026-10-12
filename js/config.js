@@ -1,25 +1,40 @@
 /* ================================================================
    심리 마케팅 (Psychology Marketing) — 환경 설정
    ----------------------------------------------------------------
-   실제 소셜 로그인 / 외부 AI 연동을 원하면 아래 키를 채워 넣으세요.
-   키가 비어 있으면 해당 기능은 자동으로 "데모 모드"로 동작하며,
-   사이트의 모든 기능은 키 없이도 그대로 사용할 수 있습니다.
+   ⬇️ 아래는 "더미 키"입니다. 나중에 실제 키를 발급받아
+      값만 교체하면 해당 기능이 자동으로 활성화됩니다.
+   더미 키 상태에서는 간편가입이 데모 모드로, 생성은 내장
+   심리 엔진으로 안전하게 동작합니다.
    ================================================================ */
 window.PM_CONFIG = {
-  // 카카오 개발자센터(developers.kakao.com) → 내 애플리케이션 → 앱 키 → JavaScript 키
-  // 플랫폼(Web)에 배포 도메인을 등록해야 실제 카카오 로그인이 활성화됩니다.
-  KAKAO_JS_KEY: '',
+  // [카카오 로그인] 카카오 개발자센터(developers.kakao.com)
+  //  → 내 애플리케이션 → 앱 키 → "JavaScript 키"로 교체.
+  //  플랫폼(Web)에 배포 도메인(예: https://xxx.pages.dev) 등록 필수.
+  KAKAO_JS_KEY: 'DUMMY_KAKAO_JAVASCRIPT_KEY_REPLACE_ME',
 
-  // Google Cloud Console → API 및 서비스 → 사용자 인증 정보
-  // → OAuth 2.0 클라이언트 ID(웹 애플리케이션). 승인된 JavaScript 원본에 배포 도메인 등록.
-  GOOGLE_CLIENT_ID: '',
+  // [구글 로그인] Google Cloud Console → API 및 서비스 → 사용자 인증 정보
+  //  → "OAuth 2.0 클라이언트 ID(웹 애플리케이션)"로 교체.
+  //  "승인된 JavaScript 원본"에 배포 도메인 등록 필수.
+  GOOGLE_CLIENT_ID: 'DUMMY_GOOGLE_CLIENT_ID_REPLACE_ME.apps.googleusercontent.com',
 
-  // (선택) Google AI Studio(aistudio.google.com)에서 발급한 Gemini API 키.
-  // 입력 시 내장 심리 엔진 대신 실제 생성형 AI가 결과를 작성합니다.
-  // 대시보드 → 설정에서 사용자가 직접 입력할 수도 있습니다.
-  GEMINI_API_KEY: '',
+  // [생성형 AI 연동(선택)] Google AI Studio(aistudio.google.com/apikey)
+  //  무료 발급 키로 교체 시 내장 엔진 대신 실제 AI가 작성.
+  //  대시보드 → 설정 화면에서 사용자가 직접 입력할 수도 있습니다.
+  GEMINI_API_KEY: 'DUMMY_GEMINI_API_KEY_REPLACE_ME',
   GEMINI_MODEL: 'gemini-2.0-flash',
 
   APP_NAME: '심리 마케팅',
   VERSION: '2.0.0',
 };
+
+/* ----------------------------------------------------------------
+   더미(플레이스홀더) 키 안전장치 — 수정하지 마세요.
+   'DUMMY' / 'REPLACE' / 'YOUR_' 가 포함된 값은 "미설정"으로 간주해
+   런타임에서 비워 둡니다. 실제 키로 교체하는 순간 자동 활성화됩니다.
+   ---------------------------------------------------------------- */
+(function () {
+  var isDummy = function (v) { return !v || /DUMMY|REPLACE|YOUR_/i.test(String(v)); };
+  ['KAKAO_JS_KEY', 'GOOGLE_CLIENT_ID', 'GEMINI_API_KEY'].forEach(function (k) {
+    if (isDummy(window.PM_CONFIG[k])) window.PM_CONFIG[k] = '';
+  });
+})();

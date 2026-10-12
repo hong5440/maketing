@@ -36,20 +36,29 @@ GitHub Pages에 그대로 배포 가능합니다 (Settings → Pages → 브랜�
 - **기본: 내장 심리 엔진 2.0** — 12가지 심리 트리거 × 12개 업종 지식 베이스 × 연령대 심리 데이터 기반의 생성 엔진. 서버·API 키 없이 완전 오프라인으로 동작합니다. 같은 입력이면 같은 결과, "다시 생성"을 누르면 변형이 나옵니다.
 - **선택: Gemini 연동** — `대시보드 → 설정`에서 [Google AI Studio](https://aistudio.google.com/apikey) 무료 API 키를 입력하면 4가지 도구 모두 실제 생성형 AI가 작성합니다. (키는 브라우저 localStorage에만 저장, 실패 시 내장 엔진으로 자동 폴백)
 
-## 🔐 소셜 로그인 실제 연동 (선택)
+## 🔐 API 키 (현재: 더미 키 상태)
 
-키가 없으면 간편가입은 **데모 모드**(닉네임만으로 가입 체험)로 동작합니다. 실제 연동하려면 `js/config.js`에 입력:
+`js/config.js`에는 자리만 잡아 둔 **더미 키**가 들어 있습니다. 더미 키 상태에서는 간편가입이 데모 모드로, 생성이 내장 엔진으로 안전하게 동작하며(안전장치 내장), 나중에 실제 키로 **값만 교체하면 자동 활성화**됩니다.
 
 ```js
 window.PM_CONFIG = {
-  KAKAO_JS_KEY: '카카오 JavaScript 키',   // developers.kakao.com → 내 애플리케이션 → 앱 키
-  GOOGLE_CLIENT_ID: '....apps.googleusercontent.com', // Google Cloud Console → OAuth 클라이언트 ID
+  KAKAO_JS_KEY: 'DUMMY_KAKAO_JAVASCRIPT_KEY_REPLACE_ME',   // ← developers.kakao.com의 JavaScript 키로 교체
+  GOOGLE_CLIENT_ID: 'DUMMY_GOOGLE_CLIENT_ID_REPLACE_ME.apps.googleusercontent.com', // ← OAuth 클라이언트 ID로 교체
+  GEMINI_API_KEY: 'DUMMY_GEMINI_API_KEY_REPLACE_ME',       // ← (선택) aistudio.google.com 키로 교체
   ...
 };
 ```
 
 - 카카오: 플랫폼(Web)에 배포 도메인 등록 + 카카오 로그인 활성화
 - 구글: "승인된 JavaScript 원본"에 배포 도메인 등록
+- `DUMMY` / `REPLACE` / `YOUR_` 가 포함된 값은 미설정으로 간주됩니다
+
+## ☁️ 클라우드플레어(Cloudflare Pages) 배포
+
+1. [Cloudflare 대시보드](https://dash.cloudflare.com) → **Workers & Pages** → **Create** → **Pages** → **Upload assets (직접 업로드)**
+2. 프로젝트 이름 입력 → 배포 ZIP(또는 이 폴더 전체)을 드래그 & 드롭 → **Deploy site**
+3. 끝! `https://프로젝트명.pages.dev` 주소가 발급됩니다 (빌드 설정 불필요 — 순수 정적 사이트)
+4. 소셜 로그인을 실제 연동할 때는 발급된 `pages.dev` 도메인을 카카오/구글 콘솔에 등록하세요
 
 ## 🎬 Seedance 생성 영상
 
