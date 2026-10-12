@@ -646,7 +646,8 @@
     const key = getGeminiKey();
     if (!key) return null;
     const cfg = window.PM_CONFIG || {};
-    const model = cfg.GEMINI_MODEL || 'gemini-2.0-flash';
+    // 설정 모델 실패 시 최신 플래시 별칭으로 자동 재시도
+    const models = Array.from(new Set([cfg.GEMINI_MODEL || 'gemini-2.5-flash', 'gemini-flash-latest']));
     const sectionHint = localResult.sections.map((s) => s.title).join(' / ');
     const prompt =
       `${GEMINI_ROLE[tool]}\n\n` +
@@ -655,36 +656,39 @@
       `반드시 아래 형식의 JSON 배열만 출력하세요(마크다운 코드블록 없이):\n` +
       `[{"title":"섹션 제목(이모지 포함)","body":"본문(줄바꿈은 \\n)"}]\n` +
       `섹션은 5~7개, 각 본문은 구체적이고 바로 복사해 쓸 수 있는 수준으로.`;
-    try {
-      const res = await fetch(
-        'https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(model) + ':generateContent?key=' + encodeURIComponent(key),
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt }] }],
-            generationConfig: { temperature: 0.9, maxOutputTokens: 4096 },
-          }),
-        }
-      );
-      if (!res.ok) throw new Error('Gemini HTTP ' + res.status);
-      const data = await res.json();
-      let text = (((data.candidates || [])[0] || {}).content || {}).parts;
-      text = text && text[0] && text[0].text ? text[0].text : '';
-      text = text.replace(/```json|```/g, '').trim();
-      const start = text.indexOf('['), end = text.lastIndexOf(']');
-      if (start === -1 || end === -1) throw new Error('JSON 배열을 찾을 수 없음');
-      const arr = JSON.parse(text.slice(start, end + 1));
-      if (!Array.isArray(arr) || !arr.length) throw new Error('빈 결과');
-      return {
-        title: localResult.title,
-        meta: Object.assign({}, localResult.meta, { badge: 'Gemini AI 생성' }),
-        sections: arr.map((s) => ({ tag: 'AI', title: String(s.title || '섹션'), body: String(s.body || '') })).slice(0, 8),
-      };
-    } catch (e) {
-      console.warn('[PMEngine] Gemini 호출 실패 → 내장 엔진으로 대체:', e.message);
-      return null;
+    for (const model of models) {
+      try {
+        const res = await fetch(
+          'https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(model) + ':generateContent?key=' + encodeURIComponent(key),
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: prompt }] }],
+              generationConfig: { temperature: 0.9, maxOutputTokens: 4096 },
+            }),
+          }
+        );
+        if (!res.ok) throw new Error('Gemini HTTP ' + res.status);
+        const data = await res.json();
+        let text = (((data.candidates || [])[0] || {}).content || {}).parts;
+        text = text && text[0] && text[0].text ? text[0].text : '';
+        text = text.replace(/```json|```/g, '').trim();
+        const start = text.indexOf('['), end = text.lastIndexOf(']');
+        if (start === -1 || end === -1) throw new Error('JSON 배열을 찾을 수 없음');
+        const arr = JSON.parse(text.slice(start, end + 1));
+        if (!Array.isArray(arr) || !arr.length) throw new Error('빈 결과');
+        return {
+          title: localResult.title,
+          meta: Object.assign({}, localResult.meta, { badge: 'Gemini AI 생성' }),
+          sections: arr.map((s) => ({ tag: 'AI', title: String(s.title || '섹션'), body: String(s.body || '') })).slice(0, 8),
+        };
+      } catch (e) {
+        console.warn('[PMEngine] Gemini(' + model + ') 호출 실패:', e.message);
+      }
     }
+    console.warn('[PMEngine] Gemini 사용 불가 → 내장 엔진으로 대체');
+    return null;
   }
 
   /* ================================================================

@@ -176,24 +176,17 @@
 
   /* ---------------- 소셜 로그인 ---------------- */
   const socialNote = $('#socialModeNote');
-  const hasKakaoKey = !!CFG.KAKAO_JS_KEY;
+  const hasKakaoKey = !!CFG.KAKAO_REST_API_KEY;
   const hasGoogleKey = !!CFG.GOOGLE_CLIENT_ID;
   if (!hasKakaoKey && !hasGoogleKey) {
     socialNote.textContent = '현재 간편가입은 체험(데모) 모드로 동작합니다 — js/config.js의 더미 키를 실제 키로 교체하면 자동 활성화.';
   }
 
-  // 카카오: 키가 있으면 SDK 로드
-  if (hasKakaoKey) {
-    PMUI.loadScript('https://developers.kakao.com/sdk/js/kakao.min.js')
-      .then(() => PMAuth.initKakao())
-      .catch(() => PMUI.toast('카카오 SDK 로드 실패 — 데모 모드로 동작합니다', 'err'));
-  }
+  // 카카오: OAuth 2.0 리다이렉트 방식 — SDK 로드 불필요 (js/auth.js 참고)
   $('#kakaoBtn').addEventListener('click', async () => {
     try {
-      const res = await PMAuth.kakaoLogin();
-      if (res.mode === 'real') {
-        goDashboard(`${nim(res.user.name)}, 카카오로 로그인되었어요 💛`);
-      } else {
+      const res = await PMAuth.kakaoLogin(); // 키 설정 시 카카오 인증 페이지로 리다이렉트됨
+      if (res && res.mode === 'demo') {
         socialProvider = 'kakao';
         $('#sdTitle').textContent = '카카오 간편가입 (데모)';
         $('#sdSub').textContent = '데모 모드예요. 닉네임만 정하면 카카오 간편가입 흐름을 그대로 체험할 수 있어요.';
@@ -236,4 +229,15 @@
   }
   $('#sdSubmit').addEventListener('click', completeSocialDemo);
   $('#sdName').addEventListener('keydown', (e) => { if (e.key === 'Enter') completeSocialDemo(); });
+
+  /* ---------------- 카카오 인증 복귀(?code=...) 처리 ---------------- */
+  (async () => {
+    try {
+      const user = await PMAuth.handleKakaoCallback();
+      if (user) goDashboard(`${nim(user.name)}, 카카오로 로그인되었어요 💛`);
+    } catch (err) {
+      PMUI.toast(err.message, 'err');
+      openAuth('login');
+    }
+  })();
 })();

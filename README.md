@@ -42,16 +42,17 @@ GitHub Pages에 그대로 배포 가능합니다 (Settings → Pages → 브랜�
 
 ```js
 window.PM_CONFIG = {
-  KAKAO_JS_KEY: 'DUMMY_KAKAO_JAVASCRIPT_KEY_REPLACE_ME',   // ← developers.kakao.com의 JavaScript 키로 교체
+  KAKAO_REST_API_KEY: 'DUMMY_KAKAO_REST_API_KEY_REPLACE_ME', // ← developers.kakao.com의 REST API 키로 교체
   GOOGLE_CLIENT_ID: 'DUMMY_GOOGLE_CLIENT_ID_REPLACE_ME.apps.googleusercontent.com', // ← OAuth 클라이언트 ID로 교체
-  GEMINI_API_KEY: 'DUMMY_GEMINI_API_KEY_REPLACE_ME',       // ← (선택) aistudio.google.com 키로 교체
+  GEMINI_API_KEY: 'DUMMY_GEMINI_API_KEY_REPLACE_ME',         // ← (선택) aistudio.google.com 키로 교체
   ...
 };
 ```
 
-- 카카오: 플랫폼(Web)에 배포 도메인 등록 + 카카오 로그인 활성화
-- 구글: "승인된 JavaScript 원본"에 배포 도메인 등록
+- 카카오: 서버가 필요 없는 **OAuth 리다이렉트 방식** — Web 플랫폼 등록 + 카카오 로그인 활성화 + Redirect URI 등록 + Client Secret "사용 안 함"
+- 구글: Google Identity Services — "승인된 JavaScript 원본"에 배포 도메인 등록
 - `DUMMY` / `REPLACE` / `YOUR_` 가 포함된 값은 미설정으로 간주됩니다
+- 📘 **키 발급 상세 절차·무료 AI API 비교·도메인(www.심리마케팅.com) 연결 방법: [SETUP_GUIDE.md](SETUP_GUIDE.md)**
 
 ## ☁️ 클라우드플레어(Cloudflare Pages) 배포
 

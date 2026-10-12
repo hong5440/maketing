@@ -1,16 +1,18 @@
 /* ================================================================
    심리 마케팅 (Psychology Marketing) — 환경 설정
    ----------------------------------------------------------------
-   ⬇️ 아래는 "더미 키"입니다. 나중에 실제 키를 발급받아
-      값만 교체하면 해당 기능이 자동으로 활성화됩니다.
-   더미 키 상태에서는 간편가입이 데모 모드로, 생성은 내장
+   ⬇️ 아래는 "더미 키"입니다. 실제 키를 발급받아 값만 교체하면
+      해당 기능이 자동으로 활성화됩니다. (발급 방법: SETUP_GUIDE.md)
+   더미 키 상태에서는 간편가입이 데모 모드로, 생성이 내장
    심리 엔진으로 안전하게 동작합니다.
    ================================================================ */
 window.PM_CONFIG = {
   // [카카오 로그인] 카카오 개발자센터(developers.kakao.com)
-  //  → 내 애플리케이션 → 앱 키 → "JavaScript 키"로 교체.
-  //  플랫폼(Web)에 배포 도메인(예: https://xxx.pages.dev) 등록 필수.
-  KAKAO_JS_KEY: 'DUMMY_KAKAO_JAVASCRIPT_KEY_REPLACE_ME',
+  //  → 내 애플리케이션 → 앱 키 → "REST API 키"로 교체.
+  //  콘솔에서 ①Web 플랫폼 등록 ②카카오 로그인 활성화
+  //  ③Redirect URI 등록(예: https://내도메인/) ④Client Secret "사용 안 함" 확인.
+  //  서버 없이 동작하는 리다이렉트 방식이라 정적 사이트에서 바로 작동합니다.
+  KAKAO_REST_API_KEY: 'DUMMY_KAKAO_REST_API_KEY_REPLACE_ME',
 
   // [구글 로그인] Google Cloud Console → API 및 서비스 → 사용자 인증 정보
   //  → "OAuth 2.0 클라이언트 ID(웹 애플리케이션)"로 교체.
@@ -21,7 +23,7 @@ window.PM_CONFIG = {
   //  무료 발급 키로 교체 시 내장 엔진 대신 실제 AI가 작성.
   //  대시보드 → 설정 화면에서 사용자가 직접 입력할 수도 있습니다.
   GEMINI_API_KEY: 'DUMMY_GEMINI_API_KEY_REPLACE_ME',
-  GEMINI_MODEL: 'gemini-2.0-flash',
+  GEMINI_MODEL: 'gemini-2.5-flash', // 호출 실패 시 gemini-flash-latest로 자동 재시도
 
   APP_NAME: '심리 마케팅',
   VERSION: '2.0.0',
@@ -34,7 +36,7 @@ window.PM_CONFIG = {
    ---------------------------------------------------------------- */
 (function () {
   var isDummy = function (v) { return !v || /DUMMY|REPLACE|YOUR_/i.test(String(v)); };
-  ['KAKAO_JS_KEY', 'GOOGLE_CLIENT_ID', 'GEMINI_API_KEY'].forEach(function (k) {
+  ['KAKAO_REST_API_KEY', 'GOOGLE_CLIENT_ID', 'GEMINI_API_KEY'].forEach(function (k) {
     if (isDummy(window.PM_CONFIG[k])) window.PM_CONFIG[k] = '';
   });
 })();

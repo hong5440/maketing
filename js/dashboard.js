@@ -394,8 +394,8 @@
     $('#geminiKeyInput').value = gKey ? '••••••••' + gKey.slice(-4) : '';
 
     const kakaoChip = $('#kakaoChip');
-    kakaoChip.textContent = CFG.KAKAO_JS_KEY ? '실제 연동' : '데모 모드';
-    kakaoChip.className = 'status-chip ' + (CFG.KAKAO_JS_KEY ? 'ok' : 'off');
+    kakaoChip.textContent = CFG.KAKAO_REST_API_KEY ? '실제 연동' : '데모 모드';
+    kakaoChip.className = 'status-chip ' + (CFG.KAKAO_REST_API_KEY ? 'ok' : 'off');
     const googleChip = $('#googleChip');
     googleChip.textContent = CFG.GOOGLE_CLIENT_ID ? '실제 연동' : '데모 모드';
     googleChip.className = 'status-chip ' + (CFG.GOOGLE_CLIENT_ID ? 'ok' : 'off');

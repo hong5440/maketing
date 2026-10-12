@@ -2,10 +2,10 @@
    심리 마케팅 — 인증 모듈 (PMAuth)
    ----------------------------------------------------------------
    - 이메일 회원가입/로그인 (비밀번호 SHA-256 해시, localStorage 저장)
-   - 카카오 간편가입: PM_CONFIG.KAKAO_JS_KEY 설정 시 실제 카카오 SDK,
-     미설정 시 데모 간편가입 플로우
-   - 구글 간편가입: PM_CONFIG.GOOGLE_CLIENT_ID 설정 시 Google Identity
-     Services, 미설정 시 데모 간편가입 플로우
+   - 카카오 간편가입: OAuth 2.0 리다이렉트 방식 (SDK 불필요, 서버 불필요)
+       KAKAO_REST_API_KEY 설정 시 실제 연동, 미설정 시 데모 플로우
+   - 구글 간편가입: Google Identity Services
+       GOOGLE_CLIENT_ID 설정 시 실제 연동, 미설정 시 데모 플로우
    ================================================================ */
 (function () {
   'use strict';
@@ -162,66 +162,6 @@
       });
     },
 
-    /** 프로필 이름 변경 */
-    updateName(newName) {
-      const s = this.current();
-      if (!s) return;
-      const users = getUsers().map((u) => (u.id === s.userId ? Object.assign(u, { name: newName }) : u));
-      saveUsers(users);
-      s.name = newName;
-      writeJSON(LS_SESSION, s);
-    },
-
-    /* ============ 카카오 ============ */
-    kakaoReady: false,
-
-    initKakao() {
-      const key = (window.PM_CONFIG || {}).KAKAO_JS_KEY;
-      if (!key) return false;
-      if (this.kakaoReady) return true;
-      if (window.Kakao && !window.Kakao.isInitialized()) {
-        window.Kakao.init(key);
-      }
-      this.kakaoReady = !!(window.Kakao && window.Kakao.isInitialized());
-      return this.kakaoReady;
-    },
-
-    /**
-     * 카카오 로그인. 키가 있으면 실제 SDK 팝업, 없으면 데모 플로우.
-     * @returns {Promise<{mode:'real'|'demo', user?:object}>}
-     */
-    kakaoLogin() {
-      const self = this;
-      return new Promise((resolve, reject) => {
-        if (self.initKakao() && window.Kakao && window.Kakao.Auth && window.Kakao.Auth.login) {
-          window.Kakao.Auth.login({
-            scope: 'profile_nickname, account_email',
-            success() {
-              window.Kakao.API.request({
-                url: '/v2/user/me',
-                success(res) {
-                  const acc = res.kakao_account || {};
-                  const prof = acc.profile || {};
-                  const user = self.socialLogin('kakao', {
-                    pid: res.id,
-                    name: prof.nickname,
-                    email: acc.email,
-                    avatar: prof.thumbnail_image_url,
-                  });
-                  resolve({ mode: 'real', user });
-                },
-                fail(err) { reject(new Error('카카오 프로필 조회에 실패했습니다.')); },
-              });
-            },
-            fail() { reject(new Error('카카오 로그인이 취소되었습니다.')); },
-          });
-        } else {
-          // 키 미설정 → 데모 간편가입 플로우 (UI 쪽에서 닉네임을 받아 완료)
-          resolve({ mode: 'demo' });
-        }
-      });
-    },
-
     /** 데모 간편가입 완료 처리 */
     socialDemoComplete(provider, nickname) {
       const name = String(nickname || '').trim() || (provider === 'kakao' ? '카카오 회원' : '구글 회원');
@@ -232,11 +172,111 @@
       });
     },
 
-    /* ============ 구글 ============ */
+    /** 프로필 이름 변경 */
+    updateName(newName) {
+      const s = this.current();
+      if (!s) return;
+      const users = getUsers().map((u) => (u.id === s.userId ? Object.assign(u, { name: newName }) : u));
+      saveUsers(users);
+      s.name = newName;
+      writeJSON(LS_SESSION, s);
+    },
+
+    /* ================================================================
+       카카오 — OAuth 2.0 인가 코드 리다이렉트 방식 (SDK·서버 불필요)
+       1) kakaoLogin(): kauth.kakao.com 인증 페이지로 이동
+       2) 동의 후 ?code=... 와 함께 이 페이지로 복귀
+       3) handleKakaoCallback(): 토큰 교환(kauth는 CORS 허용) → 프로필 조회 → 로그인
+       * 카카오 콘솔 설정: Redirect URI 등록 + Client Secret "사용 안 함"
+       ================================================================ */
+    kakaoConfigured() {
+      return !!((window.PM_CONFIG || {}).KAKAO_REST_API_KEY);
+    },
+
+    /** 등록해야 하는 Redirect URI (index.html을 뗀 디렉터리 주소) */
+    kakaoRedirectUri() {
+      return location.origin + location.pathname.replace(/index\.html$/, '');
+    },
+
+    /** 카카오 로그인 시작. 키가 없으면 {mode:'demo'} 반환 → UI가 데모 플로우 진행 */
+    kakaoLogin() {
+      if (!this.kakaoConfigured()) return Promise.resolve({ mode: 'demo' });
+      const state = Math.random().toString(36).slice(2) + Date.now().toString(36);
+      try { sessionStorage.setItem('pm_kakao_state', state); } catch (e) { /* ignore */ }
+      const url = 'https://kauth.kakao.com/oauth/authorize'
+        + '?response_type=code'
+        + '&client_id=' + encodeURIComponent(window.PM_CONFIG.KAKAO_REST_API_KEY)
+        + '&redirect_uri=' + encodeURIComponent(this.kakaoRedirectUri())
+        + '&state=' + encodeURIComponent(state);
+      location.href = url;
+      return new Promise(() => { /* 페이지가 이동하므로 resolve되지 않음 */ });
+    },
+
     /**
-     * 구글 로그인. GOOGLE_CLIENT_ID가 있으면 GIS 사용, 없으면 데모 플로우.
-     * 실제 모드에서는 지정한 컨테이너에 공식 구글 버튼을 렌더링한다.
+     * 카카오 인증 후 복귀 처리. 랜딩 페이지 로드 시 1회 호출.
+     * @returns {Promise<object|null>} 로그인된 사용자, 콜백 상황이 아니면 null
      */
+    async handleKakaoCallback() {
+      const params = new URLSearchParams(location.search);
+      const code = params.get('code');
+      const err = params.get('error');
+      if (!code && !err) return null;
+
+      // 새로고침 시 코드 재사용 방지: 주소에서 쿼리 제거
+      try { history.replaceState(null, '', location.pathname + location.hash); } catch (e) { /* ignore */ }
+
+      if (err) {
+        throw new Error('카카오 로그인이 취소되었거나 실패했습니다. (' + (params.get('error_description') || err) + ')');
+      }
+      if (!this.kakaoConfigured()) return null;
+
+      // CSRF 방지용 state 검증
+      let saved = null;
+      try {
+        saved = sessionStorage.getItem('pm_kakao_state');
+        sessionStorage.removeItem('pm_kakao_state');
+      } catch (e) { /* ignore */ }
+      const state = params.get('state');
+      if (saved && state && saved !== state) {
+        throw new Error('보안 검증(state)에 실패했습니다. 다시 시도해 주세요.');
+      }
+
+      // 1) 인가 코드 → 액세스 토큰 (kauth는 브라우저 CORS 호출 허용)
+      const body = new URLSearchParams({
+        grant_type: 'authorization_code',
+        client_id: window.PM_CONFIG.KAKAO_REST_API_KEY,
+        redirect_uri: this.kakaoRedirectUri(),
+        code: code,
+      });
+      const tokenRes = await fetch('https://kauth.kakao.com/oauth/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8' },
+        body: body.toString(),
+      });
+      if (!tokenRes.ok) {
+        throw new Error('카카오 토큰 발급 실패(' + tokenRes.status + ') — 콘솔의 Redirect URI 등록값과 REST API 키, Client Secret "사용 안 함" 설정을 확인해 주세요.');
+      }
+      const token = await tokenRes.json();
+
+      // 2) 액세스 토큰 → 사용자 프로필
+      const meRes = await fetch('https://kapi.kakao.com/v2/user/me', {
+        headers: { Authorization: 'Bearer ' + token.access_token },
+      });
+      if (!meRes.ok) throw new Error('카카오 프로필 조회에 실패했습니다. (' + meRes.status + ')');
+      const me = await meRes.json();
+      const acc = me.kakao_account || {};
+      const prof = acc.profile || {};
+      return this.socialLogin('kakao', {
+        pid: me.id,
+        name: prof.nickname,
+        email: acc.email,
+        avatar: prof.thumbnail_image_url,
+      });
+    },
+
+    /* ================================================================
+       구글 — Google Identity Services (완전 클라이언트 사이드)
+       ================================================================ */
     googleAvailable() {
       return !!((window.PM_CONFIG || {}).GOOGLE_CLIENT_ID && window.google && window.google.accounts);
     },
