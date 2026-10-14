@@ -9,15 +9,16 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js"></script>
 <style>
   :root {
-    --bg: #0d1f12;
-    --panel: #14281a;
-    --panel2: #1b3523;
+    --bg: #718c5a;            /* 헥스볼 느낌의 올리브 그린 배경 */
+    --panel: #1b1f24;
+    --panel2: #262c33;
     --line: rgba(255,255,255,.12);
-    --text: #eaf5ec;
-    --muted: #9fbfa8;
-    --red: #e55b5b;
-    --blue: #5b8de5;
+    --text: #eaf0f5;
+    --muted: #9aa7b4;
+    --red: #e56e56;
+    --blue: #5689e5;
     --accent: #43d17c;
+    --gold: #e8c04a;
   }
   * { margin:0; padding:0; box-sizing:border-box; }
   html, body { height:100%; }
@@ -34,105 +35,162 @@
   #lobby {
     position:fixed; inset:0; z-index:30;
     display:flex; align-items:center; justify-content:center;
-    background: radial-gradient(ellipse at 50% 30%, #16341f 0%, var(--bg) 70%);
+    background: radial-gradient(ellipse at 50% 30%, #7e9a66 0%, #5c744a 70%);
     padding:16px;
   }
   .card {
-    width:100%; max-width:420px;
+    width:100%; max-width:440px;
     background: var(--panel);
     border:1px solid var(--line);
-    border-radius:16px;
-    padding:28px 24px;
+    border-radius:14px;
+    padding:26px 24px;
     box-shadow: 0 20px 60px rgba(0,0,0,.5);
   }
-  .card h1 { font-size:28px; text-align:center; margin-bottom:4px; }
-  .card .sub { text-align:center; color:var(--muted); font-size:13px; margin-bottom:22px; }
+  .card h1 { font-size:26px; text-align:center; margin-bottom:4px; }
+  .card .sub { text-align:center; color:var(--muted); font-size:13px; margin-bottom:20px; }
   .field-label { font-size:12px; color:var(--muted); margin:14px 0 6px; }
   input[type=text] {
-    width:100%; padding:12px 14px; font-size:16px;
+    width:100%; padding:11px 14px; font-size:16px;
     background:var(--panel2); color:var(--text);
-    border:1px solid var(--line); border-radius:10px; outline:none;
+    border:1px solid var(--line); border-radius:9px; outline:none;
   }
   input[type=text]:focus { border-color:var(--accent); }
   .btn {
-    width:100%; padding:13px; margin-top:10px;
-    font-size:16px; font-weight:700; cursor:pointer;
-    border:none; border-radius:10px; color:#06220f;
+    width:100%; padding:12px; margin-top:10px;
+    font-size:15px; font-weight:700; cursor:pointer;
+    border:none; border-radius:9px; color:#06220f;
     background:var(--accent); transition:filter .15s;
   }
   .btn:hover { filter:brightness(1.1); }
   .btn.ghost { background:var(--panel2); color:var(--text); border:1px solid var(--line); }
   .btn:disabled { opacity:.5; cursor:default; }
-  .divider { display:flex; align-items:center; gap:10px; color:var(--muted); font-size:12px; margin:18px 0 8px; }
+  .divider { display:flex; align-items:center; gap:10px; color:var(--muted); font-size:12px; margin:16px 0 6px; }
   .divider::before, .divider::after { content:''; flex:1; height:1px; background:var(--line); }
-  #lobbyStatus { margin-top:14px; font-size:13px; color:var(--muted); text-align:center; min-height:18px; }
+  #lobbyStatus { margin-top:12px; font-size:13px; color:var(--muted); text-align:center; min-height:18px; }
   #lobbyStatus.err { color:#ff8a8a; }
 
-  /* 캐릭터 선택 */
   #charGrid {
     display:grid; grid-template-columns:repeat(4,1fr); gap:6px;
-    max-height:190px; overflow-y:auto; padding:2px;
-    margin-top:6px;
+    max-height:170px; overflow-y:auto; padding:2px; margin-top:6px;
   }
   .chip {
     display:flex; flex-direction:column; align-items:center; gap:2px;
-    padding:8px 2px 6px; cursor:pointer;
-    background:var(--panel2); border:1px solid var(--line); border-radius:10px;
+    padding:7px 2px 5px; cursor:pointer;
+    background:var(--panel2); border:1px solid var(--line); border-radius:9px;
     transition:border-color .12s, background .12s;
   }
   .chip:hover { border-color:var(--accent); }
   .chip.sel { border-color:var(--accent); background:rgba(67,209,124,.15); }
-  .chip .em { font-size:22px; line-height:1; }
+  .chip .em { font-size:21px; line-height:1; }
   .chip .nm { font-size:11px; color:var(--text); white-space:nowrap; }
 
   /* ===== 게임 화면 ===== */
   #game { position:fixed; inset:0; display:none; flex-direction:column; }
   #topbar {
-    display:flex; align-items:center; justify-content:center; gap:14px;
+    display:flex; align-items:center; justify-content:center; gap:12px;
     padding:8px 12px; flex-wrap:wrap;
   }
   .scorebox {
     display:flex; align-items:center; gap:10px;
     background:var(--panel); border:1px solid var(--line);
-    border-radius:12px; padding:6px 16px; font-weight:800; font-size:20px;
+    border-radius:10px; padding:6px 16px; font-weight:800; font-size:20px;
   }
   .scorebox .t-red { color:var(--red); }
   .scorebox .t-blue { color:var(--blue); }
-  .scorebox #clock { font-size:14px; color:var(--muted); font-weight:600; min-width:44px; text-align:center; }
-  .roombox {
-    display:flex; align-items:center; gap:8px;
-    background:var(--panel); border:1px solid var(--line);
-    border-radius:12px; padding:6px 12px; font-size:13px; color:var(--muted);
+  .scorebox #clock { font-size:14px; color:var(--muted); font-weight:600; min-width:48px; text-align:center; }
+  .mini {
+    padding:6px 12px; font-size:13px; border-radius:8px; border:1px solid var(--line);
+    background:var(--panel); color:var(--text); cursor:pointer; font-weight:600;
   }
-  .roombox b { color:var(--accent); font-size:16px; letter-spacing:2px; }
-  .mini { padding:5px 10px; font-size:12px; border-radius:8px; border:1px solid var(--line);
-    background:var(--panel2); color:var(--text); cursor:pointer; }
   .mini:hover { border-color:var(--accent); }
   #canvasWrap { flex:1; display:flex; align-items:center; justify-content:center; min-height:0; padding:4px 8px 8px; }
-  canvas { max-width:100%; max-height:100%; border-radius:10px; }
-  #help { text-align:center; font-size:12px; color:var(--muted); padding:0 10px 8px; }
+  canvas { max-width:100%; max-height:100%; border-radius:8px; }
+  #help { text-align:center; font-size:12px; color:#3f5233; padding:0 10px 8px; }
+
+  /* ===== 헥스볼 스타일 방 메뉴 ===== */
+  #menu {
+    position:fixed; inset:0; z-index:25; display:none;
+    align-items:center; justify-content:center; padding:14px;
+    background:rgba(0,0,0,.25);
+  }
+  .menu-panel {
+    width:100%; max-width:900px; max-height:94vh; overflow-y:auto;
+    background:var(--panel); border-radius:10px;
+    box-shadow:0 24px 80px rgba(0,0,0,.6);
+    padding:18px 22px 22px;
+  }
+  .menu-head {
+    display:flex; align-items:center; gap:10px;
+    padding-bottom:10px; border-bottom:2px solid var(--red); margin-bottom:16px;
+  }
+  .menu-head h2 { font-size:19px; font-weight:800; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .menu-head .mini { background:#2d4a66; border-color:#3b5f82; }
+  .menu-head .mini.leave { background:#5c3030; border-color:#7a4040; }
+
+  .teams { display:flex; gap:10px; margin-bottom:16px; }
+  .team-col { flex:1; min-width:0; display:flex; flex-direction:column; }
+  .team-col h3 {
+    align-self:center; font-size:14px; font-weight:800;
+    padding:4px 22px; border-radius:6px; margin-bottom:8px;
+    background:var(--panel2); color:var(--muted);
+  }
+  .team-col.red h3 { background:#4a2e29; color:#ff9a86; }
+  .team-col.blue h3 { background:#293a4a; color:#86b4ff; }
+  .team-list {
+    flex:1; min-height:170px; max-height:260px; overflow-y:auto;
+    background:#111418; border-radius:6px; padding:5px; list-style:none;
+  }
+  .team-list li {
+    display:flex; align-items:center; gap:6px;
+    padding:5px 7px; border-radius:5px; font-size:13.5px;
+  }
+  .team-list li:hover { background:rgba(255,255,255,.05); }
+  .team-list li .pname { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .team-list li .ping { color:var(--muted); font-size:12px; min-width:22px; text-align:right; }
+  .team-list li .mvbtn {
+    width:20px; height:20px; line-height:18px; text-align:center;
+    border-radius:4px; border:1px solid var(--line); background:var(--panel2);
+    color:var(--muted); cursor:pointer; font-size:11px; padding:0;
+  }
+  .team-list li .mvbtn:hover { color:var(--text); border-color:var(--accent); }
+
+  .settings { display:flex; flex-direction:column; gap:8px; align-items:center; margin-bottom:16px; }
+  .set-row { display:flex; align-items:center; gap:10px; font-size:14px; }
+  .set-row label { color:var(--muted); min-width:84px; text-align:right; }
+  .set-row select {
+    background:var(--panel2); color:var(--text); border:1px solid var(--line);
+    border-radius:6px; padding:5px 10px; font-size:14px; outline:none; min-width:170px;
+  }
+  .set-row select:disabled { opacity:.7; }
+  .set-row .stadium-name { color:var(--gold); font-weight:700; }
+
+  .menu-actions { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+  .menu-actions .btn { width:auto; min-width:130px; margin-top:0; padding:11px 22px; }
+  .btn.start { background:var(--accent); }
+  .btn.stop { background:#e56e56; color:#2a0f08; }
+  #guestWait { text-align:center; color:var(--muted); font-size:13.5px; }
+
+  @media (max-width:640px) {
+    .teams { flex-direction:column; }
+    .team-list { min-height:70px; max-height:120px; }
+  }
 
   /* ===== 모바일 컨트롤 ===== */
-  #stick {
-    position:fixed; left:0; bottom:0; width:50%; height:55%; z-index:20; display:none;
-  }
+  #stick { position:fixed; left:0; bottom:0; width:50%; height:55%; z-index:20; display:none; }
   #kickBtn {
     position:fixed; right:18px; bottom:28px; z-index:20; display:none;
     width:84px; height:84px; border-radius:50%;
-    background:rgba(229,91,91,.25); border:2px solid rgba(229,91,91,.7);
+    background:rgba(229,110,86,.3); border:2px solid rgba(229,110,86,.8);
     color:#fff; font-size:15px; font-weight:800;
   }
-  #stickBase, #stickKnob {
-    position:fixed; border-radius:50%; pointer-events:none; z-index:21; display:none;
-  }
-  #stickBase { width:110px; height:110px; border:2px solid rgba(255,255,255,.25); background:rgba(255,255,255,.05); }
-  #stickKnob { width:48px; height:48px; background:rgba(255,255,255,.35); }
+  #stickBase, #stickKnob { position:fixed; border-radius:50%; pointer-events:none; z-index:21; display:none; }
+  #stickBase { width:110px; height:110px; border:2px solid rgba(255,255,255,.3); background:rgba(255,255,255,.07); }
+  #stickKnob { width:48px; height:48px; background:rgba(255,255,255,.4); }
   @media (pointer:coarse) {
     #stick, #kickBtn { display:block; }
     #help { display:none; }
   }
 
-  /* 토스트 */
   #toast {
     position:fixed; top:14px; left:50%; transform:translateX(-50%);
     background:#000c; color:#fff; padding:10px 18px; border-radius:10px;
@@ -172,16 +230,75 @@
       <span id="clock">00:00</span>
       <span class="t-blue" id="scoreBlue">0</span>
     </div>
-    <div class="roombox">
-      방 코드 <b id="roomCode">----</b>
-      <button class="mini" id="btnCopy">복사</button>
-      <button class="mini" id="btnInvite">초대 링크</button>
-      <button class="mini" id="btnBot" style="display:none">🤖 봇 추가</button>
-      <button class="mini" id="btnReset" style="display:none">↺ 리셋</button>
-    </div>
+    <button class="mini" id="btnMenu">☰ 메뉴</button>
   </div>
   <div id="canvasWrap"><canvas id="cv" width="1300" height="700"></canvas></div>
-  <div id="help">이동: <b>WASD / 방향키</b> · 킥: <b>Space 또는 X</b> (잡고 있으면 차지 표시) · 호스트 리셋: <b>R</b></div>
+  <div id="help">이동: <b>WASD / 방향키</b> · 킥: <b>Space / X / Shift</b> · 메뉴: <b>Esc</b></div>
+</div>
+
+<!-- ===================== 방 메뉴 (헥스볼 스타일) ===================== -->
+<div id="menu">
+  <div class="menu-panel">
+    <div class="menu-head">
+      <h2 id="menuTitle">⚽ 간편 축구</h2>
+      <button class="mini" id="btnMenuLink">🔗 Link</button>
+      <button class="mini leave" id="btnLeave">↪ Leave</button>
+      <button class="mini" id="btnMenuClose" style="display:none">✕</button>
+    </div>
+
+    <div class="teams">
+      <div class="team-col red">
+        <h3>Red</h3>
+        <ul class="team-list" id="listRed"></ul>
+      </div>
+      <div class="team-col">
+        <h3>Spectators</h3>
+        <ul class="team-list" id="listSpec"></ul>
+      </div>
+      <div class="team-col blue">
+        <h3>Blue</h3>
+        <ul class="team-list" id="listBlue"></ul>
+      </div>
+    </div>
+
+    <div class="settings">
+      <div class="set-row">
+        <label>Time limit</label>
+        <select id="setTime">
+          <option value="1">1분</option>
+          <option value="3" selected>3분</option>
+          <option value="5">5분</option>
+          <option value="7">7분</option>
+          <option value="0">무제한</option>
+        </select>
+      </div>
+      <div class="set-row">
+        <label>Score limit</label>
+        <select id="setScore">
+          <option value="1">1골</option>
+          <option value="3" selected>3골</option>
+          <option value="5">5골</option>
+          <option value="10">10골</option>
+          <option value="0">무제한</option>
+        </select>
+      </div>
+      <div class="set-row">
+        <label>Stadium</label>
+        <select id="setStadium">
+          <option value="small">Hot Small (1v1~2v2)</option>
+          <option value="classic" selected>Classic (3v3)</option>
+          <option value="big">Hot Huge (4v4+)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="menu-actions" id="hostActions">
+      <button class="btn ghost" id="btnRand">🔀 랜덤 배정</button>
+      <button class="btn ghost" id="btnBot">🤖 봇 추가</button>
+      <button class="btn start" id="btnStart">▶ 게임 시작</button>
+    </div>
+    <div id="guestWait" style="display:none">방장이 게임을 시작하길 기다리는 중…</div>
+  </div>
 </div>
 
 <div id="stick"></div>
@@ -193,51 +310,97 @@
 <script>
 'use strict';
 /* =========================================================
- * 간편 축구 — 헥스볼 스타일 P2P 멀티플레이
- *  - 호스트가 물리 시뮬레이션을 돌리는 권위 서버 역할
- *  - 게스트는 입력만 전송, 상태 스냅샷을 받아 렌더링
- *  - PeerJS 공개 브로커 사용 → 별도 서버 없이 정적 배포 가능
+ * 간편 축구 v2 — 헥스볼 스타일 P2P 멀티플레이
+ *
+ * 물리 엔진 (헥스볼 방식):
+ *  - 모든 오브젝트는 원형 디스크: { x,y,vx,vy,r, invMass, bCoef, damping }
+ *  - invMass=0 → 무한 질량(골포스트 등 고정체)
+ *  - 충돌: 중심 거리 < 반지름 합 → 법선/접선 분해, 운동량 보존 임펄스
+ *    반발 계수는 두 디스크 bCoef의 곱, 밀어내기는 invMass 비율로 분배
+ *  - damping: 매 틱 속도 감쇠 (공기저항/마찰)
+ *
+ * 네트워크:
+ *  - 호스트 권위 시뮬레이션 60Hz, 스냅샷 30Hz 브로드캐스트
+ *  - 게스트는 입력만 전송, 스냅샷 보간 + 속도 기반 데드 레코닝(추측 항법)
  * ========================================================= */
 
-// ---------- 상수 ----------
-const W = 1300, H = 700;               // 캔버스 논리 크기
-const FX = 50, FY = 50, FW = 1200, FH = 600; // 필드 영역
-const CX = FX + FW/2, CY = FY + FH/2;  // 센터
-const GOAL_H = 220, GOAL_DEPTH = 42;   // 골대 높이/깊이
-const GOAL_TOP = CY - GOAL_H/2, GOAL_BOT = CY + GOAL_H/2;
-const P_R = 16, B_R = 10;              // 플레이어/공 반지름
-const P_ACCEL = 0.27, P_DAMP = 0.96;
-const B_DAMP = 0.992, WALL_BOUNCE = 0.85;
-const KICK_RANGE = 6, KICK_POWER = 9.5;
+// ---------- 캔버스 / 공통 상수 ----------
+const W = 1300, H = 700;
 const TICK = 1000/60;
-const SNAP_EVERY = 2;                  // 2틱마다 스냅샷 전송(30Hz)
-const ID_PREFIX = 'hxkr-soccer-';
+const SNAP_EVERY = 2;                 // 30Hz 스냅샷
+const ID_PREFIX = 'hxkr-soccer2-';
+
+// ---------- 헥스볼 물리 상수 ----------
+const PHYS = {
+  player: { r: 15, invMass: 0.5, bCoef: 0.5, damping: 0.96 },
+  ball:   { r: 10, invMass: 1.0, bCoef: 0.5, damping: 0.99 },
+  post:   { r: 8,  invMass: 0,   bCoef: 1.0 },  // 골포스트: 고정체
+  wallBCoef: 1.0,          // 벽 (공 bCoef와 곱해져 0.5)
+  playerWallBCoef: 0.4,    // 플레이어-경기장 외곽
+  accel: 0.11,             // 이동 가속도
+  kickAccel: 0.075,        // 킥 홀드 중 이동 가속도 (느려짐)
+  kickStrength: 5.2,       // 킥 임펄스
+  kickRange: 4,            // 킥 유효 거리 (표면 간격)
+};
+
+// ---------- 스타디움 ----------
+const STADIUMS = {
+  small:   { label: 'Hot Small', fw: 840,  fh: 420, goalH: 150, goalDepth: 34, circle: 60 },
+  classic: { label: 'Classic',   fw: 1040, fh: 520, goalH: 190, goalDepth: 38, circle: 75 },
+  big:     { label: 'Hot Huge',  fw: 1200, fh: 600, goalH: 220, goalDepth: 42, circle: 85 },
+};
+let field = null; // makeField() 결과
+
+function makeField(key) {
+  const s = STADIUMS[key];
+  const fx = (W - s.fw)/2, fy = (H - s.fh)/2;
+  const cx = W/2, cy = H/2;
+  const gTop = cy - s.goalH/2, gBot = cy + s.goalH/2;
+  return {
+    key, label: s.label,
+    fx, fy, fw: s.fw, fh: s.fh, cx, cy,
+    gTop, gBot, goalDepth: s.goalDepth, circle: s.circle,
+    posts: [ // 골포스트 4개 (고정 디스크)
+      { x: fx,       y: gTop, vx:0, vy:0, r: PHYS.post.r, invMass: 0, bCoef: PHYS.post.bCoef },
+      { x: fx,       y: gBot, vx:0, vy:0, r: PHYS.post.r, invMass: 0, bCoef: PHYS.post.bCoef },
+      { x: fx+s.fw,  y: gTop, vx:0, vy:0, r: PHYS.post.r, invMass: 0, bCoef: PHYS.post.bCoef },
+      { x: fx+s.fw,  y: gBot, vx:0, vy:0, r: PHYS.post.r, invMass: 0, bCoef: PHYS.post.bCoef },
+    ],
+  };
+}
 
 // ---------- 전역 상태 ----------
 let peer = null;
 let isHost = false;
-let myId = null;              // 게임 내 플레이어 id
+let myId = null;
 let roomCode = '';
 let conns = new Map();        // host: peerConnId -> {conn, playerId}
-let hostConn = null;          // guest: 호스트와의 연결
+let hostConn = null;          // guest
 
-// 호스트 시뮬레이션 상태
 const sim = {
-  players: new Map(),  // id -> {id,name,team,x,y,vx,vy,input:{up,down,left,right,kick},bot}
-  ball: { x: CX, y: CY, vx: 0, vy: 0 },
-  score: [0, 0],       // [red, blue]
-  time: 0,             // 초
-  freeze: 0,           // 골 연출 등 정지 틱 수
+  state: 'room',       // 'room' | 'playing' | 'ended'
+  players: new Map(),  // id -> {id,name,av,team(0red,1blue,2spec),bot,x,y,vx,vy,input,ping}
+  ball: { x: W/2, y: H/2, vx: 0, vy: 0, r: PHYS.ball.r, invMass: PHYS.ball.invMass, bCoef: PHYS.ball.bCoef },
+  score: [0, 0],
+  time: 0,
+  freeze: 0,
+  pendingEnd: -1,      // 골 연출 후 끝낼 팀 (-1 = 없음)
+  suddenDeath: false,
+  winner: -1,
+  endTtl: 0,
   msg: '', msgTtl: 0,
+  settings: { time: 3, score: 3, stadium: 'classic' },
   nextId: 1,
 };
+field = makeField(sim.settings.stadium);
 
-// 게스트 렌더 상태 (스냅샷 보간)
+// 게스트 스냅샷 (보간/추측항법)
 let snapA = null, snapB = null, snapBTime = 0;
 
-// 내 입력
 const input = { up:false, down:false, left:false, right:false, kick:false };
 let lastSentInput = '';
+let menuOpen = true;
+let rosterSig = '';
 
 // ---------- DOM ----------
 const $ = s => document.querySelector(s);
@@ -253,15 +416,13 @@ function setStatus(msg, err=false) {
   lobbyStatus.textContent = msg;
   lobbyStatus.className = err ? 'err' : '';
 }
-
-// ---------- 유틸 ----------
+function clamp(v,a,b){ return v<a?a:v>b?b:v; }
 function genCode() {
-  const chars = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'; // 혼동 문자 제외
+  const chars = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
   let c = '';
   for (let i=0;i<4;i++) c += chars[Math.floor(Math.random()*chars.length)];
   return c;
 }
-function clamp(v,a,b){ return v<a?a:v>b?b:v; }
 
 // ---------- 캐릭터 (디스코드 멤버) ----------
 const CHARACTERS = [
@@ -278,7 +439,6 @@ let myAvatar = localStorage.getItem('soccer_avatar') || '⚽';
 const savedName = localStorage.getItem('soccer_nick') || '';
 $('#nickname').value = savedName;
 
-// 캐릭터 그리드 생성
 (function buildCharGrid() {
   const grid = $('#charGrid');
   CHARACTERS.forEach(c => {
@@ -295,7 +455,6 @@ $('#nickname').value = savedName;
     };
     grid.appendChild(el);
   });
-  // 직접 입력 시 캐릭터 선택 해제
   $('#nickname').addEventListener('input', () => {
     const match = CHARACTERS.find(c => c.n === $('#nickname').value.trim());
     grid.querySelectorAll('.chip').forEach((x,i) => x.classList.toggle('sel', !!match && CHARACTERS[i] === match));
@@ -304,7 +463,6 @@ $('#nickname').value = savedName;
   });
 })();
 
-// 초대 링크로 접속한 경우 코드 자동 입력
 const urlRoom = new URLSearchParams(location.search).get('room');
 if (urlRoom) $('#joinCode').value = urlRoom.toUpperCase();
 
@@ -313,7 +471,6 @@ function getNick() {
   localStorage.setItem('soccer_nick', n);
   return n;
 }
-
 $('#btnHost').onclick = () => startHost(getNick());
 $('#btnJoin').onclick = () => {
   const code = $('#joinCode').value.trim().toUpperCase();
@@ -321,11 +478,7 @@ $('#btnJoin').onclick = () => {
   startGuest(getNick(), code);
 };
 $('#joinCode').addEventListener('keydown', e => { if (e.key==='Enter') $('#btnJoin').click(); });
-
-function lockLobby(lock) {
-  $('#btnHost').disabled = lock;
-  $('#btnJoin').disabled = lock;
-}
+function lockLobby(lock) { $('#btnHost').disabled = lock; $('#btnJoin').disabled = lock; }
 
 // ---------- 호스트 ----------
 function startHost(nick, retry=0) {
@@ -337,7 +490,7 @@ function startHost(nick, retry=0) {
   peer.on('open', () => {
     isHost = true;
     myId = 'p0';
-    addPlayer(myId, nick, false, myAvatar);
+    addPlayer(myId, nick, false, myAvatar, 0); // 호스트는 레드 시작
     enterGame();
   });
 
@@ -352,7 +505,7 @@ function startHost(nick, retry=0) {
   peer.on('error', err => {
     if (err.type === 'unavailable-id' && retry < 5) {
       peer.destroy();
-      startHost(nick, retry+1); // 코드 충돌 → 재생성
+      startHost(nick, retry+1);
       return;
     }
     setStatus('연결 실패: ' + err.type + ' (네트워크 확인 후 다시 시도)', true);
@@ -360,35 +513,41 @@ function startHost(nick, retry=0) {
   });
 }
 
-function addPlayer(id, name, bot, avatar) {
-  // 팀 밸런스: 인원 적은 쪽으로
-  let red = 0, blue = 0;
-  sim.players.forEach(p => p.team === 0 ? red++ : blue++);
-  const team = red <= blue ? 0 : 1;
+function addPlayer(id, name, bot, avatar, team) {
   const p = {
-    id, name: (name||'플레이어').slice(0,10), team, bot: !!bot,
+    id, name: (name||'플레이어').slice(0,10),
     av: bot ? '🤖' : (String(avatar||'⚽').slice(0,4)),
-    x:0, y:0, vx:0, vy:0,
+    team: team !== undefined ? team : 2, // 기본: 관전자 (헥스볼 방식)
+    bot: !!bot, ping: 0,
+    x: W/2, y: H/2, vx: 0, vy: 0,
+    r: PHYS.player.r, invMass: PHYS.player.invMass, bCoef: PHYS.player.bCoef,
     input: { up:false,down:false,left:false,right:false,kick:false },
+    kickArmed: true, // 킥 1회성 처리 (다시 누를 때까지 재킥 불가)
   };
   sim.players.set(id, p);
-  placePlayer(p);
+  if (p.team < 2 && sim.state === 'playing') placePlayer(p);
+  rosterChanged();
   return p;
 }
 
+function balancedTeam() {
+  let red = 0, blue = 0;
+  sim.players.forEach(p => { if (p.team===0) red++; else if (p.team===1) blue++; });
+  return red <= blue ? 0 : 1;
+}
+
 function placePlayer(p) {
-  // 팀별 진영에 세로로 분산 배치
-  const teammates = [...sim.players.values()].filter(q => q.team === p.team);
-  const idx = teammates.indexOf(p);
-  const n = teammates.length;
-  p.x = p.team === 0 ? FX + FW*0.25 : FX + FW*0.75;
-  p.y = CY + (idx - (n-1)/2) * 70;
+  const mates = [...sim.players.values()].filter(q => q.team === p.team && q.team < 2);
+  const idx = mates.indexOf(p), n = mates.length;
+  p.x = p.team === 0 ? field.fx + field.fw*0.25 : field.fx + field.fw*0.75;
+  p.y = field.cy + (idx - (n-1)/2) * (PHYS.player.r*4.5);
   p.vx = p.vy = 0;
 }
 
 function kickoffReset() {
-  sim.ball.x = CX; sim.ball.y = CY; sim.ball.vx = 0; sim.ball.vy = 0;
-  sim.players.forEach(placePlayer);
+  sim.ball.x = field.cx; sim.ball.y = field.cy;
+  sim.ball.vx = 0; sim.ball.vy = 0;
+  sim.players.forEach(p => { if (p.team < 2) placePlayer(p); });
 }
 
 function onHostData(conn, d) {
@@ -397,7 +556,7 @@ function onHostData(conn, d) {
     const p = addPlayer('p' + (sim.nextId++), String(d.name||''), false, String(d.av||'⚽'));
     conns.set(conn.peer, { conn, playerId: p.id });
     conn.send({ t:'welcome', id: p.id, room: roomCode });
-    announce(`${p.name} 입장! (${p.team===0?'🔴레드':'🔵블루'})`);
+    announce(`${p.name} 입장 (관전)`);
   } else if (d.t === 'input') {
     const rec = conns.get(conn.peer);
     if (!rec) return;
@@ -405,7 +564,13 @@ function onHostData(conn, d) {
     if (!p) return;
     p.input.up = !!d.u; p.input.down = !!d.d;
     p.input.left = !!d.l; p.input.right = !!d.r;
+    if (!d.k) p.kickArmed = true;        // 킥 해제 → 재장전
     p.input.kick = !!d.k;
+  } else if (d.t === 'pong') {
+    const rec = conns.get(conn.peer);
+    if (!rec) return;
+    const p = sim.players.get(rec.playerId);
+    if (p) p.ping = Math.max(1, Math.round((performance.now() - d.ts) / 2));
   }
 }
 
@@ -417,16 +582,12 @@ function dropGuest(conn) {
   if (p) {
     sim.players.delete(p.id);
     announce(`${p.name} 퇴장`);
+    rosterChanged();
   }
 }
 
-function announce(msg) {
-  sim.msg = msg; sim.msgTtl = 150;
-}
-
-function broadcast(data) {
-  conns.forEach(rec => { try { rec.conn.send(data); } catch(e){} });
-}
+function announce(msg) { sim.msg = msg; sim.msgTtl = 150; }
+function broadcast(data) { conns.forEach(rec => { try { rec.conn.send(data); } catch(e){} }); }
 
 // ---------- 게스트 ----------
 function startGuest(nick, code) {
@@ -443,9 +604,7 @@ function startGuest(nick, code) {
       try { peer.destroy(); } catch(e){}
     }, 8000);
 
-    hostConn.on('open', () => {
-      hostConn.send({ t:'join', name: nick, av: myAvatar });
-    });
+    hostConn.on('open', () => hostConn.send({ t:'join', name: nick, av: myAvatar }));
     hostConn.on('data', d => {
       if (!d || typeof d !== 'object') return;
       if (d.t === 'welcome') {
@@ -454,9 +613,9 @@ function startGuest(nick, code) {
         myId = d.id;
         enterGame();
       } else if (d.t === 'snap') {
-        snapA = snapB;
-        snapB = d.s;
-        snapBTime = performance.now();
+        snapA = snapB; snapB = d.s; snapBTime = performance.now();
+      } else if (d.t === 'ping') {
+        hostConn.send({ t:'pong', ts: d.ts });
       }
     });
     hostConn.on('close', () => {
@@ -466,11 +625,8 @@ function startGuest(nick, code) {
   });
 
   peer.on('error', err => {
-    if (err.type === 'peer-unavailable') {
-      setStatus('방을 찾을 수 없습니다. 코드를 확인하세요.', true);
-    } else {
-      setStatus('연결 오류: ' + err.type, true);
-    }
+    if (err.type === 'peer-unavailable') setStatus('방을 찾을 수 없습니다. 코드를 확인하세요.', true);
+    else setStatus('연결 오류: ' + err.type, true);
     lockLobby(false);
   });
 }
@@ -479,35 +635,142 @@ function startGuest(nick, code) {
 function enterGame() {
   $('#lobby').style.display = 'none';
   $('#game').style.display = 'flex';
-  $('#roomCode').textContent = roomCode;
+  $('#menuTitle').textContent = `⚽ 간편 축구 · 방 코드 ${roomCode}`;
   if (isHost) {
-    $('#btnReset').style.display = '';
-    $('#btnBot').style.display = '';
+    $('#hostActions').style.display = 'flex';
+    $('#guestWait').style.display = 'none';
+  } else {
+    $('#hostActions').style.display = 'none';
+    $('#guestWait').style.display = 'block';
+    ['setTime','setScore','setStadium'].forEach(id => $('#'+id).disabled = true);
   }
+  menuOpen = true;
   requestAnimationFrame(frame);
   if (isHost) toast('친구에게 방 코드를 공유하세요: ' + roomCode, 4000);
 }
 
-$('#btnCopy').onclick = () => {
-  navigator.clipboard?.writeText(roomCode).then(() => toast('방 코드 복사됨: ' + roomCode));
-};
-$('#btnInvite').onclick = () => {
+// ---------- 메뉴 ----------
+$('#btnMenu').onclick = () => { menuOpen = !menuOpen; };
+$('#btnMenuClose').onclick = () => { menuOpen = false; };
+$('#btnMenuLink').onclick = () => {
   const url = location.origin + location.pathname + '?room=' + roomCode;
   navigator.clipboard?.writeText(url).then(() => toast('초대 링크 복사됨!'));
 };
-$('#btnReset').onclick = () => { if (isHost) resetMatch(); };
+$('#btnLeave').onclick = () => { if (confirm('방을 나가시겠습니까?')) location.href = location.pathname; };
+
+$('#setTime').onchange = e => { if (isHost) sim.settings.time = +e.target.value; };
+$('#setScore').onchange = e => { if (isHost) sim.settings.score = +e.target.value; };
+$('#setStadium').onchange = e => {
+  if (!isHost) return;
+  if (sim.state === 'playing') { e.target.value = sim.settings.stadium; return toast('경기 중에는 맵을 바꿀 수 없어요'); }
+  sim.settings.stadium = e.target.value;
+  field = makeField(sim.settings.stadium);
+};
+
+$('#btnRand').onclick = () => {
+  if (!isHost) return;
+  const all = [...sim.players.values()];
+  for (let i = all.length-1; i>0; i--) { const j = Math.floor(Math.random()*(i+1)); [all[i],all[j]] = [all[j],all[i]]; }
+  all.forEach((p,i) => { p.team = i % 2; if (sim.state==='playing') placePlayer(p); });
+  rosterChanged();
+  announce('🔀 팀 랜덤 배정!');
+};
 $('#btnBot').onclick = () => {
   if (!isHost) return;
   let bots = 0; sim.players.forEach(p => p.bot && bots++);
   if (bots >= 4) return toast('봇은 최대 4개까지');
-  addPlayer('bot' + Math.random().toString(36).slice(2,6), '봇', true);
+  const b = addPlayer('bot' + Math.random().toString(36).slice(2,6), '봇'+(bots+1), true, '🤖', balancedTeam());
+  if (sim.state === 'playing') placePlayer(b);
   announce('🤖 봇 입장!');
 };
+$('#btnStart').onclick = () => {
+  if (!isHost) return;
+  if (sim.state === 'playing') stopMatch();
+  else startMatch();
+};
 
-function resetMatch() {
+function startMatch() {
+  field = makeField(sim.settings.stadium);
   sim.score = [0,0]; sim.time = 0;
+  sim.suddenDeath = false; sim.pendingEnd = -1; sim.winner = -1;
+  sim.state = 'playing';
   kickoffReset();
-  announce('경기 리셋! ⚽');
+  menuOpen = false;
+  announce('⚽ 경기 시작!');
+  rosterChanged();
+}
+function stopMatch() {
+  sim.state = 'room';
+  menuOpen = true;
+  announce('경기 중지');
+  rosterChanged();
+}
+function endMatch(winner) {
+  sim.state = 'ended';
+  sim.winner = winner;
+  sim.endTtl = 300; // 5초 후 방으로
+  announce(winner === 0 ? '🏆 레드 팀 승리!' : '🏆 블루 팀 승리!');
+}
+
+function movePlayer(pid, dir) { // dir -1: 레드 쪽, +1: 블루 쪽 (red 0 ← spec 2 → blue 1)
+  if (!isHost) return;
+  const p = sim.players.get(pid);
+  if (!p) return;
+  const order = [0, 2, 1];
+  let idx = order.indexOf(p.team) + dir;
+  idx = clamp(idx, 0, 2);
+  const newTeam = order[idx];
+  if (newTeam === p.team) return;
+  p.team = newTeam;
+  if (p.team < 2 && sim.state === 'playing') placePlayer(p);
+  rosterChanged();
+}
+
+function rosterChanged() { rosterSig = ''; } // 다음 메뉴 갱신 때 강제 리빌드
+
+// 메뉴 렌더 (상태 기반)
+function syncMenu(state) {
+  if (state.st === 'room') menuOpen = true; // 방 상태에서는 항상 열림
+  $('#menu').style.display = menuOpen ? 'flex' : 'none';
+  $('#btnMenuClose').style.display = state.st === 'room' ? 'none' : '';
+  if (isHost) {
+    const b = $('#btnStart');
+    if (state.st === 'playing') { b.textContent = '⏹ 경기 중지'; b.className = 'btn stop'; }
+    else { b.textContent = '▶ 게임 시작'; b.className = 'btn start'; }
+    $('#setStadium').disabled = state.st === 'playing';
+  } else {
+    // 게스트: 설정값 동기화 (disabled 상태)
+    if ($('#setTime').value !== String(state.set.time)) $('#setTime').value = state.set.time;
+    if ($('#setScore').value !== String(state.set.score)) $('#setScore').value = state.set.score;
+    if ($('#setStadium').value !== state.set.stadium) $('#setStadium').value = state.set.stadium;
+  }
+  if (!menuOpen) return;
+
+  const sig = JSON.stringify(state.p.map(q => [q.i,q.n,q.t,q.pg|0]));
+  if (sig === rosterSig) return;
+  rosterSig = sig;
+
+  const lists = { 0: $('#listRed'), 1: $('#listBlue'), 2: $('#listSpec') };
+  Object.values(lists).forEach(ul => ul.innerHTML = '');
+  for (const q of state.p) {
+    const li = document.createElement('li');
+    const crown = q.i === 'p0' ? ' 👑' : '';
+    const me = q.i === myId ? ' style="color:var(--accent)"' : '';
+    let btns = '';
+    if (isHost) {
+      const canL = q.t !== 0, canR = q.t !== 1;
+      btns = `${canL?`<button class="mvbtn" data-mv="-1" data-id="${q.i}">◀</button>`:''}` +
+             `${canR?`<button class="mvbtn" data-mv="1" data-id="${q.i}">▶</button>`:''}`;
+    }
+    li.innerHTML = `<span>${q.a||'⚽'}</span><span class="pname"${me}>${q.n}${crown}</span>` +
+                   `<span class="ping">${q.b ? 'BOT' : (q.i==='p0' ? '—' : (q.pg||'-'))}</span>${btns}`;
+    (lists[q.t] || lists[2]).appendChild(li);
+  }
+  if (isHost) {
+    $('#menu').querySelectorAll('.mvbtn').forEach(b => {
+      b.onclick = () => movePlayer(b.dataset.id, +b.dataset.mv);
+    });
+  }
 }
 
 // ---------- 입력 ----------
@@ -516,10 +779,11 @@ const KEYMAP = {
   'ArrowDown':'down','KeyS':'down',
   'ArrowLeft':'left','KeyA':'left',
   'ArrowRight':'right','KeyD':'right',
-  'Space':'kick','KeyX':'kick',
+  'Space':'kick','KeyX':'kick','ShiftLeft':'kick','ShiftRight':'kick','ControlLeft':'kick','Numpad0':'kick',
 };
 window.addEventListener('keydown', e => {
-  if (e.code === 'KeyR' && isHost) { resetMatch(); return; }
+  if (e.code === 'Escape') { if ($('#game').style.display !== 'none') menuOpen = !menuOpen; return; }
+  if (e.code === 'KeyR' && isHost && sim.state === 'playing') { startMatch(); return; }
   const k = KEYMAP[e.code];
   if (k) { input[k] = true; e.preventDefault(); }
 });
@@ -574,132 +838,203 @@ window.addEventListener('keyup', e => {
   kb.addEventListener('touchend', e => { input.kick = false; e.preventDefault(); }, {passive:false});
 })();
 
-// ---------- 물리 (호스트 전용) ----------
+// =========================================================
+// 물리 엔진 (호스트 전용)
+// =========================================================
+
+// 디스크 간 충돌: 법선/접선 분해 + 운동량 보존 임펄스
+// 반발 계수 = bCoefA × bCoefB, 밀어내기는 invMass 비율 분배
+function collideDiscs(a, b) {
+  const dx = b.x - a.x, dy = b.y - a.y;
+  const d = Math.hypot(dx, dy), min = a.r + b.r;
+  if (d === 0 || d >= min) return;
+  const nx = dx/d, ny = dy/d;
+  const totInv = a.invMass + b.invMass;
+  if (totInv === 0) return;
+  // 위치 보정 (겹침 해소)
+  const push = min - d;
+  a.x -= nx * push * (a.invMass / totInv);
+  a.y -= ny * push * (a.invMass / totInv);
+  b.x += nx * push * (b.invMass / totInv);
+  b.y += ny * push * (b.invMass / totInv);
+  // 법선 방향 상대 속도 (접선 성분은 유지)
+  const rvn = (b.vx - a.vx)*nx + (b.vy - a.vy)*ny;
+  if (rvn < 0) {
+    const bc = a.bCoef * b.bCoef;
+    const imp = -(1 + bc) * rvn / totInv;
+    a.vx -= nx * imp * a.invMass; a.vy -= ny * imp * a.invMass;
+    b.vx += nx * imp * b.invMass; b.vy += ny * imp * b.invMass;
+  }
+}
+
+// 축 정렬 벽과의 충돌 (벽 bCoef × 디스크 bCoef)
+function bounceWall(o, axis, wallPos, dir, wallBCoef) {
+  // dir: +1이면 wallPos보다 커야 함(왼/위 벽), -1이면 작아야 함
+  const bc = o.bCoef * wallBCoef;
+  if (axis === 'x') {
+    if (dir > 0 && o.x < wallPos + o.r) { o.x = wallPos + o.r; if (o.vx < 0) o.vx = -o.vx * bc; }
+    if (dir < 0 && o.x > wallPos - o.r) { o.x = wallPos - o.r; if (o.vx > 0) o.vx = -o.vx * bc; }
+  } else {
+    if (dir > 0 && o.y < wallPos + o.r) { o.y = wallPos + o.r; if (o.vy < 0) o.vy = -o.vy * bc; }
+    if (dir < 0 && o.y > wallPos - o.r) { o.y = wallPos - o.r; if (o.vy > 0) o.vy = -o.vy * bc; }
+  }
+}
+
+function activePlayers() {
+  return [...sim.players.values()].filter(p => p.team < 2);
+}
+
 function simTick() {
-  sim.time += 1/60;
   if (sim.msgTtl > 0) sim.msgTtl--;
-  if (sim.freeze > 0) { sim.freeze--; if (sim.freeze === 0) kickoffReset(); return; }
 
   // 내(호스트) 입력 반영
   const me = sim.players.get(myId);
-  if (me) me.input = { ...input };
+  if (me) {
+    if (!input.kick) me.kickArmed = true;
+    me.input = { ...input };
+  }
 
-  // 봇 AI: 공을 향해 이동, 공 뒤쪽으로 돌아가서 상대 골대 방향으로 킥
-  sim.players.forEach(p => {
-    if (!p.bot) return;
+  if (sim.state === 'ended') {
+    if (--sim.endTtl <= 0) { sim.state = 'room'; menuOpen = true; rosterChanged(); }
+    return;
+  }
+  if (sim.state !== 'playing') return;
+
+  if (sim.freeze > 0) {
+    if (--sim.freeze === 0) {
+      if (sim.pendingEnd >= 0) { endMatch(sim.pendingEnd); sim.pendingEnd = -1; }
+      else kickoffReset();
+    }
+    return;
+  }
+
+  // 경기 시간 / 타임 리밋
+  sim.time += 1/60;
+  const limit = sim.settings.time * 60;
+  if (limit > 0 && sim.time >= limit && !sim.suddenDeath) {
+    if (sim.score[0] !== sim.score[1]) {
+      endMatch(sim.score[0] > sim.score[1] ? 0 : 1);
+      return;
+    }
+    sim.suddenDeath = true;
+    announce('⚡ 서든데스! 다음 골이 승리!');
+  }
+
+  const players = activePlayers();
+
+  // 봇 AI
+  for (const p of players) {
+    if (!p.bot) continue;
     const b = sim.ball;
-    const goalX = p.team === 0 ? FX + FW : FX; // 상대 골대
-    // 공 뒤편 목표 지점 (공 기준 자기 골대 쪽으로 약간)
-    const dirToGoal = Math.atan2(CY - b.y, goalX - b.x);
+    const goalX = p.team === 0 ? field.fx + field.fw : field.fx;
+    const dirToGoal = Math.atan2(field.cy - b.y, goalX - b.x);
     const tx = b.x - Math.cos(dirToGoal) * 25;
     const ty = b.y - Math.sin(dirToGoal) * 25;
     const dx = tx - p.x, dy = ty - p.y;
     const dist = Math.hypot(dx, dy);
     p.input.left = dx < -6; p.input.right = dx > 6;
     p.input.up = dy < -6; p.input.down = dy > 6;
-    const distBall = Math.hypot(b.x - p.x, b.y - p.y);
-    p.input.kick = distBall < P_R + B_R + KICK_RANGE + 4 && dist < 40;
-  });
+    const distBall = Math.hypot(b.x - p.x, b.y - p.y) - p.r - b.r;
+    const wantKick = distBall < PHYS.kickRange + 4 && dist < 40;
+    if (!wantKick) p.kickArmed = true;
+    p.input.kick = wantKick;
+  }
 
-  // 플레이어 이동
-  sim.players.forEach(p => {
+  // 플레이어 이동 (헥스볼: 킥 홀드 중 가속 감소)
+  for (const p of players) {
     let ax = (p.input.right?1:0) - (p.input.left?1:0);
     let ay = (p.input.down?1:0) - (p.input.up?1:0);
     if (ax || ay) {
       const len = Math.hypot(ax, ay);
-      // 킥 준비 중엔 살짝 느리게 (헥스볼 느낌)
-      const acc = p.input.kick ? P_ACCEL*0.8 : P_ACCEL;
+      const acc = p.input.kick ? PHYS.kickAccel : PHYS.accel;
       p.vx += ax/len*acc; p.vy += ay/len*acc;
     }
-    p.vx *= P_DAMP; p.vy *= P_DAMP;
+    p.vx *= PHYS.player.damping; p.vy *= PHYS.player.damping;
     p.x += p.vx; p.y += p.vy;
-    // 캔버스 가장자리(필드 밖 마진 포함)에서 제한
-    p.x = clamp(p.x, P_R+4, W-P_R-4);
-    p.y = clamp(p.y, P_R+4, H-P_R-4);
-  });
-
-  // 플레이어끼리 충돌
-  const arr = [...sim.players.values()];
-  for (let i=0;i<arr.length;i++) for (let j=i+1;j<arr.length;j++) {
-    const a = arr[i], b = arr[j];
-    const dx = b.x-a.x, dy = b.y-a.y;
-    const d = Math.hypot(dx,dy), min = P_R*2;
-    if (d > 0 && d < min) {
-      const nx = dx/d, ny = dy/d, push = (min-d)/2;
-      a.x -= nx*push; a.y -= ny*push;
-      b.x += nx*push; b.y += ny*push;
-      const rvn = (b.vx-a.vx)*nx + (b.vy-a.vy)*ny;
-      if (rvn < 0) {
-        const imp = -rvn*0.5;
-        a.vx -= nx*imp; a.vy -= ny*imp;
-        b.vx += nx*imp; b.vy += ny*imp;
-      }
-    }
+    // 경기장 외곽(캔버스 마진)에서 반사
+    bounceWall(p, 'x', 6, 1, PHYS.playerWallBCoef);
+    bounceWall(p, 'x', W-6, -1, PHYS.playerWallBCoef);
+    bounceWall(p, 'y', 6, 1, PHYS.playerWallBCoef);
+    bounceWall(p, 'y', H-6, -1, PHYS.playerWallBCoef);
   }
+
+  // 플레이어 ↔ 플레이어
+  for (let i=0;i<players.length;i++)
+    for (let j=i+1;j<players.length;j++)
+      collideDiscs(players[i], players[j]);
+
+  // 플레이어 ↔ 골포스트
+  for (const p of players)
+    for (const post of field.posts)
+      collideDiscs(p, post);
 
   // 공 이동
   const ball = sim.ball;
   ball.x += ball.vx; ball.y += ball.vy;
-  ball.vx *= B_DAMP; ball.vy *= B_DAMP;
+  ball.vx *= PHYS.ball.damping; ball.vy *= PHYS.ball.damping;
 
-  // 공-플레이어 충돌 + 킥
-  sim.players.forEach(p => {
-    const dx = ball.x-p.x, dy = ball.y-p.y;
-    const d = Math.hypot(dx,dy), min = P_R+B_R;
-    if (d > 0 && d < min) {
+  // 공 ↔ 플레이어 (충돌 + 킥)
+  for (const p of players) {
+    collideDiscs(p, ball);
+    // 킥: 표면 간격이 kickRange 이내 + 킥 입력 + 재장전 상태
+    const dx = ball.x - p.x, dy = ball.y - p.y;
+    const gap = Math.hypot(dx, dy) - p.r - ball.r;
+    if (p.input.kick && p.kickArmed && gap < PHYS.kickRange) {
+      const d = Math.hypot(dx, dy) || 1;
       const nx = dx/d, ny = dy/d;
-      ball.x = p.x + nx*min; ball.y = p.y + ny*min;
-      const rvn = (ball.vx-p.vx)*nx + (ball.vy-p.vy)*ny;
-      if (rvn < 0) {
-        ball.vx -= nx*rvn*1.3; ball.vy -= ny*rvn*1.3;
-        ball.vx += p.vx*0.3; ball.vy += p.vy*0.3;
-      }
+      ball.vx += nx * PHYS.kickStrength; // 가산 방식 → 투터치 가속 가능
+      ball.vy += ny * PHYS.kickStrength;
+      p.kickArmed = false; // 다시 눌러야 재킥
     }
-    // 킥: 사거리 내에서 kick 입력 시 공에 임펄스
-    if (p.input.kick && d < min + KICK_RANGE) {
-      const nx = dx/(d||1), ny = dy/(d||1);
-      ball.vx = nx*KICK_POWER + p.vx*0.4;
-      ball.vy = ny*KICK_POWER + p.vy*0.4;
-      p.input.kick = false; // 1회성 (다시 눌러야 함)
-      if (p.id === myId) input.kick = false;
-    }
-  });
+  }
 
-  // 공 벽 충돌 (골문 구간은 통과)
-  const inMouth = ball.y > GOAL_TOP + B_R && ball.y < GOAL_BOT - B_R;
-  if (ball.y < FY + B_R) { ball.y = FY + B_R; ball.vy = Math.abs(ball.vy)*WALL_BOUNCE; }
-  if (ball.y > FY+FH - B_R) { ball.y = FY+FH - B_R; ball.vy = -Math.abs(ball.vy)*WALL_BOUNCE; }
+  // 공 ↔ 골포스트
+  for (const post of field.posts) collideDiscs(post, ball);
+
+  // 공 ↔ 경기장 벽 (골문 구간은 통과)
+  const { fx, fy, fw, fh, gTop, gBot, goalDepth } = field;
+  bounceWall(ball, 'y', fy, 1, PHYS.wallBCoef);
+  bounceWall(ball, 'y', fy+fh, -1, PHYS.wallBCoef);
+  const inMouth = ball.y > gTop && ball.y < gBot;
   if (!inMouth) {
-    if (ball.x < FX + B_R) { ball.x = FX + B_R; ball.vx = Math.abs(ball.vx)*WALL_BOUNCE; }
-    if (ball.x > FX+FW - B_R) { ball.x = FX+FW - B_R; ball.vx = -Math.abs(ball.vx)*WALL_BOUNCE; }
+    bounceWall(ball, 'x', fx, 1, PHYS.wallBCoef);
+    bounceWall(ball, 'x', fx+fw, -1, PHYS.wallBCoef);
   } else {
-    // 골 판정: 공이 골라인을 완전히 넘으면
-    if (ball.x < FX - B_R) return goal(1);      // 왼쪽 골 → 블루 득점
-    if (ball.x > FX+FW + B_R) return goal(0);   // 오른쪽 골 → 레드 득점
-    // 골대 뒷벽/옆벽
-    if (ball.x < FX - GOAL_DEPTH + B_R) { ball.x = FX - GOAL_DEPTH + B_R; ball.vx = Math.abs(ball.vx)*WALL_BOUNCE; }
-    if (ball.x > FX+FW + GOAL_DEPTH - B_R) { ball.x = FX+FW + GOAL_DEPTH - B_R; ball.vx = -Math.abs(ball.vx)*WALL_BOUNCE; }
+    // 골 판정: 공이 골라인을 완전히 넘어가면
+    if (ball.x < fx - ball.r) return goal(1);
+    if (ball.x > fx+fw + ball.r) return goal(0);
+    // 골네트 뒷벽
+    bounceWall(ball, 'x', fx - goalDepth, 1, PHYS.wallBCoef);
+    bounceWall(ball, 'x', fx+fw + goalDepth, -1, PHYS.wallBCoef);
   }
 }
 
 function goal(team) {
   sim.score[team]++;
-  sim.freeze = 120; // 2초 정지 후 킥오프
+  sim.freeze = 120;
+  const limit = sim.settings.score;
+  if (sim.suddenDeath || (limit > 0 && sim.score[team] >= limit)) sim.pendingEnd = team;
   announce(team === 0 ? '⚽ GOAL! 🔴 레드 득점!' : '⚽ GOAL! 🔵 블루 득점!');
 }
 
 // ---------- 스냅샷 ----------
 function makeSnapshot() {
   return {
+    st: sim.state,
     p: [...sim.players.values()].map(p => ({
-      i: p.id, n: p.name, t: p.team, b: p.bot ? 1 : 0, a: p.av,
+      i: p.id, n: p.name, t: p.team, b: p.bot ? 1 : 0, a: p.av, pg: p.ping,
       x: +p.x.toFixed(1), y: +p.y.toFixed(1),
+      vx: +p.vx.toFixed(2), vy: +p.vy.toFixed(2),
       k: p.input.kick ? 1 : 0,
     })),
-    b: { x: +sim.ball.x.toFixed(1), y: +sim.ball.y.toFixed(1) },
+    b: { x: +sim.ball.x.toFixed(1), y: +sim.ball.y.toFixed(1),
+         vx: +sim.ball.vx.toFixed(2), vy: +sim.ball.vy.toFixed(2) },
     s: sim.score, tm: Math.floor(sim.time),
     m: sim.msgTtl > 0 ? sim.msg : '',
     f: sim.freeze > 0 ? 1 : 0,
+    sd: sim.suddenDeath ? 1 : 0,
+    w: sim.winner,
+    set: sim.settings,
   };
 }
 
@@ -716,15 +1051,12 @@ function frame(t) {
     while (acc >= TICK) {
       acc -= TICK;
       simTick();
-      if (++tickCount % SNAP_EVERY === 0) {
-        const s = makeSnapshot();
-        broadcast({ t:'snap', s });
-        snapA = snapB; snapB = s; snapBTime = performance.now();
-      }
+      tickCount++;
+      if (tickCount % SNAP_EVERY === 0) broadcast({ t:'snap', s: makeSnapshot() });
+      if (tickCount % 120 === 0) broadcast({ t:'ping', ts: performance.now() }); // 2초마다 핑 측정
     }
   } else {
-    // 게스트: 입력 전송 (변화 시 즉시 + 50ms마다 keepalive)
-    const cur = JSON.stringify([input.up,input.down,input.left,input.right,input.kick]);
+    const cur = `${input.up}${input.down}${input.left}${input.right}${input.kick}`;
     if (hostConn?.open && (cur !== lastSentInput || t - (frame._lastSend||0) > 50)) {
       hostConn.send({ t:'input', u:input.up, d:input.down, l:input.left, r:input.right, k:input.kick });
       lastSentInput = cur;
@@ -736,116 +1068,160 @@ function frame(t) {
 }
 
 // ---------- 렌더 ----------
-function render() {
-  // 표시할 상태 결정: 호스트는 sim 직접, 게스트는 스냅샷 보간
-  let state;
-  if (isHost) {
-    state = makeSnapshot();
-  } else if (snapB) {
-    if (snapA) {
-      const alpha = clamp((performance.now() - snapBTime) / (TICK*SNAP_EVERY), 0, 1);
-      state = {
-        ...snapB,
-        p: snapB.p.map(pb => {
-          const pa = snapA.p.find(q => q.i === pb.i) || pb;
-          return { ...pb, x: pa.x + (pb.x-pa.x)*alpha, y: pa.y + (pb.y-pa.y)*alpha };
-        }),
-        b: {
-          x: snapA.b.x + (snapB.b.x - snapA.b.x)*alpha,
-          y: snapA.b.y + (snapB.b.y - snapA.b.y)*alpha,
-        },
-      };
-    } else state = snapB;
-  } else {
-    return; // 아직 데이터 없음
+function getRenderState() {
+  if (isHost) return makeSnapshot();
+  if (!snapB) return null;
+  const interval = TICK * SNAP_EVERY;
+  const age = performance.now() - snapBTime;
+  const alpha = age / interval;
+
+  if (snapA && alpha < 1) {
+    // 스냅샷 보간
+    return {
+      ...snapB,
+      p: snapB.p.map(pb => {
+        const pa = snapA.p.find(q => q.i === pb.i) || pb;
+        return { ...pb, x: pa.x + (pb.x-pa.x)*alpha, y: pa.y + (pb.y-pa.y)*alpha };
+      }),
+      b: { ...snapB.b,
+        x: snapA.b.x + (snapB.b.x - snapA.b.x)*alpha,
+        y: snapA.b.y + (snapB.b.y - snapA.b.y)*alpha },
+    };
   }
+  // 데드 레코닝: 최신 스냅샷의 속도로 물리 예측 (최대 6틱)
+  const ticks = Math.min((age - interval) / TICK, 6);
+  if (ticks <= 0 || snapB.f || snapB.st !== 'playing') return snapB;
+  const dp = PHYS.player.damping, db = PHYS.ball.damping;
+  const geom = (v, d, n) => d === 1 ? v*n : v * d * (1 - Math.pow(d, n)) / (1 - d); // 감쇠 적용 이동량
+  return {
+    ...snapB,
+    p: snapB.p.map(q => ({ ...q, x: q.x + geom(q.vx, dp, ticks), y: q.y + geom(q.vy, dp, ticks) })),
+    b: { ...snapB.b,
+      x: snapB.b.x + geom(snapB.b.vx, db, ticks),
+      y: snapB.b.y + geom(snapB.b.vy, db, ticks) },
+  };
+}
+
+function render() {
+  const state = getRenderState();
+  if (!state) return;
 
   // HUD
   $('#scoreRed').textContent = state.s[0];
   $('#scoreBlue').textContent = state.s[1];
-  const mm = String(Math.floor(state.tm/60)).padStart(2,'0');
-  const ss = String(state.tm%60).padStart(2,'0');
-  $('#clock').textContent = mm + ':' + ss;
+  let clock;
+  if (state.sd) clock = 'SD';
+  else {
+    const lim = state.set.time * 60;
+    const shown = lim > 0 ? Math.max(0, lim - state.tm) : state.tm;
+    clock = String(Math.floor(shown/60)).padStart(2,'0') + ':' + String(shown%60).padStart(2,'0');
+  }
+  $('#clock').textContent = clock;
+
+  syncMenu(state);
+
+  // 필드 지오메트리 (게스트는 설정 기준으로 로컬 계산)
+  const f = isHost ? field : makeField(state.set.stadium);
 
   // 배경
   ctx.clearRect(0,0,W,H);
-  ctx.fillStyle = '#0d1f12';
+  ctx.fillStyle = '#718c5a';
   ctx.fillRect(0,0,W,H);
 
   // 잔디 스트라이프
   for (let i=0;i<8;i++) {
-    ctx.fillStyle = i%2 ? '#2c7a43' : '#2f844a';
-    ctx.fillRect(FX + i*FW/8, FY, FW/8, FH);
+    ctx.fillStyle = i%2 ? '#6d9c59' : '#74a45f';
+    ctx.fillRect(f.fx + i*f.fw/8, f.fy, f.fw/8, f.fh);
   }
 
   // 라인
-  ctx.strokeStyle = 'rgba(255,255,255,.75)';
+  ctx.strokeStyle = 'rgba(255,255,255,.85)';
   ctx.lineWidth = 3;
-  ctx.strokeRect(FX, FY, FW, FH);
-  ctx.beginPath(); ctx.moveTo(CX, FY); ctx.lineTo(CX, FY+FH); ctx.stroke();
-  ctx.beginPath(); ctx.arc(CX, CY, 80, 0, Math.PI*2); ctx.stroke();
-  ctx.beginPath(); ctx.arc(CX, CY, 4, 0, Math.PI*2);
-  ctx.fillStyle = 'rgba(255,255,255,.75)'; ctx.fill();
+  ctx.strokeRect(f.fx, f.fy, f.fw, f.fh);
+  ctx.beginPath(); ctx.moveTo(f.cx, f.fy); ctx.lineTo(f.cx, f.fy+f.fh); ctx.stroke();
+  ctx.beginPath(); ctx.arc(f.cx, f.cy, f.circle, 0, Math.PI*2); ctx.stroke();
+  ctx.beginPath(); ctx.arc(f.cx, f.cy, 4, 0, Math.PI*2);
+  ctx.fillStyle = 'rgba(255,255,255,.85)'; ctx.fill();
   // 페널티 박스
-  ctx.strokeRect(FX, CY-140, 130, 280);
-  ctx.strokeRect(FX+FW-130, CY-140, 130, 280);
+  const boxW = f.fw*0.11, boxH = (f.gBot - f.gTop) + f.fh*0.12;
+  ctx.strokeRect(f.fx, f.cy - boxH/2, boxW, boxH);
+  ctx.strokeRect(f.fx+f.fw - boxW, f.cy - boxH/2, boxW, boxH);
 
-  // 골대
-  ctx.fillStyle = 'rgba(255,255,255,.1)';
-  ctx.fillRect(FX-GOAL_DEPTH, GOAL_TOP, GOAL_DEPTH, GOAL_H);
-  ctx.fillRect(FX+FW, GOAL_TOP, GOAL_DEPTH, GOAL_H);
-  ctx.strokeStyle = '#fff'; ctx.lineWidth = 4;
-  ctx.strokeRect(FX-GOAL_DEPTH, GOAL_TOP, GOAL_DEPTH, GOAL_H);
-  ctx.strokeRect(FX+FW, GOAL_TOP, GOAL_DEPTH, GOAL_H);
-  // 골포스트 점
-  ctx.fillStyle = '#fff';
-  for (const [gx,gy] of [[FX,GOAL_TOP],[FX,GOAL_BOT],[FX+FW,GOAL_TOP],[FX+FW,GOAL_BOT]]) {
-    ctx.beginPath(); ctx.arc(gx,gy,6,0,Math.PI*2); ctx.fill();
+  // 골네트
+  ctx.fillStyle = 'rgba(255,255,255,.12)';
+  ctx.fillRect(f.fx - f.goalDepth, f.gTop, f.goalDepth, f.gBot - f.gTop);
+  ctx.fillRect(f.fx + f.fw, f.gTop, f.goalDepth, f.gBot - f.gTop);
+  ctx.strokeStyle = 'rgba(255,255,255,.6)'; ctx.lineWidth = 2;
+  ctx.strokeRect(f.fx - f.goalDepth, f.gTop, f.goalDepth, f.gBot - f.gTop);
+  ctx.strokeRect(f.fx + f.fw, f.gTop, f.goalDepth, f.gBot - f.gTop);
+
+  // 골포스트 (물리 디스크와 동일 좌표)
+  for (const post of f.posts) {
+    ctx.beginPath(); ctx.arc(post.x, post.y, post.r, 0, Math.PI*2);
+    ctx.fillStyle = '#fff'; ctx.fill();
+    ctx.lineWidth = 2; ctx.strokeStyle = '#333'; ctx.stroke();
+  }
+
+  if (state.st === 'room') {
+    // 대기 상태: 빈 경기장만
+    return;
   }
 
   // 공
   const b = state.b;
-  ctx.beginPath(); ctx.arc(b.x, b.y, B_R, 0, Math.PI*2);
+  ctx.beginPath(); ctx.arc(b.x, b.y, PHYS.ball.r, 0, Math.PI*2);
   ctx.fillStyle = '#fff'; ctx.fill();
   ctx.lineWidth = 2; ctx.strokeStyle = '#222'; ctx.stroke();
 
-  // 플레이어
+  // 플레이어 (레드/블루만)
   ctx.textAlign = 'center';
   for (const p of state.p) {
-    ctx.beginPath(); ctx.arc(p.x, p.y, P_R, 0, Math.PI*2);
-    ctx.fillStyle = p.t === 0 ? '#e55b5b' : '#5b8de5';
+    if (p.t > 1) continue;
+    ctx.beginPath(); ctx.arc(p.x, p.y, PHYS.player.r, 0, Math.PI*2);
+    ctx.fillStyle = p.t === 0 ? '#e56e56' : '#5689e5';
     ctx.fill();
     ctx.lineWidth = 3;
-    ctx.strokeStyle = p.k ? '#fff' : 'rgba(0,0,0,.45)'; // 킥 준비 = 흰 테두리
+    ctx.strokeStyle = p.k ? '#fff' : 'rgba(0,0,0,.45)';
     ctx.stroke();
-    if (p.i === myId) { // 내 캐릭터 표시
-      ctx.beginPath(); ctx.arc(p.x, p.y, P_R+5, 0, Math.PI*2);
+    if (p.i === myId) {
+      ctx.beginPath(); ctx.arc(p.x, p.y, PHYS.player.r+5, 0, Math.PI*2);
       ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(67,209,124,.9)'; ctx.stroke();
     }
-    // 아바타 이모지
     if (p.a) {
-      ctx.font = '17px sans-serif';
+      ctx.font = '16px sans-serif';
       ctx.textBaseline = 'middle';
       ctx.fillText(p.a, p.x, p.y + 1);
       ctx.textBaseline = 'alphabetic';
     }
     ctx.font = 'bold 13px sans-serif';
     ctx.fillStyle = '#fff';
-    ctx.fillText(p.n, p.x, p.y - P_R - 8);
+    ctx.fillText(p.n, p.x, p.y - PHYS.player.r - 8);
   }
 
   // 메시지
   if (state.m) {
-    ctx.font = 'bold 42px sans-serif';
+    ctx.font = 'bold 40px sans-serif';
     ctx.fillStyle = 'rgba(0,0,0,.55)';
     const tw = ctx.measureText(state.m).width;
-    ctx.fillRect(CX - tw/2 - 24, 120, tw + 48, 64);
+    ctx.fillRect(f.cx - tw/2 - 24, 110, tw + 48, 60);
     ctx.fillStyle = '#fff';
-    ctx.fillText(state.m, CX, 165);
+    ctx.fillText(state.m, f.cx, 152);
+  }
+
+  // 경기 종료 배너
+  if (state.st === 'ended' && state.w >= 0) {
+    ctx.fillStyle = 'rgba(0,0,0,.6)';
+    ctx.fillRect(0, H/2-70, W, 140);
+    ctx.font = 'bold 56px sans-serif';
+    ctx.fillStyle = state.w === 0 ? '#ff9a86' : '#86b4ff';
+    ctx.fillText(state.w === 0 ? '🏆 RED TEAM WINS!' : '🏆 BLUE TEAM WINS!', W/2, H/2+4);
+    ctx.font = 'bold 20px sans-serif';
+    ctx.fillStyle = '#ccc';
+    ctx.fillText(`${state.s[0]} : ${state.s[1]}`, W/2, H/2+42);
   }
 }
 
-// 초기 캔버스 크기 보정
+// 캔버스 크기 보정
 function fitCanvas() {
   const wrap = $('#canvasWrap');
   const r = Math.min(wrap.clientWidth / W, wrap.clientHeight / H);
