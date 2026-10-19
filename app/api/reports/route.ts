@@ -54,7 +54,11 @@ export async function POST(req: NextRequest) {
       zoneId: body.zoneId ?? structured.zoneId ?? 0,
       reporterLang: structured.lang,
       reporterAnonymous: body.reporterAnonymous,
-      rawText: structured.sourceText || body.text || "(사진 보고)",
+      // 클라이언트가 덧붙인 내부 힌트는 저장 원문에서 제거
+      rawText: (structured.sourceText || body.text || "(사진 보고)").replace(
+        /\s*\(위험유형 힌트: [^)]*\)\s*$/,
+        ""
+      ),
       translatedKo: structured.translatedKo,
       hazardType: structured.hazardType,
       workType: structured.workType,

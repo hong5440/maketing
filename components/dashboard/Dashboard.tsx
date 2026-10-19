@@ -19,6 +19,7 @@ import {
 import type { OverlayDot } from "@/components/yard3d/Overlays";
 import { AlertCard, KpiRow, ZoneDetail, type AlertExplainState } from "./SidePanel";
 import { TimelineBar } from "./TimelineBar";
+import { QrPanel } from "./QrPanel";
 
 const YardScene = dynamic(() => import("@/components/yard3d/YardScene"), {
   ssr: false,
@@ -42,6 +43,7 @@ export function Dashboard() {
   const [simNowMs, setSimNowMs] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [explains, setExplains] = useState<Record<string, AlertExplainState>>({});
+  const [showQr, setShowQr] = useState(false);
 
   // ── 데이터 로드 ─────────────────────────────────────
   useEffect(() => {
@@ -59,6 +61,38 @@ export function Dashboard() {
       })
       .catch(() => setLoaded(true));
   }, []);
+
+  // ── 실시간 반영: 2.5초 폴링으로 새 보고 수신 ───────
+  const simNowRef = useRef(simNowMs);
+  simNowRef.current = simNowMs;
+  useEffect(() => {
+    if (!loaded) return;
+    const id = setInterval(async () => {
+      try {
+        const d = await (await fetch("/api/reports?limit=1000")).json();
+        const list: NearMissReport[] = d.reports ?? [];
+        setReports((prev) => {
+          if (list.length === prev.length) return prev;
+          const prevMax = prev.reduce(
+            (m, r) => Math.max(m, Date.parse(r.createdAt)),
+            0,
+          );
+          const newMax = list.reduce(
+            (m, r) => Math.max(m, Date.parse(r.createdAt)),
+            0,
+          );
+          // "라이브" 위치(타임라인 끝)에서 보고 있었다면 새 보고 시각으로 따라감
+          if (newMax > prevMax && simNowRef.current >= prevMax - 3600_000) {
+            setSimNowMs(newMax);
+          }
+          return list;
+        });
+      } catch {
+        /* 다음 폴링에서 재시도 */
+      }
+    }, 2500);
+    return () => clearInterval(id);
+  }, [loaded]);
 
   const range = useMemo(() => {
     if (reports.length === 0) {
@@ -220,6 +254,13 @@ export function Dashboard() {
 
         <div className="absolute right-4 top-4 flex gap-2 text-xs">
           <button
+            onClick={() => setShowQr(true)}
+            className="rounded-md border border-console-border bg-console-panel/85 px-3 py-1.5 font-medium backdrop-blur hover:bg-console-panel"
+            title="구역별 보고 QR 코드"
+          >
+            📱 QR
+          </button>
+          <button
             onClick={() => setNight((v) => !v)}
             className="rounded-md border border-console-border bg-console-panel/85 px-3 py-1.5 font-medium backdrop-blur hover:bg-console-panel"
           >
@@ -251,6 +292,8 @@ export function Dashboard() {
             {selectedZone.name}
           </div>
         )}
+
+        {showQr && <QrPanel onClose={() => setShowQr(false)} />}
 
         <TimelineBar
           minMs={range.min + WEEK_MS}
