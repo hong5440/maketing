@@ -42,7 +42,7 @@ function Kpi({
   return (
     <div className="rounded-lg border border-console-border bg-console-bg/60 px-3 py-2.5">
       <p className="text-[11px] text-console-muted">{label}</p>
-      <p className="mt-0.5 text-xl font-bold leading-tight">{value}</p>
+      <p className="num mt-0.5 text-xl font-bold leading-tight">{value}</p>
       {sub && <p className={`text-[11px] ${subClass ?? "text-console-muted"}`}>{sub}</p>}
     </div>
   );
@@ -109,7 +109,7 @@ export function AlertCard({
           <span className="rounded bg-console-panel px-1.5 py-0.5 text-[11px] text-console-text">
             {alert.hazardType}
           </span>
-          <span className="ml-auto shrink-0 text-sm font-bold text-risk-danger">
+          <span className="num ml-auto shrink-0 text-sm font-bold text-risk-danger">
             +{pct}%
           </span>
         </div>
@@ -235,7 +235,7 @@ export function ZoneDetail({
 
       <Link
         href={`/tbm/${zone.id}`}
-        className="mb-3 block rounded-md bg-risk-warning/90 px-3 py-2 text-center text-sm font-bold text-black hover:bg-risk-warning"
+        className="pressable mb-3 block rounded-md bg-risk-warning/90 px-3 py-2 text-center text-sm font-bold text-black hover:bg-risk-warning"
       >
         📋 이 구역 내일 TBM 만들기
       </Link>

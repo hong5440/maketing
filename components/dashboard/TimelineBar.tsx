@@ -40,7 +40,7 @@ export function TimelineBar({
       <div className="flex items-center gap-3">
         <button
           onClick={onPlayToggle}
-          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-risk-warning text-sm font-bold text-black hover:brightness-110"
+          className="pressable flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-risk-warning text-sm font-bold text-black hover:brightness-110"
           aria-label={playing ? "일시정지" : "8주 재생"}
           title="지난 8주 재생"
         >

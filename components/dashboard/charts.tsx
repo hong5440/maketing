@@ -59,7 +59,7 @@ export function Donut({ data, size = 120 }: { data: DonutDatum[]; size?: number 
           x={cx}
           y={cy - 4}
           textAnchor="middle"
-          className="fill-console-text"
+          className="fill-console-text num"
           fontSize={20}
           fontWeight={700}
         >

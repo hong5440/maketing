@@ -48,7 +48,7 @@ export function QrPanel({ onClose }: { onClose: () => void }) {
           </div>
           <button
             onClick={onClose}
-            className="ml-auto rounded px-2 py-1 text-console-muted hover:text-console-text"
+            className="pressable ml-auto flex h-10 w-10 items-center justify-center rounded-lg text-console-muted hover:bg-console-border/40 hover:text-console-text"
             aria-label="닫기"
           >
             ✕

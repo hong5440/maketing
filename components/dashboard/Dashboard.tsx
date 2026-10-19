@@ -33,6 +33,12 @@ const YardScene = dynamic(() => import("@/components/yard3d/YardScene"), {
 
 /** 관제 대시보드 루트 — 상태(필터·타임라인·선택)와 3D/패널 연결 */
 export function Dashboard() {
+  // 접근성: 움직임 줄이기 설정 시 자동 회전 등 장식성 모션 비활성화
+  const [reduceMotion] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+  );
   const [reports, setReports] = useState<NearMissReport[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [filters, setFilters] = useState<DashFilters>(DEFAULT_FILTERS);
@@ -315,7 +321,7 @@ export function Dashboard() {
         <YardScene
           night={night}
           quality={quality}
-          autoRotate={demoStep === 1}
+          autoRotate={demoStep === 1 && !reduceMotion}
           selectedZoneId={selectedZoneId}
           onZoneSelect={(id) => {
             setSelectedZoneId(id);
@@ -355,14 +361,14 @@ export function Dashboard() {
         >
           <button
             onClick={() => setShowQr(true)}
-            className="rounded-md border border-console-border bg-console-panel/85 px-3 py-1.5 font-medium backdrop-blur hover:bg-console-panel"
+            className="pressable rounded-md border border-console-border bg-console-panel/85 px-3 py-1.5 font-medium backdrop-blur hover:bg-console-panel"
             title="구역별 보고 QR 코드"
           >
             📱 QR
           </button>
           <button
             onClick={() => setNight((v) => !v)}
-            className="rounded-md border border-console-border bg-console-panel/85 px-3 py-1.5 font-medium backdrop-blur hover:bg-console-panel"
+            className="pressable rounded-md border border-console-border bg-console-panel/85 px-3 py-1.5 font-medium backdrop-blur hover:bg-console-panel"
           >
             {night ? "☀️ 낮" : "🌙 밤"}
           </button>
@@ -371,13 +377,13 @@ export function Dashboard() {
               setSelectedZoneId(null);
               setSelectedAlertId(null);
             }}
-            className="rounded-md border border-console-border bg-console-panel/85 px-3 py-1.5 font-medium backdrop-blur hover:bg-console-panel"
+            className="pressable rounded-md border border-console-border bg-console-panel/85 px-3 py-1.5 font-medium backdrop-blur hover:bg-console-panel"
           >
             ⤢ 전체 보기
           </button>
           <button
             onClick={() => setQuality((q) => (q === "high" ? "low" : "high"))}
-            className="rounded-md border border-console-border bg-console-panel/85 px-3 py-1.5 font-medium backdrop-blur hover:bg-console-panel"
+            className="pressable rounded-md border border-console-border bg-console-panel/85 px-3 py-1.5 font-medium backdrop-blur hover:bg-console-panel"
             title="품질 프리셋"
           >
             품질: {quality === "high" ? "High" : "Low"}

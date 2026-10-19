@@ -205,7 +205,7 @@ export function TbmView({ zoneId }: { zoneId: number }) {
         <button
           onClick={() => setEditing((v) => !v)}
           disabled={!!approvedAt}
-          className={`rounded-lg px-3 py-2 font-semibold shadow-sm ${
+          className={`pressable rounded-lg px-3 py-2 font-semibold shadow-sm ${
             editing ? "bg-amber-400 text-black" : "bg-white hover:bg-gray-50"
           } disabled:opacity-40`}
         >
@@ -218,14 +218,14 @@ export function TbmView({ zoneId }: { zoneId: number }) {
             showToast("안전관리자 승인 완료");
           }}
           disabled={!!approvedAt || !tbm}
-          className="rounded-lg bg-emerald-600 px-3 py-2 font-semibold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-40"
+          className="pressable rounded-lg bg-emerald-600 px-3 py-2 font-semibold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-40"
         >
           ✅ 승인
         </button>
         <button
           onClick={speak}
           disabled={!tbm}
-          className={`rounded-lg px-3 py-2 font-semibold shadow-sm ${
+          className={`pressable rounded-lg px-3 py-2 font-semibold shadow-sm ${
             speaking ? "bg-blue-600 text-white" : "bg-white hover:bg-gray-50"
           }`}
         >
@@ -233,7 +233,7 @@ export function TbmView({ zoneId }: { zoneId: number }) {
         </button>
         <button
           onClick={() => window.print()}
-          className="rounded-lg bg-white px-3 py-2 font-semibold shadow-sm hover:bg-gray-50"
+          className="pressable rounded-lg bg-white px-3 py-2 font-semibold shadow-sm hover:bg-gray-50"
         >
           🖨️ 인쇄
         </button>
@@ -241,7 +241,7 @@ export function TbmView({ zoneId }: { zoneId: number }) {
           onClick={() =>
             showToast(`${zone.headcount}명의 근로자 휴대폰으로 전송했습니다 (데모)`)
           }
-          className="rounded-lg bg-blue-600 px-3 py-2 font-semibold text-white shadow-sm hover:bg-blue-700"
+          className="pressable rounded-lg bg-blue-600 px-3 py-2 font-semibold text-white shadow-sm hover:bg-blue-700"
         >
           📲 근로자 휴대폰으로 보내기
         </button>

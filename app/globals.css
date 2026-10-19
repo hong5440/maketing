@@ -23,6 +23,62 @@ body {
   color: var(--color-console-text);
 }
 
+/* ── 전역 폴리시 (인터랙션 체감 품질) ──────────────── */
+/* Tailwind v4 preflight는 버튼 커서가 default — 클릭 가능성을 되살린다 */
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]) {
+  cursor: pointer;
+}
+
+/* 키보드 포커스: 마우스 클릭엔 안 보이고 Tab 이동 시에만 또렷하게 */
+:focus-visible {
+  outline: 2px solid var(--color-risk-warning);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* 누르는 맛: 인터럽트 가능한 transition + 0.96 스케일 */
+.pressable {
+  transition-property: transform, opacity;
+  transition-duration: 0.12s;
+  transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
+}
+.pressable:active {
+  transform: scale(0.96);
+}
+
+/* 갱신되는 숫자는 폭 고정 숫자로 — 레이아웃 흔들림 방지 */
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+::selection {
+  background: rgba(249, 115, 22, 0.35);
+}
+
+/* 다크 콘솔용 얇은 스크롤바 */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-console-border) transparent;
+}
+
+/* 움직임 줄이기 설정 존중 — 장식성 모션 전부 정지 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 /* ── 3D 구역 마커 배지 ─────────────────────────────── */
 .zone-badge {
   position: relative;
@@ -39,11 +95,14 @@ body {
   font-weight: 700;
   cursor: pointer;
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.45);
-  transition: transform 0.12s ease;
+  transition: transform 0.12s cubic-bezier(0.2, 0, 0, 1);
 }
 .zone-badge:hover {
   transform: scale(1.25);
   z-index: 10;
+}
+.zone-badge:active {
+  transform: scale(1.1);
 }
 .zone-badge-selected {
   background: #2563eb;
@@ -81,7 +140,7 @@ body {
 
 /* ── 데모 시나리오 모드 ───────────────────────────── */
 .demo-phone {
-  animation: demo-slide-in 0.5s cubic-bezier(0.2, 1.2, 0.4, 1);
+  animation: demo-slide-in 0.45s cubic-bezier(0.2, 0, 0, 1);
 }
 @keyframes demo-slide-in {
   from {
@@ -94,7 +153,7 @@ body {
   }
 }
 .demo-fadein {
-  animation: demo-fade 0.45s ease-out;
+  animation: demo-fade 0.45s cubic-bezier(0.2, 0, 0, 1);
 }
 @keyframes demo-fade {
   from {

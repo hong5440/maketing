@@ -253,7 +253,7 @@ export function ReportApp({ zoneId }: { zoneId: number | null }) {
           <button
             key={l.code}
             onClick={() => pickLang(l.code)}
-            className="flex min-h-14 items-center gap-3 rounded-xl border border-console-border bg-console-panel px-4 text-lg font-semibold active:scale-[0.98] active:bg-console-border"
+            className="flex min-h-14 items-center gap-3 rounded-xl border border-console-border bg-console-panel px-4 text-lg font-semibold pressable active:bg-console-border"
           >
             <span className="text-2xl">{l.flag}</span>
             {l.native}
@@ -321,7 +321,7 @@ export function ReportApp({ zoneId }: { zoneId: number | null }) {
             setResult(null);
             setStep("form");
           }}
-          className="mt-auto min-h-14 rounded-xl bg-risk-warning text-lg font-bold text-black active:scale-[0.98]"
+          className="mt-auto min-h-14 rounded-xl bg-risk-warning text-lg font-bold text-black pressable"
         >
           {t.another}
         </button>
@@ -339,8 +339,8 @@ export function ReportApp({ zoneId }: { zoneId: number | null }) {
         </div>
         <button
           onClick={() => setStep("lang")}
-          className="rounded-lg border border-console-border px-2.5 py-1.5 text-lg"
-          aria-label="language"
+          className="pressable flex h-11 min-w-11 items-center justify-center rounded-lg border border-console-border text-lg"
+          aria-label="언어 변경"
         >
           {LANG_META.find((l) => l.code === lang)?.flag}
         </button>
@@ -473,7 +473,7 @@ export function ReportApp({ zoneId }: { zoneId: number | null }) {
       <button
         onClick={() => void submit({})}
         disabled={sending}
-        className="min-h-14 rounded-xl bg-risk-warning text-lg font-extrabold text-black active:scale-[0.98] disabled:opacity-60"
+        className="min-h-14 rounded-xl bg-risk-warning text-lg font-extrabold text-black pressable disabled:opacity-60"
       >
         {sending ? t.sending : `${t.send} ➤`}
       </button>

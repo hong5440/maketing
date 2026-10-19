@@ -210,7 +210,7 @@ function Finale() {
           >
             <p className="text-sm text-console-muted">{s.label}</p>
             <p className="mt-1 text-[11px] text-console-muted line-through">{s.from}</p>
-            <p className="my-2 text-4xl font-extrabold text-risk-warning">{s.big}</p>
+            <p className="num my-2 text-4xl font-extrabold text-risk-warning">{s.big}</p>
             <p className="text-xs text-console-muted">{s.note}</p>
           </div>
         ))}
@@ -281,7 +281,7 @@ export function DemoDirector({
       {/* 발표자 자막 */}
       {captions && (
         <div className="pointer-events-none fixed bottom-4 left-1/2 z-[70] w-[min(860px,80%)] -translate-x-1/2 rounded-xl border border-console-border bg-console-bg/90 px-5 py-3 text-center backdrop-blur">
-          <p className="text-sm leading-relaxed text-console-text">
+          <p className="text-[15px] leading-relaxed text-console-text" style={{ textWrap: "pretty" }}>
             {CAPTIONS[step - 1]}
           </p>
         </div>
