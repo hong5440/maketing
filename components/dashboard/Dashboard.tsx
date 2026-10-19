@@ -20,14 +20,11 @@ import type { OverlayDot } from "@/components/yard3d/Overlays";
 import { AlertCard, KpiRow, ZoneDetail, type AlertExplainState } from "./SidePanel";
 import { TimelineBar } from "./TimelineBar";
 import { QrPanel } from "./QrPanel";
+import { LoadingSplash } from "./LoadingSplash";
 
 const YardScene = dynamic(() => import("@/components/yard3d/YardScene"), {
   ssr: false,
-  loading: () => (
-    <div className="flex h-full items-center justify-center text-console-muted">
-      3D 조선소 불러오는 중…
-    </div>
-  ),
+  loading: () => <LoadingSplash />,
 });
 
 /** 관제 대시보드 루트 — 상태(필터·타임라인·선택)와 3D/패널 연결 */
@@ -245,11 +242,21 @@ export function Dashboard() {
           }}
         />
 
-        <header className="pointer-events-none absolute left-4 top-4">
-          <h1 className="text-lg font-bold drop-shadow">아차사고 레이더</h1>
-          <p className="text-xs text-console-muted drop-shadow">
-            한화오션 거제사업장 관제 대시보드
-          </p>
+        <header className="pointer-events-none absolute left-4 top-4 flex items-center gap-2.5">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/brand/logo.webp"
+            alt=""
+            className="h-10 w-10 rounded-xl border border-console-border/60 shadow-lg"
+          />
+          <div>
+            <h1 className="text-lg font-bold leading-tight drop-shadow">
+              아차사고 레이더
+            </h1>
+            <p className="text-xs text-console-muted drop-shadow">
+              한화오션 거제사업장 관제 대시보드
+            </p>
+          </div>
         </header>
 
         <div className="absolute right-4 top-4 flex gap-2 text-xs">

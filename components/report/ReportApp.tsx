@@ -241,6 +241,12 @@ export function ReportApp({ zoneId }: { zoneId: number | null }) {
   if (step === "lang") {
     return frame(
       <main className="flex flex-1 flex-col gap-3 p-5 pt-10">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/brand/logo.webp"
+          alt=""
+          className="mx-auto h-16 w-16 rounded-2xl shadow-lg"
+        />
         <h1 className="text-center text-xl font-bold">
           아차사고 보고 <span className="text-console-muted">· Near-Miss Report</span>
         </h1>
@@ -267,7 +273,12 @@ export function ReportApp({ zoneId }: { zoneId: number | null }) {
     return frame(
       <main className="flex flex-1 flex-col gap-4 p-5 pt-10">
         <div className="points-pop mx-auto mt-2 text-center">
-          <p className="text-5xl">🎉</p>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/brand/mascot.webp"
+            alt=""
+            className="mx-auto h-32 w-32 rounded-full shadow-xl"
+          />
           <p className="mt-2 text-2xl font-extrabold text-risk-safe">{t.points}</p>
           <p className="mt-1 text-sm text-console-muted">{t.thanks}</p>
         </div>

@@ -265,12 +265,20 @@ export function TbmView({ zoneId }: { zoneId: number }) {
             {/* 헤더 */}
             <header className="border-b-2 border-gray-900 pb-3">
               <div className="flex flex-wrap items-start justify-between gap-2">
-                <div>
-                  <p className="text-sm text-gray-500">{formatDateKo(tbm.date)} · TBM 작업 전 안전미팅</p>
-                  <h1 className="text-2xl font-extrabold">
-                    {zone.id}. {zone.name}
-                  </h1>
-                  <p className="text-xs text-gray-500">{zone.nameEn}</p>
+                <div className="flex items-start gap-3">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/brand/logo.webp"
+                    alt=""
+                    className="mt-0.5 h-12 w-12 rounded-xl"
+                  />
+                  <div>
+                    <p className="text-sm text-gray-500">{formatDateKo(tbm.date)} · TBM 작업 전 안전미팅</p>
+                    <h1 className="text-2xl font-extrabold">
+                      {zone.id}. {zone.name}
+                    </h1>
+                    <p className="text-xs text-gray-500">{zone.nameEn}</p>
+                  </div>
                 </div>
                 <div className="text-right">
                   {approvedAt ? (
