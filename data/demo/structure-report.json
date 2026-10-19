@@ -1,0 +1,112 @@
+{
+  "rules": [
+    {
+      "hazardType": "낙하",
+      "keywords": ["낙하", "떨어짐", "떨어져", "떨어질", "볼트", "스패너", "공구 떨어", "인양", "rơi xuống", "rơi", "bu lông", "dropped", "fell from", "หล่น", "खस्यो", "tushib", "jatuh dari atas", "baut"]
+    },
+    {
+      "hazardType": "추락",
+      "keywords": ["추락", "족장", "비계", "사다리", "맨홀", "개구부", "현문", "미끄러", "ngã", "trượt", "giàn giáo", "fall", "slip", "scaffold", "ตก", "นั่งร้าน", "ลื่น", "खसें", "माचान", "yiqil", "lesa", "terpeleset", "scaffolding"]
+    },
+    {
+      "hazardType": "협착",
+      "keywords": ["협착", "끼일", "끼임", "낄뻔", "지게차", "turn", "턴오버", "kẹp", "xe nâng", "pinned", "forklift", "หนีบ", "โฟล์คลิฟท์", "च्यापि", "qisilib", "kejepit"]
+    },
+    {
+      "hazardType": "충돌",
+      "keywords": ["충돌", "치일", "부딪", "트랜스포터", "đâm", "transporter", "hit me", "ชน", "ठोक्कि", "urib", "nabrak"]
+    },
+    {
+      "hazardType": "화재·폭발",
+      "keywords": ["화재", "폭발", "불티", "불붙", "시너", "가우징", "가스", "cháy", "tia lửa", "fire", "spark", "ไฟไหม้", "สะเก็ดไฟ", "ग्यास", "yong'in", "kebakaran", "thinner"]
+    },
+    {
+      "hazardType": "질식",
+      "keywords": ["질식", "환기", "어지러", "밀폐", "산소", "탱크", "송기", "메스꺼", "chóng mặt", "thông gió", "thiếu ôxy", "dizzy", "ventilation", "เวียนหัว", "ระบายอากาศ", "रिंगटा", "हावा", "aylanib", "ventilyatsiya", "pusing", "blower"]
+    },
+    {
+      "hazardType": "감전",
+      "keywords": ["감전", "찌릿", "전선", "피복", "누전", "điện", "hở", "shock", "electric", "ช็อต", "สายไฟ", "करेन्ट", "tok urdi", "setrum"]
+    },
+    {
+      "hazardType": "절단·화상",
+      "keywords": ["화상", "베일", "베임", "그라인더", "파편", "델뻔", "달궈진", "đá mài", "burn", "grinder", "เจียร", "ग्राइन्डर", "kuyish", "melepuh", "plat panas"]
+    },
+    {
+      "hazardType": "전도",
+      "keywords": ["넘어질", "넘어짐", "걸려", "기름", "미끄러져 넘어", "trượt chân ngã", "tripped", "ลื่นล้ม", "लडें", "sirg'anib", "licin"]
+    }
+  ],
+  "byHazardType": {
+    "추락": {
+      "translatedKo": "고소 작업 중 발판 상태가 불량하여 추락할 뻔했다.",
+      "workType": "고소 족장(비계) 작업",
+      "severity": 4,
+      "cause": "안전대 부착설비 미설치 및 족장 고정 상태 불량",
+      "hazardFactors": ["고소작업 중 안전대 미체결", "족장(비계) 고정 클램프 탈락"]
+    },
+    "낙하": {
+      "translatedKo": "크레인 인양 작업 중 상부에서 볼트·공구가 떨어져 맞을 뻔했다.",
+      "workType": "골리앗 크레인 인양",
+      "severity": 4,
+      "cause": "인양물 결속 불량 및 하부 통제구역 미설정",
+      "hazardFactors": ["인양물 하부 근로자 통행", "공구 낙하방지끈 미사용"]
+    },
+    "협착": {
+      "translatedKo": "장비(지게차 등) 후진 시 주변 작업자를 인지하지 못해 끼일 뻔했다.",
+      "workType": "트랜스포터 운반",
+      "severity": 3,
+      "cause": "후진 경보장치 불량 및 신호수 미배치",
+      "hazardFactors": ["운반장비와 보행자 동선 미분리"]
+    },
+    "충돌": {
+      "translatedKo": "운반 장비가 사각지대에서 갑자기 나타나 부딪힐 뻔했다.",
+      "workType": "강재 하역",
+      "severity": 3,
+      "cause": "운반장비·보행자 동선 미분리, 사각지대 반사경 미설치",
+      "hazardFactors": ["교차로 시야 확보 불가", "야간 조명 부족"]
+    },
+    "화재·폭발": {
+      "translatedKo": "화기 작업 중 불티가 인화물 근처로 튀어 화재가 날 뻔했다.",
+      "workType": "화기(용접·절단) 작업",
+      "severity": 4,
+      "cause": "불티 비산방지 조치 미흡 및 인화물 격리 미흡",
+      "hazardFactors": ["작업 반경 내 인화물 방치", "소화기 미비치"]
+    },
+    "질식": {
+      "translatedKo": "밀폐공간(탱크) 내부 작업 중 환기가 불량하여 어지러움을 느꼈다.",
+      "workType": "LNGC 카고탱크 도장",
+      "severity": 4,
+      "cause": "환기장치 가동 불량 및 산소농도 측정 미실시",
+      "hazardFactors": ["밀폐공간 출입 절차 미준수", "송기마스크 수량 부족"]
+    },
+    "감전": {
+      "translatedKo": "전선 피복이 손상되어 있어 감전될 뻔했다.",
+      "workType": "선체 용접",
+      "severity": 3,
+      "cause": "전선 피복 손상 및 누전차단기 미설치",
+      "hazardFactors": ["바닥 물기와 전선 접촉"]
+    },
+    "절단·화상": {
+      "translatedKo": "연삭·취부 작업 중 파편이 튀거나 고온부에 접촉해 다칠 뻔했다.",
+      "workType": "강재 플라즈마·가스 절단",
+      "severity": 3,
+      "cause": "연삭 숫돌 상태 불량 및 고온부 표시 미흡",
+      "hazardFactors": ["보안경 등 보호구 착용 불량"]
+    },
+    "전도": {
+      "translatedKo": "바닥의 기름·장애물에 걸려 미끄러지거나 넘어질 뻔했다.",
+      "workType": "블록 조립",
+      "severity": 2,
+      "cause": "바닥 유류·이물질 방치 및 통로 정리정돈 불량",
+      "hazardFactors": ["통로 케이블 방치"]
+    },
+    "기타": {
+      "translatedKo": "작업 환경(흄·분진·소음·조명 등)이 불량하여 건강 위험을 느꼈다.",
+      "workType": "대조립 용접",
+      "severity": 2,
+      "cause": "국소배기장치 가동 불량 등 작업환경 관리 미흡",
+      "hazardFactors": ["보호구 지급 미흡"]
+    }
+  }
+}

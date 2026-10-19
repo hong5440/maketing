@@ -1,0 +1,339 @@
+{
+  "hazards": {
+    "낙하": {
+      "title": {
+        "ko": "크레인 인양물·공구 낙하",
+        "vi": "Vật liệu và dụng cụ rơi khi cẩu hàng",
+        "en": "Falling objects during crane lifting",
+        "th": "วัสดุและเครื่องมือหล่นขณะเครนยกของ",
+        "ne": "क्रेनले सामान उठाउँदा वस्तु खस्ने खतरा",
+        "uz": "Kran yuk ko'targanda buyumlar tushish xavfi",
+        "id": "Benda jatuh saat pengangkatan crane"
+      },
+      "detail": {
+        "ko": "인양 작업 반경 하부로 절대 통행하지 말고, 인양 전 블록 위 볼트·공구 등 잔재물을 반드시 제거하세요.",
+        "vi": "Tuyệt đối không đi lại phía dưới khu vực cẩu hàng. Trước khi cẩu, phải dọn sạch bu lông và dụng cụ trên block.",
+        "en": "Never walk under the lifting zone. Remove all loose bolts and tools from the block before lifting.",
+        "th": "ห้ามเดินใต้พื้นที่ยกของเด็ดขาด และต้องเก็บน็อตและเครื่องมือบนบล็อกก่อนยกทุกครั้ง",
+        "ne": "क्रेनले सामान उठाउने ठाउँमुनि कहिल्यै नहिँड्नुहोस्। उठाउनु अघि ब्लकमाथिका बोल्ट र औजारहरू हटाउनुहोस्।",
+        "uz": "Yuk ko'tarilayotgan joy ostidan hech qachon o'tmang. Ko'tarishdan oldin blok ustidagi bolt va asboblarni olib tashlang.",
+        "id": "Jangan pernah berjalan di bawah area pengangkatan. Bersihkan baut dan alat di atas blok sebelum diangkat."
+      },
+      "checklist": [
+        {
+          "ko": "인양구간 하부 출입통제 라인을 설치했는가?",
+          "vi": "Đã căng dây cấm vào khu vực phía dưới cẩu hàng chưa?",
+          "en": "Is the no-entry line set up under the lifting zone?",
+          "th": "ติดตั้งแนวกั้นห้ามเข้าใต้พื้นที่ยกของแล้วหรือยัง?",
+          "ne": "क्रेनमुनिको क्षेत्रमा प्रवेश निषेध लाइन राखिएको छ?",
+          "uz": "Yuk ko'tariladigan joy ostiga kirish taqiqlangan chiziq o'rnatildimi?",
+          "id": "Apakah garis larangan masuk di bawah area angkat sudah dipasang?"
+        },
+        {
+          "ko": "고소 작업자 전원이 공구 낙하방지끈을 착용했는가?",
+          "vi": "Tất cả công nhân làm việc trên cao đã buộc dây chống rơi dụng cụ chưa?",
+          "en": "Are all workers at height using tool lanyards?",
+          "th": "คนงานบนที่สูงทุกคนใช้สายกันเครื่องมือตกแล้วหรือยัง?",
+          "ne": "उचाइमा काम गर्ने सबैले औजार खस्न नदिने डोरी लगाएका छन्?",
+          "uz": "Balandlikda ishlovchilar asbob tushishiga qarshi bog'ich taqqanmi?",
+          "id": "Apakah semua pekerja di ketinggian memakai tali pengaman alat?"
+        }
+      ]
+    },
+    "질식": {
+      "title": {
+        "ko": "밀폐공간(탱크) 질식",
+        "vi": "Ngạt khí trong không gian kín (tank)",
+        "en": "Asphyxiation in confined spaces (tanks)",
+        "th": "การขาดอากาศในพื้นที่อับอากาศ (แทงค์)",
+        "ne": "बन्द ठाउँ (ट्याङ्क) भित्र निसास्सिने खतरा",
+        "uz": "Yopiq joyda (tank ichida) bo'g'ilish xavfi",
+        "id": "Sesak napas di ruang terbatas (tangki)"
+      },
+      "detail": {
+        "ko": "탱크 출입 전 산소농도를 반드시 측정하고, 환기팬이 작업 지점까지 작동하는지 확인하세요. 어지러우면 즉시 밖으로 나오세요.",
+        "vi": "Trước khi vào tank phải đo nồng độ ôxy và kiểm tra quạt thông gió chạy đến tận chỗ làm việc. Nếu chóng mặt, ra ngoài ngay lập tức.",
+        "en": "Measure oxygen level before entering the tank and check that ventilation reaches your work spot. If dizzy, exit immediately.",
+        "th": "ก่อนเข้าแทงค์ต้องวัดระดับออกซิเจนและตรวจว่าพัดลมระบายอากาศถึงจุดทำงาน หากเวียนหัวให้ออกมาทันที",
+        "ne": "ट्याङ्क भित्र पस्नु अघि अक्सिजन नाप्नुहोस् र भेन्टिलेसन काम गर्ने ठाउँसम्म पुगेको छ कि जाँच्नुहोस्। रिंगटा लागे तुरुन्तै बाहिर निस्कनुहोस्।",
+        "uz": "Tank ichiga kirishdan oldin kislorod miqdorini o'lchang va shamollatish ish joyigacha yetib borishini tekshiring. Bosh aylansa darhol tashqariga chiqing.",
+        "id": "Ukur kadar oksigen sebelum masuk tangki dan pastikan ventilasi sampai ke titik kerja. Jika pusing, segera keluar."
+      },
+      "checklist": [
+        {
+          "ko": "출입 전 산소·유해가스 농도를 측정했는가?",
+          "vi": "Đã đo nồng độ ôxy và khí độc trước khi vào chưa?",
+          "en": "Did you measure oxygen and toxic gas levels before entry?",
+          "th": "วัดระดับออกซิเจนและก๊าซพิษก่อนเข้าแล้วหรือยัง?",
+          "ne": "भित्र पस्नु अघि अक्सिजन र विषालु ग्यास नापियो?",
+          "uz": "Kirishdan oldin kislorod va zaharli gaz o'lchandimi?",
+          "id": "Apakah kadar oksigen dan gas beracun sudah diukur sebelum masuk?"
+        },
+        {
+          "ko": "밀폐공간 외부에 감시인이 배치되어 있는가?",
+          "vi": "Có người giám sát đứng bên ngoài không gian kín không?",
+          "en": "Is a standby watcher posted outside the confined space?",
+          "th": "มีผู้เฝ้าระวังอยู่ด้านนอกพื้นที่อับอากาศหรือไม่?",
+          "ne": "बन्द ठाउँ बाहिर निगरानी गर्ने मानिस छ?",
+          "uz": "Yopiq joy tashqarisida kuzatuvchi bormi?",
+          "id": "Apakah ada pengawas di luar ruang terbatas?"
+        }
+      ]
+    },
+    "협착": {
+      "title": {
+        "ko": "지게차·트랜스포터 협착",
+        "vi": "Kẹp người do xe nâng và transporter",
+        "en": "Caught between forklift / transporter",
+        "th": "ถูกหนีบจากโฟล์คลิฟท์และทรานสปอร์ตเตอร์",
+        "ne": "फोर्कलिफ्ट र ट्रान्सपोर्टरबाट च्यापिने खतरा",
+        "uz": "Pogruzchik va transporter orasida qisilish xavfi",
+        "id": "Terjepit forklift / transporter"
+      },
+      "detail": {
+        "ko": "야간에는 특히 운전자가 사람을 보기 어렵습니다. 장비 후진 시 접근하지 말고, 신호수 유도에 따라 이동하세요.",
+        "vi": "Ban đêm lái xe rất khó nhìn thấy người. Không lại gần khi xe lùi, di chuyển theo hướng dẫn của người ra hiệu.",
+        "en": "At night, drivers can hardly see people. Never approach a reversing vehicle; follow the spotter's signals.",
+        "th": "ตอนกลางคืนคนขับมองเห็นคนได้ยากมาก ห้ามเข้าใกล้รถที่กำลังถอย และเดินตามสัญญาณของผู้ให้สัญญาณ",
+        "ne": "रातमा चालकले मानिस देख्न गाह्रो हुन्छ। पछाडि सर्दै गरेको गाडी नजिक नजानुहोस्, सिग्नलम्यानको निर्देशन पालना गर्नुहोस्।",
+        "uz": "Kechasi haydovchi odamlarni ko'rishi juda qiyin. Orqaga yurayotgan texnikaga yaqinlashmang, signalchi ko'rsatmasiga amal qiling.",
+        "id": "Di malam hari pengemudi sulit melihat orang. Jangan mendekati kendaraan yang mundur; ikuti aba-aba pemberi sinyal."
+      },
+      "checklist": [
+        {
+          "ko": "운반장비 후진 경보음·경광등이 정상 작동하는가?",
+          "vi": "Còi lùi và đèn cảnh báo của xe có hoạt động bình thường không?",
+          "en": "Are the reverse alarm and warning lights working?",
+          "th": "สัญญาณเสียงถอยหลังและไฟเตือนทำงานปกติหรือไม่?",
+          "ne": "गाडीको ब्याक अलार्म र बत्ती राम्ररी चल्छ?",
+          "uz": "Orqaga yurish signali va ogohlantiruvchi chiroqlar ishlayaptimi?",
+          "id": "Apakah alarm mundur dan lampu peringatan berfungsi?"
+        },
+        {
+          "ko": "야간 작업 구역 조명과 신호수 배치를 확인했는가?",
+          "vi": "Đã kiểm tra đèn chiếu sáng ban đêm và bố trí người ra hiệu chưa?",
+          "en": "Did you check night lighting and spotter assignment?",
+          "th": "ตรวจสอบไฟส่องสว่างกลางคืนและการจัดผู้ให้สัญญาณแล้วหรือยัง?",
+          "ne": "रातको बत्ती र सिग्नलम्यानको व्यवस्था जाँचियो?",
+          "uz": "Tungi yoritish va signalchi tayinlanganligini tekshirdingizmi?",
+          "id": "Apakah penerangan malam dan penempatan pemberi sinyal sudah diperiksa?"
+        }
+      ]
+    },
+    "충돌": {
+      "title": {
+        "ko": "운반장비 충돌",
+        "vi": "Va chạm với xe vận chuyển",
+        "en": "Collision with transport vehicles",
+        "th": "การชนกับยานพาหนะขนส่ง",
+        "ne": "ढुवानी गाडीसँग ठोक्किने खतरा",
+        "uz": "Transport vositalari bilan to'qnashuv xavfi",
+        "id": "Tabrakan dengan kendaraan pengangkut"
+      },
+      "detail": {
+        "ko": "보행 통로를 벗어나지 말고, 교차로·코너에서는 반드시 멈춰 좌우를 확인한 뒤 이동하세요.",
+        "vi": "Không đi ra ngoài lối đi bộ. Ở ngã tư và góc cua phải dừng lại nhìn hai bên rồi mới đi tiếp.",
+        "en": "Stay inside pedestrian lanes. Stop and look both ways at intersections and corners.",
+        "th": "เดินในช่องทางเดินเท้าเท่านั้น หยุดและมองซ้ายขวาที่ทางแยกและหัวมุมทุกครั้ง",
+        "ne": "हिँड्ने बाटोभित्रै हिँड्नुहोस्। चोक र घुम्तीमा रोकिएर दुवैतिर हेरेर मात्र अगाडि बढ्नुहोस्।",
+        "uz": "Piyodalar yo'lagidan chiqmang. Chorraha va burchaklarda to'xtab, ikki tomonga qarab o'ting.",
+        "id": "Tetap di jalur pejalan kaki. Berhenti dan lihat kiri-kanan di persimpangan dan tikungan."
+      },
+      "checklist": [
+        {
+          "ko": "보행자 통로와 장비 동선이 분리되어 있는가?",
+          "vi": "Lối đi bộ và đường xe chạy đã được tách riêng chưa?",
+          "en": "Are pedestrian lanes separated from vehicle routes?",
+          "th": "ช่องทางเดินเท้าแยกจากเส้นทางรถแล้วหรือยัง?",
+          "ne": "हिँड्ने बाटो र गाडीको बाटो छुट्याइएको छ?",
+          "uz": "Piyodalar yo'li va texnika yo'li ajratilganmi?",
+          "id": "Apakah jalur pejalan kaki terpisah dari jalur kendaraan?"
+        }
+      ]
+    },
+    "추락": {
+      "title": {
+        "ko": "고소·해상 추락",
+        "vi": "Ngã từ trên cao và rơi xuống biển",
+        "en": "Falls from height / into the sea",
+        "th": "การตกจากที่สูงและตกทะเล",
+        "ne": "उचाइ र समुद्रमा खस्ने खतरा",
+        "uz": "Balandlikdan va dengizga yiqilish xavfi",
+        "id": "Jatuh dari ketinggian / ke laut"
+      },
+      "detail": {
+        "ko": "비 오는 날 안벽·현문 사다리는 매우 미끄럽습니다. 난간을 꼭 잡고, 안전대 체결과 구명조끼 착용을 확인하세요.",
+        "vi": "Trời mưa, mặt bến và cầu thang mạn tàu rất trơn. Bám chắc lan can, kiểm tra dây an toàn và áo phao.",
+        "en": "On rainy days the quay and gangway are very slippery. Hold the handrail, check your harness and life vest.",
+        "th": "วันฝนตกพื้นท่าเรือและบันไดขึ้นเรือลื่นมาก จับราวให้แน่น ตรวจเข็มขัดนิรภัยและเสื้อชูชีพ",
+        "ne": "पानी परेको दिन किनारा र डोरेटो धेरै चिप्लो हुन्छ। रेलिङ समात्नुहोस्, सेफ्टी बेल्ट र लाइफ ज्याकेट जाँच्नुहोस्।",
+        "uz": "Yomg'irli kunda kema zinasi juda sirpanchiq bo'ladi. Panjarani mahkam ushlang, xavfsizlik kamari va qutqaruv nimchasini tekshiring.",
+        "id": "Saat hujan, dermaga dan tangga kapal sangat licin. Pegang pagar, periksa harness dan pelampung."
+      },
+      "checklist": [
+        {
+          "ko": "우천 시 현문 사다리·안벽 가장자리에 미끄럼방지 조치를 했는가?",
+          "vi": "Trời mưa đã có biện pháp chống trượt ở cầu thang mạn tàu và mép bến chưa?",
+          "en": "Are anti-slip measures in place on the gangway and quay edge when raining?",
+          "th": "มีมาตรการกันลื่นที่บันไดขึ้นเรือและขอบท่าเมื่อฝนตกหรือไม่?",
+          "ne": "पानी पर्दा डोरेटो र किनारामा चिप्लो नहुने व्यवस्था गरिएको छ?",
+          "uz": "Yomg'irda zinapoya va qirg'oq chetida sirpanishga qarshi chora ko'rilganmi?",
+          "id": "Apakah ada tindakan anti-selip di tangga kapal dan tepi dermaga saat hujan?"
+        },
+        {
+          "ko": "안전대 부착설비(생명줄)가 설치되어 있고 체결했는가?",
+          "vi": "Đã lắp dây cứu sinh và móc dây an toàn chưa?",
+          "en": "Is a lifeline installed and your harness hooked on?",
+          "th": "ติดตั้งสายช่วยชีวิตและเกี่ยวเข็มขัดนิรภัยแล้วหรือยัง?",
+          "ne": "लाइफलाइन जडान गरेर सेफ्टी बेल्ट झुन्ड्याइएको छ?",
+          "uz": "Hayot arqoni o'rnatilib, xavfsizlik kamari ulandimi?",
+          "id": "Apakah lifeline terpasang dan harness sudah dikaitkan?"
+        }
+      ]
+    },
+    "화재·폭발": {
+      "title": {
+        "ko": "화기작업 화재·폭발",
+        "vi": "Cháy nổ khi làm việc với lửa",
+        "en": "Fire/explosion during hot work"
+      },
+      "detail": {
+        "ko": "화기작업 전 반경 내 인화물을 제거하고 불티받이를 설치하세요. 소화기 위치를 먼저 확인하세요.",
+        "vi": "Trước khi hàn cắt phải dọn vật dễ cháy xung quanh và đặt tấm chắn tia lửa. Kiểm tra vị trí bình chữa cháy trước.",
+        "en": "Remove flammables and set up spark shields before hot work. Check the fire extinguisher location first."
+      },
+      "checklist": [
+        {
+          "ko": "화기작업 반경 내 인화물을 제거·격리했는가?",
+          "vi": "Đã dọn và cách ly vật dễ cháy quanh khu vực hàn cắt chưa?",
+          "en": "Are flammables removed/isolated around the hot work area?"
+        }
+      ]
+    },
+    "감전": {
+      "title": {
+        "ko": "전기 감전",
+        "vi": "Điện giật",
+        "en": "Electric shock"
+      },
+      "detail": {
+        "ko": "용접기 홀더·케이블 피복 상태를 작업 전에 점검하고, 물기 있는 곳에서는 전선을 가공(높이) 정리하세요.",
+        "vi": "Kiểm tra vỏ cách điện của kìm hàn và dây cáp trước khi làm. Chỗ ướt phải treo dây điện lên cao.",
+        "en": "Inspect welder holder and cable insulation before work. Keep cables elevated in wet areas."
+      },
+      "checklist": [
+        {
+          "ko": "용접 케이블·홀더 피복 손상 여부를 점검했는가?",
+          "vi": "Đã kiểm tra vỏ cách điện của cáp hàn và kìm hàn chưa?",
+          "en": "Did you inspect welding cable and holder insulation?"
+        }
+      ]
+    },
+    "절단·화상": {
+      "title": {
+        "ko": "절단·화상",
+        "vi": "Cắt vào người và bỏng",
+        "en": "Cuts and burns"
+      },
+      "detail": {
+        "ko": "그라인더 숫돌 상태를 확인하고 보안경·방진마스크를 착용하세요. 고온부는 표시하고 접촉하지 마세요.",
+        "vi": "Kiểm tra đá mài trước khi dùng, đeo kính và khẩu trang bảo hộ. Chỗ kim loại nóng phải đánh dấu, không chạm vào.",
+        "en": "Check the grinder disc, wear goggles and dust mask. Mark hot surfaces and never touch them."
+      },
+      "checklist": [
+        {
+          "ko": "그라인더 숫돌 균열·마모 상태를 확인했는가?",
+          "vi": "Đã kiểm tra đá mài có nứt hoặc mòn không?",
+          "en": "Did you check the grinder disc for cracks and wear?"
+        }
+      ]
+    },
+    "전도": {
+      "title": {
+        "ko": "미끄러짐·걸려 넘어짐",
+        "vi": "Trượt ngã và vấp ngã",
+        "en": "Slips and trips"
+      },
+      "detail": {
+        "ko": "통로의 케이블·호스를 정리하고 바닥 기름기는 즉시 제거하세요. 론지 통과 시 발 디딤을 확인하세요.",
+        "vi": "Dọn gọn dây cáp và ống trên lối đi, lau ngay vết dầu trên sàn. Bước qua longi phải nhìn chỗ đặt chân.",
+        "en": "Keep cables/hoses off walkways, clean up oil at once. Watch your footing when crossing longitudinals."
+      },
+      "checklist": [
+        {
+          "ko": "통로 케이블·호스 정리와 바닥 유류 제거를 했는가?",
+          "vi": "Đã dọn dây cáp trên lối đi và lau sạch dầu trên sàn chưa?",
+          "en": "Are walkways clear of cables and the floor free of oil?"
+        }
+      ]
+    },
+    "기타": {
+      "title": {
+        "ko": "작업환경(흄·분진·소음)",
+        "vi": "Môi trường làm việc (khói hàn, bụi, tiếng ồn)",
+        "en": "Work environment (fume, dust, noise)"
+      },
+      "detail": {
+        "ko": "국소배기장치 가동을 확인하고 방진·방독마스크, 귀마개를 착용하세요. 이상 증상이 있으면 즉시 보고하세요.",
+        "vi": "Kiểm tra quạt hút cục bộ hoạt động, đeo khẩu trang và nút tai. Có triệu chứng bất thường phải báo ngay.",
+        "en": "Confirm local exhaust is running, wear respirator and earplugs. Report any symptoms immediately."
+      },
+      "checklist": [
+        {
+          "ko": "국소배기장치가 정상 가동 중인가?",
+          "vi": "Quạt hút cục bộ có đang hoạt động bình thường không?",
+          "en": "Is the local exhaust ventilation running properly?"
+        }
+      ]
+    }
+  },
+  "commonChecklist": [
+    {
+      "ko": "안전모·안전화·보호구를 바르게 착용했는가?",
+      "vi": "Đã đội mũ, đi giày và mang đồ bảo hộ đúng cách chưa?",
+      "en": "Are helmet, safety shoes and PPE worn correctly?",
+      "th": "สวมหมวกนิรภัย รองเท้าเซฟตี้ และอุปกรณ์ป้องกันถูกต้องหรือไม่?",
+      "ne": "हेल्मेट, जुत्ता र सुरक्षा सामग्री राम्ररी लगाइएको छ?",
+      "uz": "Kaska, himoya poyabzali va vositalari to'g'ri kiyilganmi?",
+      "id": "Apakah helm, sepatu safety, dan APD dipakai dengan benar?"
+    },
+    {
+      "ko": "오늘 작업의 위험 요인을 동료와 함께 확인했는가?",
+      "vi": "Đã cùng đồng nghiệp xác nhận các nguy cơ của công việc hôm nay chưa?",
+      "en": "Did you review today's hazards with your coworkers?",
+      "th": "ตรวจสอบความเสี่ยงของงานวันนี้ร่วมกับเพื่อนร่วมงานแล้วหรือยัง?",
+      "ne": "आजको कामको खतरा साथीहरूसँग मिलेर जाँच्नुभयो?",
+      "uz": "Bugungi ish xavflarini hamkasblar bilan birga ko'rib chiqdingizmi?",
+      "id": "Apakah bahaya pekerjaan hari ini sudah ditinjau bersama rekan kerja?"
+    },
+    {
+      "ko": "위험을 발견하면 즉시 작업을 멈추고 보고하기로 약속했는가?",
+      "vi": "Đã cam kết dừng việc ngay và báo cáo khi phát hiện nguy hiểm chưa?",
+      "en": "Do we all agree to stop work and report any danger immediately?",
+      "th": "ตกลงกันว่าจะหยุดงานและรายงานทันทีเมื่อพบอันตรายแล้วหรือยัง?",
+      "ne": "खतरा देखे तुरुन्तै काम रोकेर रिपोर्ट गर्ने सहमति भयो?",
+      "uz": "Xavf topilsa darhol ishni to'xtatib, xabar berishga kelishdikmi?",
+      "id": "Apakah kita sepakat berhenti bekerja dan segera melapor jika ada bahaya?"
+    }
+  ],
+  "slogans": [
+    {
+      "ko": "10초의 보고가 10년의 동료를 지킵니다!",
+      "vi": "10 giây báo cáo, bảo vệ đồng nghiệp 10 năm!",
+      "en": "A 10-second report protects a 10-year teammate!",
+      "th": "รายงาน 10 วินาที ปกป้องเพื่อนร่วมงาน 10 ปี!",
+      "ne": "१० सेकेन्डको रिपोर्टले १० वर्षको साथीलाई जोगाउँछ!",
+      "uz": "10 soniyalik xabar 10 yillik hamkasbni asraydi!",
+      "id": "Laporan 10 detik melindungi rekan kerja 10 tahun!"
+    },
+    {
+      "ko": "오늘도 무사고! 서로 보고, 서로 지키자!",
+      "vi": "Hôm nay không tai nạn! Cùng quan sát, cùng bảo vệ nhau!",
+      "en": "Zero accidents today! Watch out for each other!",
+      "th": "วันนี้ปลอดอุบัติเหตุ! ดูแลซึ่งกันและกัน!",
+      "ne": "आज पनि दुर्घटना शून्य! एकअर्कालाई हेरौं, जोगाऔं!",
+      "uz": "Bugun ham baxtsiz hodisasiz! Bir-birimizni asraylik!",
+      "id": "Hari ini nihil kecelakaan! Saling menjaga satu sama lain!"
+    }
+  ]
+}
