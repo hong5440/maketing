@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "next lint",
     "seed": "tsx scripts/generate-seed.ts",
-    "test": "vitest run"
+    "test": "vitest run",
+    "build:static": "bash scripts/build-static.sh",
+    "demo": "serve demo"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.68.0",

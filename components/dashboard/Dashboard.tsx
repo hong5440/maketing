@@ -8,6 +8,7 @@ import {
   detectHotspots,
   type HotspotAlert,
 } from "@/lib/ai/detectHotspots";
+import { apiExplainAlert, apiGetReports } from "@/lib/clientApi";
 import {
   DEFAULT_FILTERS,
   WEEK_MS,
@@ -42,12 +43,10 @@ export function Dashboard() {
   const [explains, setExplains] = useState<Record<string, AlertExplainState>>({});
   const [showQr, setShowQr] = useState(false);
 
-  // ── 데이터 로드 ─────────────────────────────────────
+  // ── 데이터 로드 (서버 API → 없으면 정적 데모 폴백) ───
   useEffect(() => {
-    fetch("/api/reports?limit=1000")
-      .then((r) => r.json())
-      .then((d) => {
-        const list: NearMissReport[] = d.reports ?? [];
+    apiGetReports()
+      .then((list) => {
         setReports(list);
         const maxT = list.reduce(
           (m, r) => Math.max(m, Date.parse(r.createdAt)),
@@ -66,8 +65,7 @@ export function Dashboard() {
     if (!loaded) return;
     const id = setInterval(async () => {
       try {
-        const d = await (await fetch("/api/reports?limit=1000")).json();
-        const list: NearMissReport[] = d.reports ?? [];
+        const list = await apiGetReports();
         setReports((prev) => {
           if (list.length === prev.length) return prev;
           const prevMax = prev.reduce(
@@ -190,18 +188,11 @@ export function Dashboard() {
       if (!explainCacheRef.current.has(alert.id)) {
         explainCacheRef.current.add(alert.id);
         setExplains((e) => ({ ...e, [alert.id]: { loading: true } }));
-        fetch(
-          `/api/alerts/${encodeURIComponent(alert.id)}/explain?now=${new Date(
-            simNowMs,
-          ).toISOString()}`,
-          { method: "POST" },
-        )
-          .then(async (r) => {
-            if (!r.ok) throw new Error(`분석 실패 (${r.status})`);
-            const d = await r.json();
+        apiExplainAlert(alert, simNowMs)
+          .then((explanation) => {
             setExplains((e) => ({
               ...e,
-              [alert.id]: { loading: false, data: d.explanation },
+              [alert.id]: { loading: false, data: explanation },
             }));
           })
           .catch((err) => {

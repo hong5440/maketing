@@ -5,6 +5,7 @@ import { getZone } from "@/data/zones";
 import type { ReporterLang } from "@/lib/domain";
 import { LANG_LABELS } from "@/lib/domain";
 import { HAZARD_UI, LANG_META } from "@/lib/reportI18n";
+import { apiGenerateTbm } from "@/lib/clientApi";
 import { MiniMap } from "./MiniMap";
 
 /**
@@ -103,15 +104,9 @@ export function TbmView({ zoneId }: { zoneId: number }) {
   const [speaking, setSpeaking] = useState(false);
 
   useEffect(() => {
-    fetch("/api/tbm", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ zoneId }),
-    })
-      .then(async (r) => {
-        if (!r.ok) throw new Error(String(r.status));
-        const d = await r.json();
-        setTbm(d.tbm);
+    apiGenerateTbm(zoneId)
+      .then((d) => {
+        setTbm(d.tbm as TBMDocument);
         // 생성된 언어 중 첫 외국어를 기본 선택
         const langs = Object.keys(d.tbm.slogan).filter((l) => l !== "ko");
         if (langs.length > 0) setLang(langs[0] as ReporterLang);

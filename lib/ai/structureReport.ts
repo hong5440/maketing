@@ -22,7 +22,7 @@ import { callClaudeJson, isDemoMode } from "./config";
 import { SHIPYARD_GLOSSARY } from "./glossary";
 import { StructuredReportSchema, type StructuredReport } from "./schemas";
 import { transcribeAudio } from "./stt";
-import demoData from "../../data/demo/structure-report.json";
+import { demoStructure } from "./demoFallbacks";
 
 export interface StructureReportInput {
   /** 텍스트 보고 또는 클라이언트 Web Speech 결과 */
@@ -78,72 +78,8 @@ ${zoneCatalog()}
 }`;
 }
 
-// ── 데모 폴백 ────────────────────────────────────────────────
-
-function detectLangByScript(text: string, hint?: string): ReporterLang {
-  if (hint && (REPORTER_LANGS as readonly string[]).includes(hint))
-    return hint as ReporterLang;
-  if (/[가-힣]/.test(text)) return "ko";
-  if (/[฀-๿]/.test(text)) return "th"; // 태국 문자
-  if (/[ऀ-ॿ]/.test(text)) return "ne"; // 데바나가리
-  // 베트남어 고유 성조 문자
-  if (/[ăâđêôơưàảãạằẳẵặầẩẫậèẻẽẹềểễệìỉĩịòỏõọồổỗộờởỡợùủũụừửữựỳỷỹỵ]/i.test(text))
-    return "vi";
-  // 우즈베크어 특유 어포스트로피 표기(o'/g') 및 흔한 기능어
-  if (/(o['’]|g['’]|\b(va|bilan|uchun|emas|qoldi)\b)/i.test(text)) return "uz";
-  // 인도네시아어 흔한 기능어
-  if (/\b(yang|tidak|nggak|saya|dari|hampir|kena)\b/i.test(text)) return "id";
-  return "en";
-}
-
-type DemoRule = { hazardType: string; keywords: string[] };
-type DemoCanned = {
-  translatedKo: string;
-  workType: string;
-  severity: number;
-  cause: string;
-  hazardFactors: string[];
-};
-
-function demoStructure(
-  text: string,
-  input: StructureReportInput
-): StructuredReport {
-  const lower = text.toLowerCase();
-  const rules = demoData.rules as DemoRule[];
-
-  // 키워드 매칭 점수가 가장 높은 위험유형 선택
-  let best: { hazard: HazardType; score: number } = {
-    hazard: "기타",
-    score: 0,
-  };
-  for (const rule of rules) {
-    const score = rule.keywords.reduce(
-      (s, kw) => s + (lower.includes(kw.toLowerCase()) ? 1 : 0),
-      0
-    );
-    if (score > best.score)
-      best = { hazard: rule.hazardType as HazardType, score };
-  }
-
-  const canned = (demoData.byHazardType as Record<string, DemoCanned>)[
-    best.hazard
-  ];
-  const lang = detectLangByScript(text, input.lang);
-  const zone = input.zoneId ? ZONES.find((z) => z.id === input.zoneId) : null;
-
-  return StructuredReportSchema.parse({
-    lang,
-    // 원문이 한국어면 원문 그대로, 아니면 준비된 번역문
-    translatedKo: lang === "ko" ? text : canned.translatedKo,
-    hazardType: best.hazard,
-    workType: zone ? zone.workTypes[0] : canned.workType,
-    severity: canned.severity as Severity,
-    cause: canned.cause,
-    zoneId: input.zoneId ?? null,
-    hazardFactors: canned.hazardFactors,
-  });
-}
+// ── 데모 폴백 (공용 모듈 lib/ai/demoFallbacks.ts) ─────────────
+// demoStructure / detectLangByScript 는 정적 데모의 클라이언트 경로와 공유된다.
 
 // ── 메인 ─────────────────────────────────────────────────────
 

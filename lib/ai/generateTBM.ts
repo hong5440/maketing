@@ -21,7 +21,7 @@ import {
   type LocalizedText,
   type TBMDocument,
 } from "./schemas";
-import demoData from "../../data/demo/tbm.json";
+import { demoTBM, pickLangs, topHazards } from "./demoFallbacks";
 
 export interface GenerateTBMOutput extends TBMDocument {
   demo: boolean;
@@ -29,105 +29,7 @@ export interface GenerateTBMOutput extends TBMDocument {
   alertIds: string[];
 }
 
-// ─────────────────────────────────────────────────────────────
-
-/** 구역의 최근 14일 보고서에서 다발 위험유형 산출 (없으면 8주 전체) */
-function topHazards(zoneReports: NearMissReport[], now: Date): HazardType[] {
-  const nowMs = now.getTime();
-  const count = (sinceDays: number) => {
-    const m = new Map<HazardType, number>();
-    for (const r of zoneReports) {
-      const t = Date.parse(r.createdAt);
-      if (t > nowMs || nowMs - t > sinceDays * 86400000) continue;
-      m.set(r.hazardType, (m.get(r.hazardType) ?? 0) + 1);
-    }
-    return m;
-  };
-  let m = count(14);
-  if (m.size === 0) m = count(56);
-  return [...m.entries()]
-    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
-    .map(([h]) => h);
-}
-
-/** 다국어 사전에서 ko + 요청 언어만 추출 (없는 언어는 en으로 폴백) */
-function pickLangs(
-  dict: Record<string, string>,
-  langs: ReporterLang[]
-): LocalizedText {
-  const out: Record<string, string> = { ko: dict.ko };
-  for (const lang of langs) {
-    if (lang === "ko") continue;
-    out[lang] = dict[lang] ?? dict.en ?? dict.ko;
-  }
-  return out;
-}
-
-// ── 데모 폴백 ────────────────────────────────────────────────
-
-type DemoHazard = {
-  title: Record<string, string>;
-  detail: Record<string, string>;
-  checklist: Record<string, string>[];
-};
-
-function demoTBM(
-  zoneId: number,
-  date: string,
-  langs: ReporterLang[],
-  hazards: HazardType[],
-  zoneReports: NearMissReport[],
-  now: Date
-): TBMDocument {
-  const bank = demoData.hazards as Record<string, DemoHazard>;
-  const chosen = hazards.filter((h) => bank[h]).slice(0, 3);
-  if (chosen.length === 0) chosen.push("기타");
-
-  const keyRisks = chosen.map((h) => ({
-    hazardType: h,
-    title: pickLangs(bank[h].title, langs),
-    detail: pickLangs(bank[h].detail, langs),
-  }));
-
-  // 익명화된 실제 사례: 최근 보고서 번역문 (보고자 언어가 요청 언어와 같으면 원문 병기)
-  const nowMs = now.getTime();
-  const recentCases = [...zoneReports]
-    .filter((r) => Date.parse(r.createdAt) <= nowMs)
-    .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
-    .filter((r) => chosen.includes(r.hazardType))
-    .slice(0, 2);
-  const cases: LocalizedText[] = recentCases.map((r) => {
-    const c: Record<string, string> = {
-      ko: `(익명 사례 · ${r.createdAt.slice(5, 10)} · ${r.hazardType}) ${r.translatedKo}`,
-    };
-    if (langs.includes(r.reporterLang) && r.reporterLang !== "ko") {
-      c[r.reporterLang] = r.rawText;
-    }
-    return c;
-  });
-
-  // 체크리스트: 핵심 위험별 항목 + 공통 항목
-  const checklist: LocalizedText[] = [];
-  for (const h of chosen) {
-    for (const item of bank[h].checklist) checklist.push(pickLangs(item, langs));
-  }
-  for (const item of demoData.commonChecklist as Record<string, string>[]) {
-    checklist.push(pickLangs(item, langs));
-    if (checklist.length >= 6) break;
-  }
-
-  const slogans = demoData.slogans as Record<string, string>[];
-  const slogan = pickLangs(slogans[zoneId % slogans.length], langs);
-
-  return TBMDocumentSchema.parse({
-    zoneId,
-    date,
-    keyRisks,
-    cases,
-    checklist,
-    slogan,
-  });
-}
+// 데모 폴백·공용 헬퍼는 lib/ai/demoFallbacks.ts 공유
 
 // ── 메인 ─────────────────────────────────────────────────────
 

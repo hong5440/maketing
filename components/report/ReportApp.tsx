@@ -10,6 +10,7 @@ import {
   hazardLabel,
   type ReportStrings,
 } from "@/lib/reportI18n";
+import { apiSubmitReport } from "@/lib/clientApi";
 
 /**
  * 근로자용 모바일 보고 화면.
@@ -119,22 +120,16 @@ export function ReportApp({ zoneId }: { zoneId: number | null }) {
       try {
         const hinted =
           bodyText && hazardHint ? `${bodyText}\n(위험유형 힌트: ${hazardHint})` : bodyText;
-        const res = await fetch("/api/reports", {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify({
-            text: hinted,
-            audioBase64: opts.audioBase64,
-            audioMimeType: opts.audioMime,
-            imageBase64: photo?.base64,
-            imageMimeType: photo?.mime,
-            zoneId: zoneId ?? undefined,
-            lang,
-            reporterAnonymous: anonymous,
-          }),
+        const data: SubmitResult = await apiSubmitReport({
+          text: hinted,
+          audioBase64: opts.audioBase64,
+          audioMimeType: opts.audioMime,
+          imageBase64: photo?.base64,
+          imageMimeType: photo?.mime,
+          zoneId: zoneId ?? undefined,
+          lang,
+          reporterAnonymous: anonymous,
         });
-        if (!res.ok) throw new Error(String(res.status));
-        const data: SubmitResult = await res.json();
         setResult(data);
         setStep("done");
         setText("");

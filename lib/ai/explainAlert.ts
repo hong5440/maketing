@@ -13,7 +13,7 @@ import type { HotspotAlert } from "./detectHotspots";
 import { SHIPYARD_GLOSSARY } from "./glossary";
 import { AlertExplanationSchema, type AlertExplanation } from "./schemas";
 import { findSimilarReports } from "./similarity";
-import demoData from "../../data/demo/explain-alert.json";
+import { demoExplain } from "./demoFallbacks";
 
 const SIMILAR_TOP_N = 5;
 
@@ -26,31 +26,6 @@ export interface ExplainAlertOutput extends AlertExplanation {
 
 function fmtReport(r: NearMissReport): string {
   return `- [${r.id}] ${r.createdAt.slice(0, 16)} / 심각도 ${r.severity} / ${r.workType} / 날씨 ${r.weather}\n  "${r.translatedKo}" (원인: ${r.cause})`;
-}
-
-function demoExplain(
-  alert: HotspotAlert,
-  zoneName: string
-): AlertExplanation {
-  type Canned = {
-    pattern: string;
-    riskReason: string;
-    recommendedActions: string[];
-  };
-  const bank = demoData.byHazardType as Record<string, Canned>;
-  const canned = bank[alert.hazardType] ?? bank.default;
-  const fill = (s: string) =>
-    s
-      .replaceAll("{zone}", zoneName)
-      .replaceAll("{hazard}", alert.hazardType)
-      .replaceAll("{count}", String(alert.recentCount))
-      .replaceAll("{baseline}", alert.baselineWeekly.toFixed(1))
-      .replaceAll("{ratio}", alert.increaseRatio.toFixed(1));
-  return AlertExplanationSchema.parse({
-    pattern: fill(canned.pattern),
-    riskReason: fill(canned.riskReason),
-    recommendedActions: canned.recommendedActions.slice(0, 3).map(fill),
-  });
 }
 
 export async function explainAlert(
