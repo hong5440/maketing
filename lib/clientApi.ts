@@ -6,6 +6,7 @@
  * localStorage 덕분에 /report 탭에서 보낸 보고가 대시보드 탭 폴링에 바로 잡힌다.
  */
 
+import { withBase } from "./basePath";
 import seedData from "../data/seed/reports.json";
 import { getZone } from "../data/zones";
 import {
@@ -65,7 +66,7 @@ function staticReports(): NearMissReport[] {
 export async function apiGetReports(): Promise<NearMissReport[]> {
   if (staticMode !== true) {
     try {
-      const res = await fetch("/api/reports?limit=1000");
+      const res = await fetch(withBase("/api/reports?limit=1000"));
       if (res.ok) {
         const d = await res.json();
         if (Array.isArray(d.reports)) {
@@ -104,7 +105,7 @@ export async function apiSubmitReport(
 ): Promise<SubmitReportResult> {
   if (staticMode !== true) {
     try {
-      const res = await fetch("/api/reports", {
+      const res = await fetch(withBase("/api/reports"), {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify(body),
@@ -214,7 +215,7 @@ export interface TbmResult {
 export async function apiGenerateTbm(zoneId: number): Promise<TbmResult> {
   if (staticMode !== true) {
     try {
-      const res = await fetch("/api/tbm", {
+      const res = await fetch(withBase("/api/tbm"), {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ zoneId }),

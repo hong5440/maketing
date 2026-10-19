@@ -1,5 +1,6 @@
 "use client";
 
+import { withBase } from "@/lib/basePath";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { getZone } from "@/data/zones";
 import type { ReporterLang } from "@/lib/domain";
@@ -263,7 +264,7 @@ export function TbmView({ zoneId }: { zoneId: number }) {
                 <div className="flex items-start gap-3">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src="/brand/logo.webp"
+                    src={withBase("/brand/logo.webp")}
                     alt=""
                     className="mt-0.5 h-12 w-12 rounded-xl"
                   />

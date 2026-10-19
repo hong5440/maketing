@@ -1,3 +1,5 @@
+import { withBase } from "@/lib/basePath";
+
 /**
  * 3D 씬 로딩 스플래시 — 로고 + 레이더 스윕 애니메이션.
  */
@@ -7,7 +9,7 @@ export function LoadingSplash() {
       <div className="radar-ring relative h-28 w-28">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/brand/logo.webp"
+          src={withBase("/brand/logo.webp")}
           alt="아차사고 레이더"
           className="h-28 w-28 rounded-3xl object-cover"
         />

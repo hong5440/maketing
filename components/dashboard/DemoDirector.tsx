@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { withBase } from "@/lib/basePath";
 
 /**
  * 발표용 데모 시나리오 모드 오버레이.
@@ -46,7 +47,7 @@ function PhoneOverlay({ onSubmit }: { onSubmit: () => void }) {
     timers.push(
       setTimeout(() => {
         if (cancelled) return;
-        const audio = new Audio("/demo/report-vi.mp3");
+        const audio = new Audio(withBase("/demo/report-vi.mp3"));
         audioRef.current = audio;
         let advanced = false;
         const advance = () => {
@@ -87,7 +88,7 @@ function PhoneOverlay({ onSubmit }: { onSubmit: () => void }) {
         <div className="flex min-h-[460px] flex-col gap-3 p-4">
           <div className="flex items-center gap-2">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/brand/logo.webp" alt="" className="h-7 w-7 rounded-lg" />
+            <img src={withBase("/brand/logo.webp")} alt="" className="h-7 w-7 rounded-lg" />
             <p className="text-sm font-bold">Báo cáo suýt tai nạn</p>
             <span className="ml-auto text-lg">🇻🇳</span>
           </div>
@@ -147,7 +148,7 @@ function PhoneOverlay({ onSubmit }: { onSubmit: () => void }) {
               {phase === "sent" && (
                 <div className="demo-fadein flex items-center justify-center gap-2 pt-1 text-center">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/brand/mascot.webp" alt="" className="h-10 w-10 rounded-full" />
+                  <img src={withBase("/brand/mascot.webp")} alt="" className="h-10 w-10 rounded-full" />
                   <p className="text-base font-extrabold text-risk-safe">+10 điểm!</p>
                 </div>
               )}
@@ -194,7 +195,7 @@ function Finale() {
   return (
     <div className="demo-fadein fixed inset-0 z-[60] flex flex-col items-center justify-center gap-10 bg-console-bg/95 backdrop-blur-sm">
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/brand/logo.webp" alt="" className="h-24 w-24 rounded-3xl shadow-2xl" />
+      <img src={withBase("/brand/logo.webp")} alt="" className="h-24 w-24 rounded-3xl shadow-2xl" />
       <div className="text-center">
         <h2 className="text-4xl font-extrabold">아차사고 레이더</h2>
         <p className="mt-2 text-console-muted">
@@ -267,7 +268,7 @@ export function DemoDirector({
         >
           <iframe
             ref={iframeRef}
-            src="/tbm/1"
+            src={withBase("/tbm/1")}
             className="h-full w-full bg-white"
             onLoad={hookIframeKeys}
             title="TBM 자료"

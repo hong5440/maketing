@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import QRCode from "qrcode";
 import { ZONES } from "@/data/zones";
+import { BASE_PATH } from "@/lib/basePath";
 
 /**
  * 구역별 보고 QR 패널 — 심사위원이 폰으로 직접 찍어 /report?zone=N 으로 들어가게.
@@ -16,7 +17,7 @@ export function QrPanel({ onClose }: { onClose: () => void }) {
       const origin = window.location.origin;
       const out: Record<number, string> = {};
       for (const zone of ZONES) {
-        out[zone.id] = await QRCode.toDataURL(`${origin}/report?zone=${zone.id}`, {
+        out[zone.id] = await QRCode.toDataURL(`${origin}${BASE_PATH}/report?zone=${zone.id}`, {
           margin: 1,
           width: 160,
           color: { dark: "#0a0f1a", light: "#ffffff" },

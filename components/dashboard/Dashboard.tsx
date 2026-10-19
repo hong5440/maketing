@@ -1,5 +1,6 @@
 "use client";
 
+import { withBase } from "@/lib/basePath";
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getZone } from "@/data/zones";
@@ -335,7 +336,7 @@ export function Dashboard() {
         <header className="pointer-events-none absolute left-4 top-4 flex items-center gap-2.5">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/brand/logo.webp"
+            src={withBase("/brand/logo.webp")}
             alt=""
             className="h-10 w-10 rounded-xl border border-console-border/60 shadow-lg"
           />

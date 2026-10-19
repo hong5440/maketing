@@ -1,5 +1,6 @@
 "use client";
 
+import { withBase } from "@/lib/basePath";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getZone } from "@/data/zones";
 import type { NearMissReport, ReporterLang } from "@/lib/domain";
@@ -238,7 +239,7 @@ export function ReportApp({ zoneId }: { zoneId: number | null }) {
       <main className="flex flex-1 flex-col gap-3 p-5 pt-10">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/brand/logo.webp"
+          src={withBase("/brand/logo.webp")}
           alt=""
           className="mx-auto h-16 w-16 rounded-2xl shadow-lg"
         />
@@ -270,7 +271,7 @@ export function ReportApp({ zoneId }: { zoneId: number | null }) {
         <div className="points-pop mx-auto mt-2 text-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/brand/mascot.webp"
+            src={withBase("/brand/mascot.webp")}
             alt=""
             className="mx-auto h-32 w-32 rounded-full shadow-xl"
           />
