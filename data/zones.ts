@@ -95,9 +95,9 @@ export const ZONES: Zone[] = [
     name: "2도크와 900톤 골리앗 크레인",
     nameEn: "Dock 2 & 900t Goliath Crane",
     // 원안 (42,62)는 만 수역 내부라 서쪽 해안선 위로 보정.
-    // 게이트가 만을 향해 동쪽으로 열리도록 해안에 직각 배치.
-    center: { x: 30, z: 63 },
-    footprint: { w: 14, d: 4.5, rotation: -14 },
+    // 게이트가 만을 향해 동쪽으로 열리도록 해안에 직각 배치 (도크 전체는 육지 안).
+    center: { x: 26.5, z: 62 },
+    footprint: { w: 9.5, d: 4.2, rotation: -14 },
     kind: "dock",
     buildingHeight: 0,
     roofColor: "#64748b",

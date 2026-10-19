@@ -22,3 +22,58 @@ body {
   background-color: var(--color-console-bg);
   color: var(--color-console-text);
 }
+
+/* ── 3D 구역 마커 배지 ─────────────────────────────── */
+.zone-badge {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 9999px;
+  background: #f97316;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.45);
+  transition: transform 0.12s ease;
+}
+.zone-badge:hover {
+  transform: scale(1.25);
+  z-index: 10;
+}
+.zone-badge-selected {
+  background: #2563eb;
+  transform: scale(1.2);
+}
+.zone-badge-alert {
+  background: #ef4444;
+  animation: badge-pulse 1.1s ease-in-out infinite;
+}
+@keyframes badge-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.75);
+  }
+  55% {
+    box-shadow: 0 0 0 11px rgba(239, 68, 68, 0);
+  }
+}
+.zone-tooltip {
+  position: absolute;
+  bottom: calc(100% + 7px);
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  background: rgba(10, 15, 26, 0.92);
+  border: 1px solid var(--color-console-border);
+  color: var(--color-console-text);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 9px;
+  border-radius: 6px;
+  pointer-events: none;
+}
