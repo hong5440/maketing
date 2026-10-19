@@ -39,7 +39,7 @@ export function ZoneMarkers({
             position={[wx, y, wz]}
             center
             distanceFactor={55}
-            zIndexRange={[50, 0]}
+            zIndexRange={[20, 0]}
             style={{ pointerEvents: "auto" }}
           >
             <button

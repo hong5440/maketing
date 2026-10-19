@@ -22,6 +22,8 @@ import { AlertCard, KpiRow, ZoneDetail, type AlertExplainState } from "./SidePan
 import { TimelineBar } from "./TimelineBar";
 import { QrPanel } from "./QrPanel";
 import { LoadingSplash } from "./LoadingSplash";
+import { DEMO_TOTAL_STEPS, DemoDirector } from "./DemoDirector";
+import { apiSubmitReport } from "@/lib/clientApi";
 
 const YardScene = dynamic(() => import("@/components/yard3d/YardScene"), {
   ssr: false,
@@ -42,6 +44,10 @@ export function Dashboard() {
   const [playing, setPlaying] = useState(false);
   const [explains, setExplains] = useState<Record<string, AlertExplainState>>({});
   const [showQr, setShowQr] = useState(false);
+  // ── 발표용 데모 시나리오 모드 (D 토글, ←→ 이동, Shift+N 자막) ──
+  const [demoStep, setDemoStep] = useState<number | null>(null);
+  const [demoCaptions, setDemoCaptions] = useState(true);
+  const demoActive = demoStep != null;
 
   // ── 데이터 로드 (서버 API → 없으면 정적 데모 폴백) ───
   useEffect(() => {
@@ -209,6 +215,98 @@ export function Dashboard() {
 
   const selectedZone = selectedZoneId ? getZone(selectedZoneId) : null;
 
+  // ── 데모 모드: 키보드 ───────────────────────────────
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const t = e.target as HTMLElement | null;
+      if (
+        t &&
+        (t.tagName === "INPUT" ||
+          t.tagName === "TEXTAREA" ||
+          t.tagName === "SELECT" ||
+          t.isContentEditable)
+      )
+        return;
+      if (
+        (e.key === "d" || e.key === "D") &&
+        !e.metaKey && !e.ctrlKey && !e.altKey && !e.shiftKey
+      ) {
+        e.preventDefault();
+        setDemoStep((s) => (s == null ? 1 : null));
+      } else if (e.shiftKey && (e.key === "N" || e.key === "n")) {
+        e.preventDefault();
+        setDemoCaptions((c) => !c);
+      } else if (demoActive && e.key === "ArrowRight") {
+        e.preventDefault();
+        setDemoStep((s) => Math.min(DEMO_TOTAL_STEPS, (s ?? 1) + 1));
+      } else if (demoActive && e.key === "ArrowLeft") {
+        e.preventDefault();
+        setDemoStep((s) => Math.max(1, (s ?? 1) - 1));
+      } else if (demoActive && e.key === "Escape") {
+        setDemoStep(null);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [demoActive]);
+
+  // ── 데모 모드: 단계별 연출 ──────────────────────────
+  useEffect(() => {
+    if (!loaded) return;
+    if (demoStep == null) {
+      setPlaying(false);
+      return;
+    }
+    setShowQr(false);
+    const timers: ReturnType<typeof setTimeout>[] = [];
+    switch (demoStep) {
+      case 1: // 오프닝: 전경, 밤 → 낮, 천천히 회전
+        setViewMode("off");
+        setSelectedZoneId(null);
+        setSelectedAlertId(null);
+        setPlaying(false);
+        setSimNowMs(range.max);
+        setNight(true);
+        timers.push(setTimeout(() => setNight(false), 2800));
+        break;
+      case 2: // 8주 타임랩스: 1도크가 붉어지는 과정
+        setNight(false);
+        setViewMode("heatmap");
+        setSelectedZoneId(null);
+        setSelectedAlertId(null);
+        setSimNowMs(range.min + WEEK_MS);
+        timers.push(setTimeout(() => setPlaying(true), 800));
+        break;
+      case 3: // 휴대폰 보고 → 지도에 점 낙하
+        setNight(false);
+        setPlaying(false);
+        setSimNowMs(range.max);
+        setViewMode("heatmap");
+        setSelectedZoneId(null);
+        setSelectedAlertId(null);
+        break;
+      case 4: // 1도크 경보 줌인 + AI 설명 (경보 선택은 아래 별도 효과)
+        setPlaying(false);
+        setSimNowMs((t) => Math.max(t, range.max));
+        setViewMode("heatmap");
+        break;
+      case 5: // TBM (iframe 오버레이)
+      case 6: // 피날레
+        setPlaying(false);
+        break;
+    }
+    return () => timers.forEach(clearTimeout);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [demoStep, loaded]);
+
+  // 4단계: 1도크 경보 카드 자동 선택 (+카메라 줌인 + AI 설명)
+  useEffect(() => {
+    if (demoStep !== 4) return;
+    const target = alerts.find((a) => a.zoneId === 1) ?? alerts[0];
+    if (target && selectedAlertId !== target.id) handleAlertClick(target);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [demoStep, alerts]);
+
   return (
     <main className="flex h-dvh min-w-0">
       {/* ── 3D 맵 ─────────────────────────────────── */}
@@ -216,6 +314,7 @@ export function Dashboard() {
         <YardScene
           night={night}
           quality={quality}
+          autoRotate={demoStep === 1}
           selectedZoneId={selectedZoneId}
           onZoneSelect={(id) => {
             setSelectedZoneId(id);
@@ -250,7 +349,9 @@ export function Dashboard() {
           </div>
         </header>
 
-        <div className="absolute right-4 top-4 flex gap-2 text-xs">
+        <div
+          className={`absolute right-4 top-4 flex gap-2 text-xs ${demoActive ? "hidden" : ""}`}
+        >
           <button
             onClick={() => setShowQr(true)}
             className="rounded-md border border-console-border bg-console-panel/85 px-3 py-1.5 font-medium backdrop-blur hover:bg-console-panel"
@@ -293,21 +394,42 @@ export function Dashboard() {
 
         {showQr && <QrPanel onClose={() => setShowQr(false)} />}
 
-        <TimelineBar
-          minMs={range.min + WEEK_MS}
-          maxMs={range.max}
-          simNowMs={Math.max(simNowMs, range.min + WEEK_MS)}
-          playing={playing}
-          onSimNowChange={(ms) => {
-            setPlaying(false);
-            setSimNowMs(ms);
-          }}
-          onPlayToggle={handlePlayToggle}
-          viewMode={viewMode}
-          onViewModeChange={setViewMode}
-          filters={filters}
-          onFiltersChange={setFilters}
-        />
+        {(!demoActive || demoStep === 2) && (
+          <TimelineBar
+            minMs={range.min + WEEK_MS}
+            maxMs={range.max}
+            simNowMs={Math.max(simNowMs, range.min + WEEK_MS)}
+            playing={playing}
+            onSimNowChange={(ms) => {
+              setPlaying(false);
+              setSimNowMs(ms);
+            }}
+            onPlayToggle={handlePlayToggle}
+            viewMode={viewMode}
+            onViewModeChange={setViewMode}
+            filters={filters}
+            onFiltersChange={setFilters}
+          />
+        )}
+
+        {demoActive && (
+          <DemoDirector
+            step={demoStep}
+            captions={demoCaptions}
+            setStep={(up) => setDemoStep((s) => up(s ?? 1))}
+            onExit={() => setDemoStep(null)}
+            toggleCaptions={() => setDemoCaptions((c) => !c)}
+            onSubmitDemoReport={() => {
+              void apiSubmitReport({
+                text:
+                  "Cần cẩu đang nâng block, bu lông rơi xuống lối đi bên dưới, suýt trúng người!\n(위험유형 힌트: 낙하)",
+                zoneId: 1,
+                lang: "vi",
+                reporterAnonymous: true,
+              });
+            }}
+          />
+        )}
       </section>
 
       {/* ── 사이드 패널 ────────────────────────────── */}

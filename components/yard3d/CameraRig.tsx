@@ -16,7 +16,13 @@ export const HOME_TARGET = new THREE.Vector3(0, 0, -6);
  * OrbitControls + 구역 선택 시 부드러운 플라이투.
  * selectedZoneId가 바뀌면 목표 시점을 설정하고 지수 감쇠로 이동한다.
  */
-export function CameraRig({ selectedZoneId }: { selectedZoneId: number | null }) {
+export function CameraRig({
+  selectedZoneId,
+  autoRotate = false,
+}: {
+  selectedZoneId: number | null;
+  autoRotate?: boolean;
+}) {
   const camera = useThree((s) => s.camera);
   const controlsRef = useRef<OrbitControlsImpl>(null);
   const desired = useMemo(
@@ -64,6 +70,8 @@ export function CameraRig({ selectedZoneId }: { selectedZoneId: number | null })
       makeDefault
       enableDamping
       dampingFactor={0.08}
+      autoRotate={autoRotate}
+      autoRotateSpeed={0.55}
       target={[HOME_TARGET.x, HOME_TARGET.y, HOME_TARGET.z]}
       minDistance={8}
       maxDistance={170}

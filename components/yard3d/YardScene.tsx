@@ -20,6 +20,8 @@ import { RiskOverlays, type OverlayProps } from "./Overlays";
 export interface YardSceneProps {
   night?: boolean;
   quality?: "low" | "high";
+  /** 데모 오프닝용 느린 자동 회전 */
+  autoRotate?: boolean;
   selectedZoneId?: number | null;
   onZoneSelect?: (id: number | null) => void;
   /** 위험도 오버레이 (히트맵/막대/보고 점/경보 기둥) */
@@ -31,6 +33,7 @@ export interface YardSceneProps {
 export default function YardScene({
   night = false,
   quality = "high",
+  autoRotate = false,
   selectedZoneId = null,
   onZoneSelect,
   overlay,
@@ -82,7 +85,7 @@ export default function YardScene({
           selectedZoneId={selectedZoneId}
           alertZoneIds={alertZoneIds}
         />
-        <CameraRig selectedZoneId={selectedZoneId ?? null} />
+        <CameraRig selectedZoneId={selectedZoneId ?? null} autoRotate={autoRotate} />
         {quality === "high" && (
           <EffectComposer multisampling={0}>
             <SMAA />
