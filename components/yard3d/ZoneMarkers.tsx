@@ -29,16 +29,16 @@ export function ZoneMarkers({
         <span />
       </Html>
       {ZONES.map((zone) => {
-        const y = Math.max(m(zone.buildingHeight) + 1.2, 2.2);
+        const y = Math.max(m(zone.buildingHeight) + 1.6, 2.6);
         const [wx, , wz] = toWorld(zone.center.x, zone.center.z);
         const isAlert = alertZoneIds.includes(zone.id);
         const isSelected = selectedZoneId === zone.id;
+        const shortName = zone.name.split("·")[0].split(" 및 ")[0];
         return (
           <Html
             key={zone.id}
             position={[wx, y, wz]}
             center
-            distanceFactor={55}
             zIndexRange={[20, 0]}
             style={{ pointerEvents: "auto" }}
           >
@@ -46,15 +46,14 @@ export function ZoneMarkers({
               onClick={() => onZoneSelect?.(zone.id)}
               onMouseEnter={() => setHovered(zone.id)}
               onMouseLeave={() => setHovered(null)}
-              className={`zone-badge ${isAlert ? "zone-badge-alert" : ""} ${
-                isSelected ? "zone-badge-selected" : ""
+              className={`zone-chip ${isAlert ? "zone-chip-alert" : ""} ${
+                isSelected ? "zone-chip-selected" : ""
               }`}
               aria-label={zone.name}
+              title={hovered === zone.id ? zone.name : undefined}
             >
-              {zone.id}
-              {hovered === zone.id && (
-                <span className="zone-tooltip">{zone.name}</span>
-              )}
+              <span className="zone-chip-num">{zone.id}</span>
+              {shortName}
             </button>
           </Html>
         );

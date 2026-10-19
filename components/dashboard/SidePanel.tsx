@@ -106,7 +106,7 @@ export function AlertCard({
           <span className="truncate text-sm font-semibold">
             {zone?.name.split("·")[0] ?? `${alert.zoneId}구역`}
           </span>
-          <span className="rounded bg-console-panel px-1.5 py-0.5 text-[11px] text-console-text">
+          <span className="whitespace-nowrap rounded bg-console-panel px-1.5 py-0.5 text-[11px] text-console-text">
             {alert.hazardType}
           </span>
           <span className="num ml-auto shrink-0 text-sm font-bold text-risk-danger">
@@ -219,7 +219,7 @@ export function ZoneDetail({
 
   if (!zone) return null;
   return (
-    <section className="rounded-lg border border-console-border bg-console-bg/60 p-3">
+    <section>
       <div className="mb-2 flex items-center gap-2">
         <h3 className="text-sm font-bold">
           {zone.id}. {zone.name}

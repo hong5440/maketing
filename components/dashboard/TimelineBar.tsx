@@ -35,7 +35,7 @@ export function TimelineBar({
     "rounded border border-console-border bg-console-panel px-1.5 py-1 text-[11px]";
 
   return (
-    <div className="absolute inset-x-3 bottom-3 rounded-xl border border-console-border bg-console-panel/85 px-3 py-2 backdrop-blur">
+    <div className="holo-panel absolute bottom-[62px] left-1/2 z-20 w-[min(780px,56vw)] -translate-x-1/2 px-3 py-2">
       {/* 타임라인 */}
       <div className="flex items-center gap-3">
         <button

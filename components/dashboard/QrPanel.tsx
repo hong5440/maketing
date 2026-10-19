@@ -32,7 +32,7 @@ export function QrPanel({ onClose }: { onClose: () => void }) {
 
   return (
     <div
-      className="absolute inset-0 z-20 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+      className="absolute inset-0 z-30 flex items-center justify-center bg-black/60 backdrop-blur-sm"
       onClick={onClose}
     >
       <div

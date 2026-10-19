@@ -1,9 +1,7 @@
 "use client";
 
-import { withBase } from "@/lib/basePath";
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { getZone } from "@/data/zones";
 import type { NearMissReport } from "@/lib/domain";
 import {
   detectHotspots,
@@ -12,14 +10,26 @@ import {
 import { apiExplainAlert, apiGetReports } from "@/lib/clientApi";
 import {
   DEFAULT_FILTERS,
+  HAZARD_COLORS,
   WEEK_MS,
   computeKpis,
   filterByAttrs,
+  hazardDistribution,
   inWindow,
   type DashFilters,
 } from "@/lib/dashboardStats";
 import type { OverlayDot } from "@/components/yard3d/Overlays";
-import { AlertCard, KpiRow, ZoneDetail, type AlertExplainState } from "./SidePanel";
+import { AlertCard, ZoneDetail, type AlertExplainState } from "./SidePanel";
+import { Donut } from "./charts";
+import {
+  BrandPlate,
+  DockBar,
+  MiniMap,
+  NavRail,
+  OverviewRows,
+  Slogan,
+  StatusStrip,
+} from "./HoloChrome";
 import { TimelineBar } from "./TimelineBar";
 import { QrPanel } from "./QrPanel";
 import { LoadingSplash } from "./LoadingSplash";
@@ -43,7 +53,8 @@ export function Dashboard() {
   const [loaded, setLoaded] = useState(false);
   const [filters, setFilters] = useState<DashFilters>(DEFAULT_FILTERS);
   const [viewMode, setViewMode] = useState<"heatmap" | "bars" | "off">("heatmap");
-  const [night, setNight] = useState(false);
+  // 참조 디지털 트윈 룩: 야간 씬이 기본 (좌측 레일에서 주간 전환 가능)
+  const [night, setNight] = useState(true);
   const [quality, setQuality] = useState<"low" | "high">("high");
   const [selectedZoneId, setSelectedZoneId] = useState<number | null>(null);
   const [selectedAlertId, setSelectedAlertId] = useState<string | null>(null);
@@ -182,6 +193,21 @@ export function Dashboard() {
     [attrFiltered, simNowMs, alerts.length],
   );
 
+  // 현황 패널 도넛: 기간 내 위험유형 분포 (상위 5 + 기타)
+  const hazardMix = useMemo(() => {
+    const dist = hazardDistribution(
+      inWindow(attrFiltered, simNowMs, filters.periodWeeks),
+    );
+    const top = dist.slice(0, 5).map((d) => ({
+      label: d.hazardType as string,
+      count: d.count,
+      color: HAZARD_COLORS[d.hazardType],
+    }));
+    const rest = dist.slice(5).reduce((s, d) => s + d.count, 0);
+    if (rest > 0) top.push({ label: "그 외", count: rest, color: "#717c8e" });
+    return top;
+  }, [attrFiltered, simNowMs, filters.periodWeeks]);
+
   const reportById = useMemo(() => {
     const m = new Map<string, NearMissReport>();
     for (const r of reports) m.set(r.id, r);
@@ -219,8 +245,6 @@ export function Dashboard() {
     },
     [selectedAlertId, simNowMs],
   );
-
-  const selectedZone = selectedZoneId ? getZone(selectedZoneId) : null;
 
   // ── 데모 모드: 키보드 ───────────────────────────────
   useEffect(() => {
@@ -314,185 +338,185 @@ export function Dashboard() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [demoStep, alerts]);
 
+  const cycleLayer = useCallback(() => {
+    setViewMode((m) => (m === "heatmap" ? "bars" : m === "bars" ? "off" : "heatmap"));
+  }, []);
+  const goHome = useCallback(() => {
+    setSelectedZoneId(null);
+    setSelectedAlertId(null);
+  }, []);
+
   return (
-    <main className="flex h-dvh min-w-0">
-      {/* ── 3D 맵 ─────────────────────────────────── */}
-      <section className="relative min-w-0 flex-1 border-r border-console-border">
-        <YardScene
-          night={night}
-          quality={quality}
-          autoRotate={demoStep === 1 && !reduceMotion}
-          selectedZoneId={selectedZoneId}
-          onZoneSelect={(id) => {
-            setSelectedZoneId(id);
-            setSelectedAlertId(null);
-          }}
-          alertZoneIds={alertZoneIds}
-          overlay={{
-            mode: viewMode,
-            riskByZone: hotspot.riskByZone,
-            alertZoneIds,
-            dots,
-            simNowMs,
-            windowMs: filters.periodWeeks * WEEK_MS,
-            countByZone,
-          }}
-        />
+    <main className="relative h-dvh overflow-hidden">
+      {/* ── 3D 디지털 트윈 (풀블리드) ───────────────── */}
+      <YardScene
+        night={night}
+        quality={quality}
+        autoRotate={demoStep === 1 && !reduceMotion}
+        selectedZoneId={selectedZoneId}
+        onZoneSelect={(id) => {
+          setSelectedZoneId(id);
+          setSelectedAlertId(null);
+        }}
+        alertZoneIds={alertZoneIds}
+        overlay={{
+          mode: viewMode,
+          riskByZone: hotspot.riskByZone,
+          alertZoneIds,
+          dots,
+          simNowMs,
+          windowMs: filters.periodWeeks * WEEK_MS,
+          countByZone,
+        }}
+      />
 
-        <header className="pointer-events-none absolute left-4 top-4 flex items-center gap-2.5">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={withBase("/brand/logo.webp")}
-            alt=""
-            className="h-10 w-10 rounded-xl border border-console-border/60 shadow-lg"
+      <BrandPlate />
+
+      {!demoActive && (
+        <>
+          <NavRail
+            viewMode={viewMode}
+            onViewMode={setViewMode}
+            night={night}
+            onNight={() => setNight((v) => !v)}
+            quality={quality}
+            onQuality={() => setQuality((q) => (q === "high" ? "low" : "high"))}
+            onHome={goHome}
           />
-          <div>
-            <h1 className="text-lg font-bold leading-tight drop-shadow">
-              아차사고 레이더
-            </h1>
-            <p className="text-xs text-console-muted drop-shadow">
-              한화오션 거제사업장 관제 대시보드
-            </p>
-          </div>
-        </header>
-
-        <div
-          className={`absolute right-4 top-4 flex gap-2 text-xs ${demoActive ? "hidden" : ""}`}
-        >
-          <button
-            onClick={() => setShowQr(true)}
-            className="pressable rounded-md border border-console-border bg-console-panel/85 px-3 py-1.5 font-medium backdrop-blur hover:bg-console-panel"
-            title="구역별 보고 QR 코드"
-          >
-            📱 QR
-          </button>
-          <button
-            onClick={() => setNight((v) => !v)}
-            className="pressable rounded-md border border-console-border bg-console-panel/85 px-3 py-1.5 font-medium backdrop-blur hover:bg-console-panel"
-          >
-            {night ? "☀️ 낮" : "🌙 밤"}
-          </button>
-          <button
-            onClick={() => {
-              setSelectedZoneId(null);
+          <Slogan />
+          <MiniMap
+            selectedZoneId={selectedZoneId}
+            alertZoneIds={alertZoneIds}
+            onSelect={(id) => {
+              setSelectedZoneId(id);
               setSelectedAlertId(null);
             }}
-            className="pressable rounded-md border border-console-border bg-console-panel/85 px-3 py-1.5 font-medium backdrop-blur hover:bg-console-panel"
-          >
-            ⤢ 전체 보기
-          </button>
-          <button
-            onClick={() => setQuality((q) => (q === "high" ? "low" : "high"))}
-            className="pressable rounded-md border border-console-border bg-console-panel/85 px-3 py-1.5 font-medium backdrop-blur hover:bg-console-panel"
-            title="품질 프리셋"
-          >
-            품질: {quality === "high" ? "High" : "Low"}
-          </button>
-        </div>
-
-        {selectedZone && (
-          <div className="absolute bottom-24 left-4 rounded-md border border-console-border bg-console-panel/85 px-3 py-2 text-sm backdrop-blur">
-            <span className="mr-2 inline-flex h-5 w-5 items-center justify-center rounded-full bg-risk-warning text-xs font-bold text-white">
-              {selectedZone.id}
-            </span>
-            {selectedZone.name}
-          </div>
-        )}
-
-        {showQr && <QrPanel onClose={() => setShowQr(false)} />}
-
-        {(!demoActive || demoStep === 2) && (
-          <TimelineBar
-            minMs={range.min + WEEK_MS}
-            maxMs={range.max}
-            simNowMs={Math.max(simNowMs, range.min + WEEK_MS)}
+          />
+          <DockBar
             playing={playing}
-            onSimNowChange={(ms) => {
-              setPlaying(false);
-              setSimNowMs(ms);
-            }}
-            onPlayToggle={handlePlayToggle}
-            viewMode={viewMode}
-            onViewModeChange={setViewMode}
-            filters={filters}
-            onFiltersChange={setFilters}
-          />
-        )}
-
-        {demoActive && (
-          <DemoDirector
-            step={demoStep}
-            captions={demoCaptions}
-            setStep={(up) => setDemoStep((s) => up(s ?? 1))}
-            onExit={() => setDemoStep(null)}
-            toggleCaptions={() => setDemoCaptions((c) => !c)}
-            onSubmitDemoReport={() => {
-              void apiSubmitReport({
-                text:
-                  "Cần cẩu đang nâng block, bu lông rơi xuống lối đi bên dưới, suýt trúng người!\n(위험유형 힌트: 낙하)",
-                zoneId: 1,
-                lang: "vi",
-                reporterAnonymous: true,
-              });
+            onPlay={handlePlayToggle}
+            onHome={goHome}
+            onCycleLayer={cycleLayer}
+            onQr={() => setShowQr(true)}
+            alerts={alerts.length}
+            onAlerts={() => {
+              if (alerts.length > 0) handleAlertClick(alerts[0]);
             }}
           />
-        )}
-      </section>
+        </>
+      )}
 
-      {/* ── 사이드 패널 ────────────────────────────── */}
-      <aside className="flex w-[400px] shrink-0 flex-col gap-3 overflow-y-auto bg-console-panel p-3 xl:w-[460px]">
-        {!loaded ? (
-          <p className="animate-pulse text-sm text-console-muted">데이터 불러오는 중…</p>
-        ) : (
-          <>
-            <KpiRow kpis={kpis} />
+      {/* ── 우측 플로팅 패널 스택 ───────────────────── */}
+      <aside
+        className={`absolute right-3 top-3 z-20 flex w-[360px] flex-col gap-2.5 ${
+          demoActive ? "bottom-3" : "bottom-[176px]"
+        }`}
+      >
+        {!demoActive && <StatusStrip activeAlerts={alerts.length} />}
+        <div className="flex min-h-0 flex-1 flex-col gap-2.5 overflow-y-auto pr-0.5">
+          {!loaded ? (
+            <div className="holo-panel p-3">
+              <p className="animate-pulse text-sm text-console-muted">
+                데이터 불러오는 중…
+              </p>
+            </div>
+          ) : (
+            <>
+              <section className="holo-panel p-3">
+                <h2 className="holo-title mb-2">실시간 안전 현황</h2>
+                <div className="flex items-center justify-center">
+                  <Donut data={hazardMix} size={116} />
+                </div>
+                <OverviewRows kpis={kpis} />
+              </section>
 
-            <section>
-              <h2 className="mb-1.5 flex items-center gap-2 text-sm font-semibold text-console-muted">
-                급증 경보
-                {alerts.length > 0 && (
-                  <span className="inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-risk-danger px-1 text-[10px] font-bold text-white">
-                    {alerts.length}
-                  </span>
-                )}
-              </h2>
-              <div className="space-y-2">
-                {alerts.length === 0 && (
-                  <p className="text-xs text-console-muted">현재 급증 경보가 없습니다.</p>
-                )}
-                {alerts.map((alert) => (
-                  <AlertCard
-                    key={alert.id}
-                    alert={alert}
-                    selected={selectedAlertId === alert.id}
-                    onClick={() => handleAlertClick(alert)}
-                    explain={explains[alert.id]}
-                    evidence={
-                      selectedAlertId === alert.id
-                        ? alert.reportIds
-                            .map((id) => reportById.get(id))
-                            .filter((r): r is NearMissReport => !!r)
-                        : []
-                    }
+              <section className="holo-panel p-3">
+                <h2 className="holo-title mb-2">
+                  급증 경보
+                  {alerts.length > 0 && (
+                    <span className="num inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-risk-danger px-1 text-[10px] font-bold text-white">
+                      {alerts.length}
+                    </span>
+                  )}
+                </h2>
+                <div className="space-y-2">
+                  {alerts.length === 0 && (
+                    <p className="text-xs text-console-muted">
+                      현재 급증 경보가 없습니다.
+                    </p>
+                  )}
+                  {alerts.map((alert) => (
+                    <AlertCard
+                      key={alert.id}
+                      alert={alert}
+                      selected={selectedAlertId === alert.id}
+                      onClick={() => handleAlertClick(alert)}
+                      explain={explains[alert.id]}
+                      evidence={
+                        selectedAlertId === alert.id
+                          ? alert.reportIds
+                              .map((id) => reportById.get(id))
+                              .filter((r): r is NearMissReport => !!r)
+                          : []
+                      }
+                    />
+                  ))}
+                </div>
+              </section>
+
+              {selectedZoneId != null && (
+                <section className="holo-panel p-3">
+                  <ZoneDetail
+                    zoneId={selectedZoneId}
+                    reports={attrFiltered}
+                    simNowMs={simNowMs}
+                    onClose={goHome}
                   />
-                ))}
-              </div>
-            </section>
-
-            {selectedZoneId != null && (
-              <ZoneDetail
-                zoneId={selectedZoneId}
-                reports={attrFiltered}
-                simNowMs={simNowMs}
-                onClose={() => {
-                  setSelectedZoneId(null);
-                  setSelectedAlertId(null);
-                }}
-              />
-            )}
-          </>
-        )}
+                </section>
+              )}
+            </>
+          )}
+        </div>
       </aside>
+
+      {showQr && <QrPanel onClose={() => setShowQr(false)} />}
+
+      {(!demoActive || demoStep === 2) && (
+        <TimelineBar
+          minMs={range.min + WEEK_MS}
+          maxMs={range.max}
+          simNowMs={Math.max(simNowMs, range.min + WEEK_MS)}
+          playing={playing}
+          onSimNowChange={(ms) => {
+            setPlaying(false);
+            setSimNowMs(ms);
+          }}
+          onPlayToggle={handlePlayToggle}
+          viewMode={viewMode}
+          onViewModeChange={setViewMode}
+          filters={filters}
+          onFiltersChange={setFilters}
+        />
+      )}
+
+      {demoActive && (
+        <DemoDirector
+          step={demoStep}
+          captions={demoCaptions}
+          setStep={(up) => setDemoStep((s) => up(s ?? 1))}
+          onExit={() => setDemoStep(null)}
+          toggleCaptions={() => setDemoCaptions((c) => !c)}
+          onSubmitDemoReport={() => {
+            void apiSubmitReport({
+              text:
+                "Cần cẩu đang nâng block, bu lông rơi xuống lối đi bên dưới, suýt trúng người!\n(위험유형 힌트: 낙하)",
+              zoneId: 1,
+              lang: "vi",
+              reporterAnonymous: true,
+            });
+          }}
+        />
+      )}
     </main>
   );
 }
