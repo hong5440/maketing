@@ -15,14 +15,15 @@ import { CityBlocks, Greenery, NightLamps, Parking, Quays, Roads, StockYards } f
 import { Lighting } from "./Lighting";
 import { ZoneMarkers } from "./ZoneMarkers";
 import { CameraRig, HOME_POSITION } from "./CameraRig";
+import { RiskOverlays, type OverlayProps } from "./Overlays";
 
 export interface YardSceneProps {
   night?: boolean;
   quality?: "low" | "high";
   selectedZoneId?: number | null;
   onZoneSelect?: (id: number | null) => void;
-  /** 구역별 위험 점수 0~100 (이후 단계의 히트맵 오버레이용) */
-  riskByZone?: Record<number, number>;
+  /** 위험도 오버레이 (히트맵/막대/보고 점/경보 기둥) */
+  overlay?: OverlayProps;
   /** 경보 중인 구역 — 마커가 빨갛게 깜빡임 */
   alertZoneIds?: number[];
 }
@@ -32,7 +33,7 @@ export default function YardScene({
   quality = "high",
   selectedZoneId = null,
   onZoneSelect,
-  riskByZone,
+  overlay,
   alertZoneIds = [],
 }: YardSceneProps) {
   // 낮/밤 보간 상태 (리렌더 없이 useFrame에서 공유)
@@ -42,8 +43,6 @@ export default function YardScene({
   useEffect(() => {
     envRef.current.nightTarget = night ? 1 : 0;
   }, [night]);
-
-  void riskByZone; // 다음 단계: 히트맵 오버레이에서 사용
 
   return (
     <Canvas
@@ -77,6 +76,7 @@ export default function YardScene({
         <Parking />
         <Greenery />
         <NightLamps env={envRef.current} />
+        {overlay && <RiskOverlays overlay={overlay} />}
         <ZoneMarkers
           onZoneSelect={onZoneSelect}
           selectedZoneId={selectedZoneId}
