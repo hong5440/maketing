@@ -26,7 +26,7 @@ export interface OverlayDot {
 }
 
 export interface OverlayProps {
-  mode: "forecast" | "heatmap" | "bars" | "off";
+  mode: "forecast" | "confined" | "heatmap" | "bars" | "off";
   riskByZone: Record<number, number>;
   alertZoneIds: number[];
   dots: OverlayDot[];

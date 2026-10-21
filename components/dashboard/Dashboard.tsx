@@ -37,6 +37,9 @@ import { LoadingSplash } from "./LoadingSplash";
 import { DEMO_TOTAL_STEPS, DemoDirector } from "./DemoDirector";
 import { ForecastHourSlider, ForecastPanel } from "./ForecastPanel";
 import { forecastAt } from "@/lib/forecast";
+import { ConfinedPanel } from "./ConfinedPanel";
+import { confinedEntries } from "@/lib/confined";
+import type { ConfinedMarker } from "@/components/yard3d/ConfinedMarkers";
 import { apiSubmitReport } from "@/lib/clientApi";
 
 const YardScene = dynamic(() => import("@/components/yard3d/YardScene"), {
@@ -56,7 +59,9 @@ export function Dashboard() {
   const [loaded, setLoaded] = useState(false);
   const [filters, setFilters] = useState<DashFilters>(DEFAULT_FILTERS);
   // OVERVIEW 첫 화면은 야드 위험 예보 (B-2)
-  const [viewMode, setViewMode] = useState<"forecast" | "heatmap" | "bars" | "off">("forecast");
+  const [viewMode, setViewMode] = useState<
+    "forecast" | "confined" | "heatmap" | "bars" | "off"
+  >("forecast");
   const [forecastHour, setForecastHour] = useState(14);
   // 발표 기본값: 해 질 녘 (레일에서 낮/해질녘/밤 순환)
   const [tod, setTod] = useState<TimeOfDay>("dusk");
@@ -356,6 +361,24 @@ export function Dashboard() {
     return m;
   }, [forecastFrame]);
 
+  // ── 밀폐공간 숨길 (B-3) ─────────────────────────────
+  const [selectedConfinedId, setSelectedConfinedId] = useState<string | null>(null);
+  const confinedMarkers = useMemo<ConfinedMarker[]>(
+    () =>
+      confinedEntries().map((e) => ({
+        permitId: e.interp.permit.id,
+        zoneId: e.zoneId,
+        danger: e.missingCount > 0,
+        title: e.interp.permit.title,
+      })),
+    [],
+  );
+  const handleConfinedSelect = useCallback((permitId: string, zoneId: number) => {
+    setSelectedConfinedId(permitId);
+    setSelectedZoneId(zoneId);
+    setSelectedAlertId(null);
+  }, []);
+
   const cycleLayer = useCallback(() => {
     setViewMode((m) =>
       m === "forecast" ? "heatmap" : m === "heatmap" ? "bars" : m === "bars" ? "off" : "forecast",
@@ -381,6 +404,9 @@ export function Dashboard() {
         }}
         alertZoneIds={alertZoneIds}
         forecastByZone={viewMode === "forecast" ? forecastByZone : undefined}
+        confinedMarkers={viewMode === "confined" ? confinedMarkers : undefined}
+        selectedConfinedId={selectedConfinedId}
+        onConfinedSelect={handleConfinedSelect}
         overlay={{
           mode: viewMode,
           riskByZone: hotspot.riskByZone,
@@ -467,6 +493,12 @@ export function Dashboard() {
             </div>
           ) : (
             <>
+              {viewMode === "confined" && (
+                <ConfinedPanel
+                  selectedPermitId={selectedConfinedId}
+                  onSelect={handleConfinedSelect}
+                />
+              )}
               {viewMode === "forecast" && (
                 <ForecastPanel
                   frame={forecastFrame}
@@ -535,7 +567,7 @@ export function Dashboard() {
 
       {showQr && <QrPanel onClose={() => setShowQr(false)} />}
 
-      {((!demoActive && viewMode !== "forecast") || demoStep === 2) && (
+      {((!demoActive && viewMode !== "forecast" && viewMode !== "confined") || demoStep === 2) && (
         <TimelineBar
           minMs={range.min + WEEK_MS}
           maxMs={range.max}
