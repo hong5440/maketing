@@ -23,10 +23,13 @@ export function ZoneMarkers({
   onZoneSelect,
   selectedZoneId,
   alertZoneIds = [],
+  forecastByZone,
 }: {
   onZoneSelect?: (id: number) => void;
   selectedZoneId?: number | null;
   alertZoneIds?: number[];
+  /** 야드 위험 예보 단계 (0 맑음/1 주의/2 경보) — 배지 옆 아이콘 */
+  forecastByZone?: Record<number, 0 | 1 | 2>;
 }) {
   const [hovered, setHovered] = useState<number | null>(null);
   const [modes, setModes] = useState<Record<number, LabelMode>>({});
@@ -142,6 +145,12 @@ export function ZoneMarkers({
               title={zone.name}
             >
               <span className="zone-chip-num">{zone.id}</span>
+              {forecastByZone?.[zone.id] != null && (
+                <span
+                  className={`fc-ico fc-ico-${forecastByZone[zone.id]}`}
+                  aria-label={["맑음", "주의", "경보"][forecastByZone[zone.id]]}
+                />
+              )}
               {mode === "full" && shortName}
             </button>
           </Html>

@@ -35,6 +35,8 @@ import { TimelineBar } from "./TimelineBar";
 import { QrPanel } from "./QrPanel";
 import { LoadingSplash } from "./LoadingSplash";
 import { DEMO_TOTAL_STEPS, DemoDirector } from "./DemoDirector";
+import { ForecastHourSlider, ForecastPanel } from "./ForecastPanel";
+import { forecastAt } from "@/lib/forecast";
 import { apiSubmitReport } from "@/lib/clientApi";
 
 const YardScene = dynamic(() => import("@/components/yard3d/YardScene"), {
@@ -53,7 +55,9 @@ export function Dashboard() {
   const [reports, setReports] = useState<NearMissReport[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [filters, setFilters] = useState<DashFilters>(DEFAULT_FILTERS);
-  const [viewMode, setViewMode] = useState<"heatmap" | "bars" | "off">("heatmap");
+  // OVERVIEW 첫 화면은 야드 위험 예보 (B-2)
+  const [viewMode, setViewMode] = useState<"forecast" | "heatmap" | "bars" | "off">("forecast");
+  const [forecastHour, setForecastHour] = useState(14);
   // 발표 기본값: 해 질 녘 (레일에서 낮/해질녘/밤 순환)
   const [tod, setTod] = useState<TimeOfDay>("dusk");
   // 개발용 노출 슬라이더 (?dev=1)
@@ -344,8 +348,18 @@ export function Dashboard() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [demoStep, alerts]);
 
+  // ── 야드 위험 예보 (B-2) — 시연용 규칙 계산 ─────────
+  const forecastFrame = useMemo(() => forecastAt(forecastHour), [forecastHour]);
+  const forecastByZone = useMemo(() => {
+    const m: Record<number, 0 | 1 | 2> = {};
+    for (const [id, v] of Object.entries(forecastFrame.byZone)) m[Number(id)] = v.level;
+    return m;
+  }, [forecastFrame]);
+
   const cycleLayer = useCallback(() => {
-    setViewMode((m) => (m === "heatmap" ? "bars" : m === "bars" ? "off" : "heatmap"));
+    setViewMode((m) =>
+      m === "forecast" ? "heatmap" : m === "heatmap" ? "bars" : m === "bars" ? "off" : "forecast",
+    );
   }, []);
   const goHome = useCallback(() => {
     setSelectedZoneId(null);
@@ -366,6 +380,7 @@ export function Dashboard() {
           setSelectedAlertId(null);
         }}
         alertZoneIds={alertZoneIds}
+        forecastByZone={viewMode === "forecast" ? forecastByZone : undefined}
         overlay={{
           mode: viewMode,
           riskByZone: hotspot.riskByZone,
@@ -374,10 +389,15 @@ export function Dashboard() {
           simNowMs,
           windowMs: filters.periodWeeks * WEEK_MS,
           countByZone,
+          forecast: forecastFrame,
         }}
       />
 
       <BrandPlate />
+
+      {!demoActive && viewMode === "forecast" && (
+        <ForecastHourSlider hour={forecastHour} onHour={setForecastHour} />
+      )}
 
       {!demoActive && (
         <>
@@ -447,6 +467,15 @@ export function Dashboard() {
             </div>
           ) : (
             <>
+              {viewMode === "forecast" && (
+                <ForecastPanel
+                  frame={forecastFrame}
+                  onZoneSelect={(id) => {
+                    setSelectedZoneId(id);
+                    setSelectedAlertId(null);
+                  }}
+                />
+              )}
               <section className="holo-panel p-3">
                 <h2 className="holo-title mb-2">실시간 안전 현황</h2>
                 <div className="flex items-center justify-center">
@@ -506,7 +535,7 @@ export function Dashboard() {
 
       {showQr && <QrPanel onClose={() => setShowQr(false)} />}
 
-      {(!demoActive || demoStep === 2) && (
+      {((!demoActive && viewMode !== "forecast") || demoStep === 2) && (
         <TimelineBar
           minMs={range.min + WEEK_MS}
           maxMs={range.max}

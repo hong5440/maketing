@@ -1,0 +1,226 @@
+{
+  "note": "합성 데이터 — 시연용으로 생성한 가상 작업허가서입니다. 실제 허가서가 아닙니다.",
+  "date": "오늘",
+  "permits": [
+    {
+      "id": "P-001",
+      "title": "1도크 블록 인양·탑재",
+      "text": "1도크에서 14~16시 골리앗 크레인으로 C-31 블록 인양 및 탑재. 신호수 2명 배치.",
+      "workKind": "lifting"
+    },
+    {
+      "id": "P-002",
+      "title": "1도크 블록 하부 용접",
+      "text": "1도크 14~16시 C-31 블록 하부 론지 취부 용접. 불티 비산 방지포 설치.",
+      "workKind": "hotwork"
+    },
+    {
+      "id": "P-003",
+      "title": "LNGC 탱크 내부 도장",
+      "text": "22번 LNGC 도장 공장에서 10~12시 화물탱크 내부 스프레이 도장. 송기마스크 착용.",
+      "workKind": "painting",
+      "confined": {
+        "o2Measured": true,
+        "measuredAt": "09:40",
+        "ventilation": true,
+        "watcher": true,
+        "entrants": 4,
+        "emergencyContact": true
+      }
+    },
+    {
+      "id": "P-004",
+      "title": "LNGC 인접 배관 화기작업",
+      "text": "22번 공장 10~12시 탱크 인접 구역 배관 스풀 절단 및 용접 화기작업.",
+      "workKind": "hotwork"
+    },
+    {
+      "id": "P-005",
+      "title": "의장안벽 고소 족장 설치",
+      "text": "9번 의장안벽 계류선 13~15시 현문 상부 족장 설치 고소작업.",
+      "workKind": "height"
+    },
+    {
+      "id": "P-006",
+      "title": "의장안벽 하부 배관 작업",
+      "text": "의장안벽 13~15시 같은 구역 하부에서 배관 스풀 설치 작업.",
+      "workKind": "piping"
+    },
+    {
+      "id": "P-007",
+      "title": "2도크 블록 턴오버",
+      "text": "2도크 09~11시 900톤 크레인으로 D-12 블록 턴오버. 줄걸이 점검 완료.",
+      "workKind": "lifting"
+    },
+    {
+      "id": "P-008",
+      "title": "절단공장 강재 절단",
+      "text": "11번 절단공장 08~17시 플라즈마 절단기 강재 절단. 흄 배기 가동.",
+      "workKind": "hotwork"
+    },
+    {
+      "id": "P-009",
+      "title": "조립 1공장 대조립 용접",
+      "text": "조립 1공장 08~18시 패널 대조립 CO2 용접.",
+      "workKind": "hotwork"
+    },
+    {
+      "id": "P-010",
+      "title": "조립 2공장 소조립 취부",
+      "text": "조립 2공장 09~17시 소조립 취부 및 사상 작업.",
+      "workKind": "assembly"
+    },
+    {
+      "id": "P-011",
+      "title": "전처리 쇼트 블라스팅",
+      "text": "10번 전처리 공장 06~14시 강재 쇼트 블라스팅 및 프라이머 도장.",
+      "workKind": "painting"
+    },
+    {
+      "id": "P-012",
+      "title": "전처리 집진기 내부 점검",
+      "text": "10번 전처리 공장 15~16시 집진기 챔버 내부 점검. 맨홀 출입.",
+      "workKind": "confined",
+      "confined": {
+        "o2Measured": false,
+        "measuredAt": null,
+        "ventilation": true,
+        "watcher": true,
+        "entrants": 2,
+        "emergencyContact": true
+      }
+    },
+    {
+      "id": "P-013",
+      "title": "강재적치장 자재 불출",
+      "text": "15번 강재적치장 07~12시 지게차·트랜스포터 자재 불출. 보행 통제선 설치.",
+      "workKind": "transport"
+    },
+    {
+      "id": "P-014",
+      "title": "블록 운송 (적치장→1도크)",
+      "text": "15번 적치장에서 1도크까지 13~14시 트랜스포터 블록 운송. 신호수 선도.",
+      "workKind": "transport"
+    },
+    {
+      "id": "P-015",
+      "title": "플로팅 도크 발라스트 점검",
+      "text": "14번 플로팅 도크 10~11시 발라스트 펌프실 점검.",
+      "workKind": "inspection"
+    },
+    {
+      "id": "P-016",
+      "title": "해양제작 1공장 모듈 용접",
+      "text": "17번 해양제작 1공장 08~17시 모듈 구조 용접 및 가우징.",
+      "workKind": "hotwork"
+    },
+    {
+      "id": "P-017",
+      "title": "해양제작 2공장 전기 입선",
+      "text": "18번 해양제작 2공장 09~16시 케이블 트레이 입선 전기작업.",
+      "workKind": "electric"
+    },
+    {
+      "id": "P-018",
+      "title": "해양제작 3공장 고소 볼팅",
+      "text": "19번 해양제작 3공장 10~15시 상부 구조 고소 볼팅. 안전대 착용.",
+      "workKind": "height"
+    },
+    {
+      "id": "P-019",
+      "title": "해양플랜트 도장부스 내부 도장",
+      "text": "20번 해양플랜트 도장 공장 13~17시 도장부스 내부 에어리스 도장. 유증기 환기 가동.",
+      "workKind": "painting",
+      "confined": {
+        "o2Measured": true,
+        "measuredAt": "12:35",
+        "ventilation": true,
+        "watcher": false,
+        "entrants": 3,
+        "emergencyContact": true
+      }
+    },
+    {
+      "id": "P-020",
+      "title": "옥외 조립장 리프팅 빔 인양",
+      "text": "21번 해양플랜트 옥외 조립장 09~11시 타워크레인 리프팅 빔 인양.",
+      "workKind": "lifting"
+    },
+    {
+      "id": "P-021",
+      "title": "하역안벽 강재 하역",
+      "text": "하역안벽 06~10시 강재 코일 하역. 와이어 체결 상태 확인.",
+      "workKind": "lifting"
+    },
+    {
+      "id": "P-022",
+      "title": "선행의장 유닛 조립",
+      "text": "5번 선행의장 1공장 08~17시 파이프 유닛 조립.",
+      "workKind": "assembly"
+    },
+    {
+      "id": "P-023",
+      "title": "소부재 조립 용접",
+      "text": "6번 소부재조립공장 08~17시 소부재 로봇 용접 라인 가동.",
+      "workKind": "hotwork"
+    },
+    {
+      "id": "P-024",
+      "title": "1도크 이중저 내부 검사",
+      "text": "1도크 09~10시 선저 이중저 탱크 내부 검사. 맨홀 2개소 개방.",
+      "workKind": "confined",
+      "confined": {
+        "o2Measured": false,
+        "measuredAt": null,
+        "ventilation": false,
+        "watcher": true,
+        "entrants": 2,
+        "emergencyContact": false
+      }
+    },
+    {
+      "id": "P-025",
+      "title": "해양 의장공장 배관 수압시험",
+      "text": "16번 해양 의장공장 13~16시 배관 스풀 수압시험.",
+      "workKind": "test"
+    },
+    {
+      "id": "P-026",
+      "title": "LNGC 화물창 단열 패널 설치",
+      "text": "22번 공장 14~18시 화물창 내부 단열 패널 설치. 밀폐공간 출입.",
+      "workKind": "confined",
+      "confined": {
+        "o2Measured": true,
+        "measuredAt": "13:30",
+        "ventilation": true,
+        "watcher": true,
+        "entrants": 6,
+        "emergencyContact": true
+      }
+    },
+    {
+      "id": "P-027",
+      "title": "의장안벽 발전기 시운전",
+      "text": "9번 의장안벽 10~12시 계류선 발전기 시운전. 배기가스 주의.",
+      "workKind": "test"
+    },
+    {
+      "id": "P-028",
+      "title": "절단공장 크레인 월례 점검",
+      "text": "11번 절단공장 06~08시 천장크레인 월례 점검. 점검 중 하부 통행 금지.",
+      "workKind": "inspection"
+    },
+    {
+      "id": "P-029",
+      "title": "2도크 도크 바닥 청소",
+      "text": "2도크 16~18시 도크 바닥 고압세척 및 폐기물 반출.",
+      "workKind": "cleaning"
+    },
+    {
+      "id": "P-030",
+      "title": "기술교육원 승강설비 점검",
+      "text": "3번 기술교육원 14~15시 승강기 정기 점검. 전기 차단 후 작업.",
+      "workKind": "electric"
+    }
+  ]
+}

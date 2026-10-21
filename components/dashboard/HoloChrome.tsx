@@ -149,8 +149,8 @@ export function NavRail({
   onQuality,
   onHome,
 }: {
-  viewMode: "heatmap" | "bars" | "off";
-  onViewMode: (m: "heatmap" | "bars" | "off") => void;
+  viewMode: "forecast" | "heatmap" | "bars" | "off";
+  onViewMode: (m: "forecast" | "heatmap" | "bars" | "off") => void;
   tod: TimeOfDay;
   onTod: () => void;
   quality: "low" | "high";
@@ -169,6 +169,7 @@ export function NavRail({
       className="holo-panel absolute left-3 top-1/2 z-20 flex w-[64px] -translate-y-1/2 flex-col gap-1 p-1.5"
     >
       <RailButton icon={IC.home} label="전체 현황" onClick={onHome} />
+      <RailButton icon={IC.radar} label="위험 예보" active={viewMode === "forecast"} onClick={() => onViewMode("forecast")} />
       <RailButton icon={IC.heat} label="히트맵" active={viewMode === "heatmap"} onClick={() => onViewMode("heatmap")} />
       <RailButton icon={IC.bars} label="3D 막대" active={viewMode === "bars"} onClick={() => onViewMode("bars")} />
       <RailButton icon={IC.eyeOff} label="오버레이" active={viewMode === "off"} onClick={() => onViewMode("off")} />

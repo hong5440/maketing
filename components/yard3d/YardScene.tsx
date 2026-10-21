@@ -39,6 +39,8 @@ export interface YardSceneProps {
   overlay?: OverlayProps;
   /** 경보 중인 구역 — 마커가 빨갛게 깜빡임 */
   alertZoneIds?: number[];
+  /** 야드 위험 예보 단계 — 구역 배지 옆 아이콘 */
+  forecastByZone?: Record<number, 0 | 1 | 2>;
 }
 
 export default function YardScene({
@@ -50,6 +52,7 @@ export default function YardScene({
   onZoneSelect,
   overlay,
   alertZoneIds = [],
+  forecastByZone,
 }: YardSceneProps) {
   // 시간대 보간 상태 (리렌더 없이 useFrame에서 공유)
   const envRef = useRef<YardEnv>(makeYardEnv(timeOfDay));
@@ -112,6 +115,7 @@ export default function YardScene({
           onZoneSelect={onZoneSelect}
           selectedZoneId={selectedZoneId}
           alertZoneIds={alertZoneIds}
+          forecastByZone={forecastByZone}
         />
         <CameraRig selectedZoneId={selectedZoneId ?? null} autoRotate={autoRotate} />
         {quality === "high" && (

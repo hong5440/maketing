@@ -7,6 +7,7 @@ import { ZONES, getZone } from "@/data/zones";
 import type { HazardType } from "@/lib/domain";
 import { HAZARD_COLORS, riskColor } from "@/lib/dashboardStats";
 import { mulberry32, rotY, toWorld } from "./coords";
+import type { ForecastFrame } from "@/lib/forecast";
 
 /**
  * 위험도 오버레이:
@@ -25,7 +26,7 @@ export interface OverlayDot {
 }
 
 export interface OverlayProps {
-  mode: "heatmap" | "bars" | "off";
+  mode: "forecast" | "heatmap" | "bars" | "off";
   riskByZone: Record<number, number>;
   alertZoneIds: number[];
   dots: OverlayDot[];
@@ -33,6 +34,8 @@ export interface OverlayProps {
   windowMs: number;
   /** 구역별 표시 건수 (막대 모드) */
   countByZone: Record<number, number>;
+  /** 야드 위험 예보 프레임 (mode==="forecast") */
+  forecast?: ForecastFrame;
 }
 
 /* ── 히트맵 ──────────────────────────────────────────── */
@@ -497,6 +500,73 @@ function RiskBars({
 
 /* ── 조립 ────────────────────────────────────────────── */
 
+/** 겹침 허가 바닥 연결선 (B-2) — 같은 시설의 간섭 작업 두 지점을 잇는다 */
+function ForecastLinks({ forecast }: { forecast: ForecastFrame }) {
+  const matRef = useRef<THREE.MeshBasicMaterial>(null);
+
+  useFrame(({ clock }) => {
+    if (matRef.current)
+      matRef.current.opacity = 0.55 + 0.3 * Math.sin(clock.elapsedTime * 2.2);
+  });
+
+  const links = useMemo(() => {
+    return forecast.conflicts
+      .map((c) => {
+        const zone = getZone(c.zoneId);
+        if (!zone) return null;
+        const { w, d, rotation } = zone.footprint;
+        const rad = (rotation * Math.PI) / 180;
+        // 작업 두 지점: footprint 긴 축을 따라 ±25% 지점
+        const off = Math.max(w, d) * 0.25;
+        const ax = w >= d ? Math.cos(rad) : Math.sin(rad);
+        const az = w >= d ? Math.sin(rad) : Math.cos(rad);
+        const [cx, , cz] = toWorld(zone.center.x, zone.center.z);
+        return {
+          id: c.id,
+          a: [cx - ax * off, 0.14, cz - az * off] as [number, number, number],
+          b: [cx + ax * off, 0.14, cz + az * off] as [number, number, number],
+          len: off * 2,
+          rot: Math.atan2(-(az * off * 2), ax * off * 2),
+          mid: [cx, 0.14, cz] as [number, number, number],
+        };
+      })
+      .filter((v): v is NonNullable<typeof v> => v != null);
+  }, [forecast.conflicts]);
+
+  if (links.length === 0) return null;
+  return (
+    <group>
+      {links.map((l) => (
+        <group key={l.id}>
+          <mesh position={l.mid} rotation={[-Math.PI / 2, 0, -l.rot]} renderOrder={7}>
+            <planeGeometry args={[l.len, 0.14]} />
+            <meshBasicMaterial
+              ref={matRef}
+              color="#ff5a4e"
+              transparent
+              opacity={0.7}
+              depthWrite={false}
+              toneMapped={false}
+            />
+          </mesh>
+          {[l.a, l.b].map((p, i) => (
+            <mesh key={i} position={p} rotation={[-Math.PI / 2, 0, 0]} renderOrder={7}>
+              <ringGeometry args={[0.22, 0.34, 24]} />
+              <meshBasicMaterial
+                color="#ff5a4e"
+                transparent
+                opacity={0.85}
+                depthWrite={false}
+                toneMapped={false}
+              />
+            </mesh>
+          ))}
+        </group>
+      ))}
+    </group>
+  );
+}
+
 export function RiskOverlays({ overlay }: { overlay: OverlayProps }) {
   if (overlay.mode === "off") return null;
   return (
@@ -513,7 +583,17 @@ export function RiskOverlays({ overlay }: { overlay: OverlayProps }) {
         <RiskBars countByZone={overlay.countByZone} riskByZone={overlay.riskByZone} />
       )}
       {overlay.mode === "heatmap" && <CraneSweptDecal />}
-      <AlertPillars zoneIds={overlay.alertZoneIds} />
+      {overlay.mode === "forecast" && overlay.forecast && (
+        <>
+          <ForecastLinks forecast={overlay.forecast} />
+          <AlertPillars
+            zoneIds={Object.entries(overlay.forecast.byZone)
+              .filter(([, v]) => v.level === 2)
+              .map(([id]) => Number(id))}
+          />
+        </>
+      )}
+      {overlay.mode !== "forecast" && <AlertPillars zoneIds={overlay.alertZoneIds} />}
     </group>
   );
 }
