@@ -116,6 +116,34 @@ export function CranePanel() {
     rec.start();
   }, [lang.speech, interpret]);
 
+  // ── 데모 모드: demo-crane-command 이벤트 → 음성 지시 시뮬레이션 + 자동 Confirm ──
+  const demoAuto = useRef(false);
+  useEffect(() => {
+    const onDemo = (e: Event) => {
+      const d = (e as CustomEvent<{ text: string; lang: string }>).detail;
+      const l = LANGS.find((v) => v.code === d.lang) ?? LANGS[0];
+      setLang(l);
+      setText(d.text);
+      demoAuto.current = true;
+      void interpret(d.text, "voice");
+    };
+    window.addEventListener("demo-crane-command", onDemo);
+    return () => window.removeEventListener("demo-crane-command", onDemo);
+  }, [interpret]);
+  useEffect(() => {
+    if (proposal && demoAuto.current) {
+      demoAuto.current = false;
+      const t = setTimeout(() => {
+        applyCommand(proposal.command, proposal.source);
+        if (craneNav.mode === "LIVE")
+          sendCommand(proposal.command.axis, proposal.command.direction, proposal.command.amountM);
+        setProposal(null);
+        setText("");
+      }, 2600);
+      return () => clearTimeout(t);
+    }
+  }, [proposal]);
+
   const confirm = useCallback(() => {
     if (!proposal) return;
     applyCommand(proposal.command, proposal.source);

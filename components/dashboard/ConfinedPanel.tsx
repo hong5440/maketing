@@ -113,7 +113,17 @@ export function ConfinedPanel({
   selectedPermitId: string | null;
   onSelect: (permitId: string, zoneId: number) => void;
 }) {
-  const entries = useMemo(() => confinedEntries(), []);
+  const entries = useMemo(() => {
+    const list = [...confinedEntries()];
+    // 선택된 허가 먼저, 다음 누락 많은 순
+    list.sort((a, b) => {
+      const sa = a.interp.permit.id === selectedPermitId ? 1 : 0;
+      const sb = b.interp.permit.id === selectedPermitId ? 1 : 0;
+      if (sa !== sb) return sb - sa;
+      return b.missingCount - a.missingCount;
+    });
+    return list;
+  }, [selectedPermitId]);
   const [now, setNow] = useState(() => new Date());
   useEffect(() => {
     const id = setInterval(() => setNow(new Date()), 1000);

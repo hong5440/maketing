@@ -170,12 +170,12 @@
       "text": "1도크 09~10시 선저 이중저 탱크 내부 검사. 맨홀 2개소 개방.",
       "workKind": "confined",
       "confined": {
-        "o2Measured": false,
-        "measuredAt": null,
-        "ventilation": false,
+        "o2Measured": true,
+        "measuredAt": "08:40",
+        "ventilation": true,
         "watcher": true,
         "entrants": 2,
-        "emergencyContact": false
+        "emergencyContact": true
       }
     },
     {
@@ -190,8 +190,8 @@
       "text": "22번 공장 14~18시 화물창 내부 단열 패널 설치. 밀폐공간 출입.",
       "workKind": "confined",
       "confined": {
-        "o2Measured": true,
-        "measuredAt": "13:30",
+        "o2Measured": false,
+        "measuredAt": null,
         "ventilation": true,
         "watcher": true,
         "entrants": 6,
@@ -221,6 +221,12 @@
       "title": "기술교육원 승강설비 점검",
       "text": "3번 기술교육원 14~15시 승강기 정기 점검. 전기 차단 후 작업.",
       "workKind": "electric"
+    },
+    {
+      "id": "P-031",
+      "title": "해양플랜트 도장부스 인접 배관 용접",
+      "text": "20번 해양플랜트 도장 공장 13~16시 도장부스 인접 구역 배관 용접 화기작업.",
+      "workKind": "hotwork"
     }
   ]
 }
