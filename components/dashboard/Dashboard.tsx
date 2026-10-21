@@ -48,6 +48,7 @@ import {
   type ContentsState,
 } from "./ContentsPanel";
 import { MEMORY_INCIDENTS, TOUR_STEPS, type MemoryIncident } from "@/lib/contents";
+import { StatsPanel } from "./StatsPanel";
 import { feelByZone } from "@/lib/heat";
 import { confinedEntries } from "@/lib/confined";
 import type { ConfinedMarker } from "@/components/yard3d/ConfinedMarkers";
@@ -499,6 +500,12 @@ export function Dashboard() {
               <span className="num w-8 text-console-text">{exposure.toFixed(2)}</span>
             </div>
           )}
+          <StatsPanel
+            onPick={(hazard) => {
+              setViewMode("heatmap");
+              setFilters((f) => ({ ...f, hazardType: hazard }));
+            }}
+          />
           <MiniMap
             selectedZoneId={selectedZoneId}
             alertZoneIds={alertZoneIds}
