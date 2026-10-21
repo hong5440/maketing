@@ -285,7 +285,41 @@ export function StockYards() {
 }
 
 /** 주거지·도심 블록 (InstancedMesh 흰 건물 군집) */
-export function CityBlocks() {
+/** 주거지 창문 텍스처 — 랜덤 점등 (emissiveMap 공유) */
+function makeCityWindowTex(): THREE.CanvasTexture {
+  const c = document.createElement("canvas");
+  c.width = c.height = 64;
+  const ctx = c.getContext("2d")!;
+  ctx.fillStyle = "#000000";
+  ctx.fillRect(0, 0, 64, 64);
+  let seed = 41;
+  const rnd = () => {
+    seed = (seed * 16807) % 2147483647;
+    return seed / 2147483647;
+  };
+  for (let gy = 0; gy < 8; gy++) {
+    for (let gx = 0; gx < 6; gx++) {
+      if (rnd() < 0.55) continue; // 약 45%만 점등
+      const warm = rnd() < 0.7;
+      ctx.fillStyle = warm ? "#ffd9a0" : "#dcebff";
+      ctx.globalAlpha = 0.5 + rnd() * 0.5;
+      ctx.fillRect(4 + gx * 10, 3 + gy * 7.4, 5, 4);
+    }
+  }
+  ctx.globalAlpha = 1;
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+}
+
+export function CityBlocks({ env }: { env: YardEnv }) {
+  const matRef = useRef<THREE.MeshStandardMaterial>(null);
+  const windowTex = useMemo(() => makeCityWindowTex(), []);
+
+  useFrame(() => {
+    if (matRef.current) matRef.current.emissiveIntensity = env.night * 1.4;
+  });
+
   const items = useMemo(() => {
     const rng = mulberry32(2024);
     const arr: { pos: [number, number, number]; h: number; w: number; d: number }[] = [];
@@ -334,7 +368,13 @@ export function CityBlocks() {
       receiveShadow
     >
       <boxGeometry args={[1, 1, 1]} />
-      <meshStandardMaterial roughness={0.9} />
+      <meshStandardMaterial
+        ref={matRef}
+        roughness={0.9}
+        emissive="#ffffff"
+        emissiveMap={windowTex}
+        emissiveIntensity={0}
+      />
     </instancedMesh>
   );
 }

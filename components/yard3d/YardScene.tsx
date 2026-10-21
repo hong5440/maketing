@@ -13,7 +13,7 @@ import {
 import * as THREE from "three";
 import { withBase } from "@/lib/basePath";
 import { TOD_T, makeYardEnv, type TimeOfDay, type YardEnv } from "./coords";
-import { Terrain, SitePavement } from "./Terrain";
+import { MountainBackdrop, Terrain, SitePavement } from "./Terrain";
 import { Sea } from "./Sea";
 import { Buildings } from "./Buildings";
 import { Docks } from "./Docks";
@@ -92,6 +92,7 @@ export default function YardScene({
         />
         <Lighting env={envRef.current} sunRef={sunRef} quality={quality} />
         <Terrain />
+        <MountainBackdrop />
         <SitePavement />
         <Sea env={envRef.current} sunRef={sunRef} quality={quality} />
         <Roads />
@@ -101,7 +102,7 @@ export default function YardScene({
         <Cranes />
         <Ships />
         <StockYards />
-        <CityBlocks />
+        <CityBlocks env={envRef.current} />
         <Parking />
         <Greenery />
         <NightLamps env={envRef.current} />

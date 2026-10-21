@@ -6,6 +6,45 @@ import { BAY_WATER, COASTLINE } from "@/data/geography";
 import { ZONES } from "@/data/zones";
 import { fbm2, pointInPolygon } from "./coords";
 
+/** 녹지/숲 디테일 텍스처 — 캔버스 노이즈 (map × vertexColors 곱) */
+function makeGroundDetail(): THREE.CanvasTexture {
+  const S = 256;
+  const c = document.createElement("canvas");
+  c.width = c.height = S;
+  const ctx = c.getContext("2d")!;
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, S, S);
+  // 숲 캐노피 느낌의 어두운 덩어리 + 미세 점 노이즈
+  let seed = 7;
+  const rnd = () => {
+    seed = (seed * 16807) % 2147483647;
+    return seed / 2147483647;
+  };
+  for (let i = 0; i < 260; i++) {
+    const r = 3 + rnd() * 11;
+    const g = ctx.createRadialGradient(0, 0, 0, 0, 0, r);
+    const k = 0.72 + rnd() * 0.16;
+    g.addColorStop(0, `rgba(${(k * 255) | 0},${(k * 255) | 0},${(k * 245) | 0},0.9)`);
+    g.addColorStop(1, "rgba(255,255,255,0)");
+    ctx.save();
+    ctx.translate(rnd() * S, rnd() * S);
+    ctx.fillStyle = g;
+    ctx.fillRect(-r, -r, r * 2, r * 2);
+    ctx.restore();
+  }
+  for (let i = 0; i < 4000; i++) {
+    const v = (200 + rnd() * 55) | 0;
+    ctx.fillStyle = `rgba(${v},${v},${v},0.5)`;
+    ctx.fillRect(rnd() * S, rnd() * S, 1.4, 1.4);
+  }
+  const t = new THREE.CanvasTexture(c);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.repeat.set(42, 42);
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.anisotropy = 4;
+  return t;
+}
+
 /**
  * 지형 + 부지 포장면.
  * - 바다(만 + 북쪽 외해)는 음수 깊이, 사업장 부지는 평탄(0),
@@ -104,9 +143,53 @@ export function Terrain() {
     return geo;
   }, []);
 
+  const detail = useMemo(() => makeGroundDetail(), []);
+
   return (
     <mesh geometry={geometry} receiveShadow position={[0, -0.12, 0]}>
-      <meshStandardMaterial vertexColors roughness={1} metalness={0} />
+      <meshStandardMaterial vertexColors map={detail} roughness={1} metalness={0} />
+    </mesh>
+  );
+}
+
+/**
+ * 원경 산 실루엣 — 지형 바깥 반경의 능선 띠.
+ * FogExp2가 거리감으로 자연스럽게 하늘에 녹인다. 바다(북쪽) 수평선은 비워 둠.
+ */
+export function MountainBackdrop() {
+  const geometry = useMemo(() => {
+    const R = 285;
+    const SEG = 220;
+    const positions: number[] = [];
+    const ridge = (a: number) =>
+      (fbm2(Math.cos(a) * 2.4 + 3.1, Math.sin(a) * 2.4 + 8.7, 4) * 0.75 +
+        fbm2(Math.cos(a) * 7 + 1.2, Math.sin(a) * 7 + 4.4, 3) * 0.25) *
+      30;
+    for (let i = 0; i < SEG; i++) {
+      const a0 = (i / SEG) * Math.PI * 2;
+      const a1 = ((i + 1) / SEG) * Math.PI * 2;
+      const mk = (a: number) => {
+        const x = Math.cos(a) * R;
+        const z = Math.sin(a) * R;
+        // 북쪽(세계 -Z, 바다 방향)은 능선을 낮춰 수평선 유지
+        const m = THREE.MathUtils.smoothstep(z / R, -0.55, 0.05);
+        const h = Math.max(0, ridge(a)) * (0.15 + 0.85 * m);
+        return { x, z, h };
+      };
+      const p0 = mk(a0);
+      const p1 = mk(a1);
+      // 쿼드 (bottom0, bottom1, top1), (bottom0, top1, top0)
+      positions.push(p0.x, -2, p0.z, p1.x, -2, p1.z, p1.x, p1.h, p1.z);
+      positions.push(p0.x, -2, p0.z, p1.x, p1.h, p1.z, p0.x, p0.h, p0.z);
+    }
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+    return geo;
+  }, []);
+
+  return (
+    <mesh geometry={geometry}>
+      <meshBasicMaterial color="#39444d" side={THREE.DoubleSide} />
     </mesh>
   );
 }

@@ -135,7 +135,23 @@ h3 {
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
-.zone-chip-selected {
+.zone-chip-mini {
+    padding: 3px;
+    gap: 0;
+  }
+  .zone-chip-lg {
+    font-size: 13.5px;
+    padding: 4px 12px 4px 4px;
+  }
+  .zone-chip-lg .zone-chip-num {
+    width: 23px;
+    height: 23px;
+    font-size: 12px;
+  }
+  .zone-chip-lg.zone-chip-mini {
+    padding: 4px;
+  }
+  .zone-chip-selected {
   border-color: #3cc7ff;
   box-shadow:
     0 0 0 2px rgba(60, 199, 255, 0.45),
