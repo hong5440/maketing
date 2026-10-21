@@ -40,6 +40,14 @@ import { forecastAt } from "@/lib/forecast";
 import { ConfinedPanel } from "./ConfinedPanel";
 import { HeatPanel, useWeather } from "./HeatPanel";
 import { CranePanel } from "./CranePanel";
+import {
+  BriefingPanel,
+  ContentsPanel,
+  INITIAL_CONTENTS,
+  TourPanel,
+  type ContentsState,
+} from "./ContentsPanel";
+import { MEMORY_INCIDENTS, TOUR_STEPS, type MemoryIncident } from "@/lib/contents";
 import { feelByZone } from "@/lib/heat";
 import { confinedEntries } from "@/lib/confined";
 import type { ConfinedMarker } from "@/components/yard3d/ConfinedMarkers";
@@ -364,6 +372,26 @@ export function Dashboard() {
     return m;
   }, [forecastFrame]);
 
+  // ── 콘텐츠 5종 (B-6) ────────────────────────────────
+  const [contents, setContents] = useState<ContentsState>(INITIAL_CONTENTS);
+  const changeContents = useCallback((next: Partial<ContentsState>) => {
+    setContents((c) => ({ ...c, ...next }));
+  }, []);
+  const memoryIncident = useMemo<MemoryIncident | null>(
+    () => MEMORY_INCIDENTS.find((m) => m.id === contents.memorySelected) ?? null,
+    [contents.memorySelected],
+  );
+  // 투어 단계 변경 시 해당 구역으로 카메라 이동
+  useEffect(() => {
+    if (contents.tourStep != null) {
+      const step = TOUR_STEPS[contents.tourStep];
+      if (step) {
+        setSelectedZoneId(step.zoneId);
+        setSelectedAlertId(null);
+      }
+    }
+  }, [contents.tourStep]);
+
   // ── 폭염 쉼표 (B-4) ────────────────────────────────
   const weather = useWeather();
   const heatByZone = useMemo(() => feelByZone(weather.current), [weather]);
@@ -414,6 +442,14 @@ export function Dashboard() {
         confinedMarkers={viewMode === "confined" ? confinedMarkers : undefined}
         selectedConfinedId={selectedConfinedId}
         onConfinedSelect={handleConfinedSelect}
+        showTransport={contents.transport}
+        showMemory={contents.memory}
+        selectedMemoryId={contents.memorySelected}
+        onMemorySelect={(inc) => {
+          setContents((c) => ({ ...c, memorySelected: inc.id }));
+          setSelectedZoneId(inc.zoneId);
+          setSelectedAlertId(null);
+        }}
         overlay={{
           mode: viewMode,
           riskByZone: hotspot.riskByZone,
@@ -501,6 +537,13 @@ export function Dashboard() {
             </div>
           ) : (
             <>
+              {contents.tourStep != null && (
+                <TourPanel
+                  step={contents.tourStep}
+                  onStep={(n) => changeContents({ tourStep: n })}
+                  onExit={() => changeContents({ tourStep: null })}
+                />
+              )}
               {viewMode === "heat" && (
                 <HeatPanel weather={weather} selectedZoneId={selectedZoneId} />
               )}
@@ -517,6 +560,14 @@ export function Dashboard() {
                     setSelectedZoneId(id);
                     setSelectedAlertId(null);
                   }}
+                />
+              )}
+              {contents.tourStep == null && (
+                <ContentsPanel
+                  contents={contents}
+                  onChange={changeContents}
+                  onOpenQr={() => setShowQr(true)}
+                  memoryIncident={memoryIncident}
                 />
               )}
               <section className="holo-panel p-3">
@@ -562,6 +613,9 @@ export function Dashboard() {
               </section>
 
               {selectedZoneId === 1 && <CranePanel />}
+              {selectedZoneId != null && contents.tourStep == null && (
+                <BriefingPanel zoneId={selectedZoneId} reports={attrFiltered} />
+              )}
               {selectedZoneId != null && (
                 <section className="holo-panel p-3">
                   <ZoneDetail

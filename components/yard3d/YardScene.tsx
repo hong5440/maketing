@@ -26,6 +26,8 @@ import { ZoneMarkers } from "./ZoneMarkers";
 import { CameraRig, HOME_POSITION } from "./CameraRig";
 import { RiskOverlays, ZoneOutlines, type OverlayProps } from "./Overlays";
 import { ConfinedMarkers, type ConfinedMarker } from "./ConfinedMarkers";
+import { MemoryMarkers, TransportRoute } from "./ContentsOverlays";
+import type { MemoryIncident } from "@/lib/contents";
 
 export interface YardSceneProps {
   /** 시간대 프리셋 — 전환 시 2초 트윈 */
@@ -47,6 +49,11 @@ export interface YardSceneProps {
   confinedMarkers?: ConfinedMarker[];
   selectedConfinedId?: string | null;
   onConfinedSelect?: (permitId: string, zoneId: number) => void;
+  /** 콘텐츠 5종 (B-6) */
+  showTransport?: boolean;
+  showMemory?: boolean;
+  selectedMemoryId?: string | null;
+  onMemorySelect?: (incident: MemoryIncident) => void;
 }
 
 export default function YardScene({
@@ -62,6 +69,10 @@ export default function YardScene({
   confinedMarkers,
   selectedConfinedId,
   onConfinedSelect,
+  showTransport,
+  showMemory,
+  selectedMemoryId,
+  onMemorySelect,
 }: YardSceneProps) {
   // 시간대 보간 상태 (리렌더 없이 useFrame에서 공유)
   const envRef = useRef<YardEnv>(makeYardEnv(timeOfDay));
@@ -120,6 +131,10 @@ export default function YardScene({
         <Greenery />
         <NightLamps env={envRef.current} />
         {overlay && <RiskOverlays overlay={overlay} />}
+        {showTransport && <TransportRoute />}
+        {showMemory && (
+          <MemoryMarkers selectedId={selectedMemoryId} onSelect={onMemorySelect} />
+        )}
         {confinedMarkers && confinedMarkers.length > 0 && (
           <ConfinedMarkers
             markers={confinedMarkers}
