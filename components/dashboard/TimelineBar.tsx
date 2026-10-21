@@ -25,8 +25,8 @@ export function TimelineBar({
   playing: boolean;
   onSimNowChange: (ms: number) => void;
   onPlayToggle: () => void;
-  viewMode: "forecast" | "confined" | "heatmap" | "bars" | "off";
-  onViewModeChange: (m: "forecast" | "confined" | "heatmap" | "bars" | "off") => void;
+  viewMode: "forecast" | "confined" | "heat" | "heatmap" | "bars" | "off";
+  onViewModeChange: (m: "forecast" | "confined" | "heat" | "heatmap" | "bars" | "off") => void;
   filters: DashFilters;
   onFiltersChange: (f: DashFilters) => void;
 }) {

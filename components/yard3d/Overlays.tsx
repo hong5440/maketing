@@ -8,6 +8,7 @@ import type { HazardType } from "@/lib/domain";
 import { HAZARD_COLORS, riskColor } from "@/lib/dashboardStats";
 import { mulberry32, rotY, toWorld } from "./coords";
 import type { ForecastFrame } from "@/lib/forecast";
+import { heatLevelOf } from "@/lib/heat";
 
 /**
  * 위험도 오버레이:
@@ -26,7 +27,7 @@ export interface OverlayDot {
 }
 
 export interface OverlayProps {
-  mode: "forecast" | "confined" | "heatmap" | "bars" | "off";
+  mode: "forecast" | "confined" | "heat" | "heatmap" | "bars" | "off";
   riskByZone: Record<number, number>;
   alertZoneIds: number[];
   dots: OverlayDot[];
@@ -36,6 +37,8 @@ export interface OverlayProps {
   countByZone: Record<number, number>;
   /** 야드 위험 예보 프레임 (mode==="forecast") */
   forecast?: ForecastFrame;
+  /** 시설별 체감온도 (mode==="heat") */
+  heatByZone?: Record<number, number>;
 }
 
 /* ── 히트맵 ──────────────────────────────────────────── */
@@ -500,6 +503,48 @@ function RiskBars({
 
 /* ── 조립 ────────────────────────────────────────────── */
 
+/** 체감온도 바닥 레이어 (B-4) — A-6 스타일 바닥 데칼, 단계 색 + 등고선 */
+function HeatLayer({ heatByZone }: { heatByZone: Record<number, number> }) {
+  const texture = useMemo(() => {
+    const SIZE = 512;
+    const canvas = document.createElement("canvas");
+    canvas.width = canvas.height = SIZE;
+    const ctx = canvas.getContext("2d")!;
+    ctx.clearRect(0, 0, SIZE, SIZE);
+    for (const zone of ZONES) {
+      const feel = heatByZone[zone.id];
+      if (feel == null) continue;
+      const lv = heatLevelOf(feel);
+      if (lv.level === 0) continue;
+      const cx = (zone.center.x / 100) * SIZE;
+      const cy = (zone.center.z / 100) * SIZE;
+      const radius = Math.max(zone.footprint.w, zone.footprint.d) * (SIZE / 100) * 0.75;
+      const alpha = 0.2 + lv.level * 0.04;
+      const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
+      g.addColorStop(0, `${lv.color}${Math.round(alpha * 255).toString(16).padStart(2, "0")}`);
+      g.addColorStop(0.65, `${lv.color}${Math.round(alpha * 140).toString(16).padStart(2, "0")}`);
+      g.addColorStop(1, `${lv.color}00`);
+      ctx.fillStyle = g;
+      ctx.fillRect(cx - radius, cy - radius, radius * 2, radius * 2);
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius * 0.55, 0, Math.PI * 2);
+      ctx.strokeStyle = `${lv.color}66`;
+      ctx.lineWidth = 1.6;
+      ctx.stroke();
+    }
+    const t = new THREE.CanvasTexture(canvas);
+    t.colorSpace = THREE.SRGBColorSpace;
+    return t;
+  }, [heatByZone]);
+
+  return (
+    <mesh position={[0, 0.09, 0]} rotation={[-Math.PI / 2, 0, 0]} renderOrder={5}>
+      <planeGeometry args={[100, 100]} />
+      <meshBasicMaterial map={texture} transparent opacity={0.85} depthWrite={false} />
+    </mesh>
+  );
+}
+
 /** 겹침 허가 바닥 연결선 (B-2) — 같은 시설의 간섭 작업 두 지점을 잇는다 */
 function ForecastLinks({ forecast }: { forecast: ForecastFrame }) {
   const matRef = useRef<THREE.MeshBasicMaterial>(null);
@@ -583,6 +628,9 @@ export function RiskOverlays({ overlay }: { overlay: OverlayProps }) {
         <RiskBars countByZone={overlay.countByZone} riskByZone={overlay.riskByZone} />
       )}
       {overlay.mode === "heatmap" && <CraneSweptDecal />}
+      {overlay.mode === "heat" && overlay.heatByZone && (
+        <HeatLayer heatByZone={overlay.heatByZone} />
+      )}
       {overlay.mode === "forecast" && overlay.forecast && (
         <>
           <ForecastLinks forecast={overlay.forecast} />

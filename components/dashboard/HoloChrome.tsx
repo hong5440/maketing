@@ -149,8 +149,8 @@ export function NavRail({
   onQuality,
   onHome,
 }: {
-  viewMode: "forecast" | "confined" | "heatmap" | "bars" | "off";
-  onViewMode: (m: "forecast" | "confined" | "heatmap" | "bars" | "off") => void;
+  viewMode: "forecast" | "confined" | "heat" | "heatmap" | "bars" | "off";
+  onViewMode: (m: "forecast" | "confined" | "heat" | "heatmap" | "bars" | "off") => void;
   tod: TimeOfDay;
   onTod: () => void;
   quality: "low" | "high";
@@ -171,6 +171,7 @@ export function NavRail({
       <RailButton icon={IC.home} label="전체 현황" onClick={onHome} />
       <RailButton icon={IC.radar} label="위험 예보" active={viewMode === "forecast"} onClick={() => onViewMode("forecast")} />
       <RailButton icon={IC.compass} label="밀폐공간" active={viewMode === "confined"} onClick={() => onViewMode("confined")} />
+      <RailButton icon={IC.sun} label="폭염" active={viewMode === "heat"} onClick={() => onViewMode("heat")} />
       <RailButton icon={IC.heat} label="히트맵" active={viewMode === "heatmap"} onClick={() => onViewMode("heatmap")} />
       <RailButton icon={IC.bars} label="3D 막대" active={viewMode === "bars"} onClick={() => onViewMode("bars")} />
       <RailButton icon={IC.eyeOff} label="오버레이" active={viewMode === "off"} onClick={() => onViewMode("off")} />

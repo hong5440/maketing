@@ -38,6 +38,8 @@ import { DEMO_TOTAL_STEPS, DemoDirector } from "./DemoDirector";
 import { ForecastHourSlider, ForecastPanel } from "./ForecastPanel";
 import { forecastAt } from "@/lib/forecast";
 import { ConfinedPanel } from "./ConfinedPanel";
+import { HeatPanel, useWeather } from "./HeatPanel";
+import { feelByZone } from "@/lib/heat";
 import { confinedEntries } from "@/lib/confined";
 import type { ConfinedMarker } from "@/components/yard3d/ConfinedMarkers";
 import { apiSubmitReport } from "@/lib/clientApi";
@@ -60,7 +62,7 @@ export function Dashboard() {
   const [filters, setFilters] = useState<DashFilters>(DEFAULT_FILTERS);
   // OVERVIEW 첫 화면은 야드 위험 예보 (B-2)
   const [viewMode, setViewMode] = useState<
-    "forecast" | "confined" | "heatmap" | "bars" | "off"
+    "forecast" | "confined" | "heat" | "heatmap" | "bars" | "off"
   >("forecast");
   const [forecastHour, setForecastHour] = useState(14);
   // 발표 기본값: 해 질 녘 (레일에서 낮/해질녘/밤 순환)
@@ -361,6 +363,10 @@ export function Dashboard() {
     return m;
   }, [forecastFrame]);
 
+  // ── 폭염 쉼표 (B-4) ────────────────────────────────
+  const weather = useWeather();
+  const heatByZone = useMemo(() => feelByZone(weather.current), [weather]);
+
   // ── 밀폐공간 숨길 (B-3) ─────────────────────────────
   const [selectedConfinedId, setSelectedConfinedId] = useState<string | null>(null);
   const confinedMarkers = useMemo<ConfinedMarker[]>(
@@ -416,6 +422,7 @@ export function Dashboard() {
           windowMs: filters.periodWeeks * WEEK_MS,
           countByZone,
           forecast: forecastFrame,
+          heatByZone,
         }}
       />
 
@@ -493,6 +500,9 @@ export function Dashboard() {
             </div>
           ) : (
             <>
+              {viewMode === "heat" && (
+                <HeatPanel weather={weather} selectedZoneId={selectedZoneId} />
+              )}
               {viewMode === "confined" && (
                 <ConfinedPanel
                   selectedPermitId={selectedConfinedId}
@@ -567,7 +577,7 @@ export function Dashboard() {
 
       {showQr && <QrPanel onClose={() => setShowQr(false)} />}
 
-      {((!demoActive && viewMode !== "forecast" && viewMode !== "confined") || demoStep === 2) && (
+      {((!demoActive && viewMode !== "forecast" && viewMode !== "confined" && viewMode !== "heat") || demoStep === 2) && (
         <TimelineBar
           minMs={range.min + WEEK_MS}
           maxMs={range.max}
