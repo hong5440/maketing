@@ -6,7 +6,9 @@ import * as THREE from "three";
 import { QUAY_LINES, ROADS } from "@/data/geography";
 import { ZONES } from "@/data/zones";
 import { CITY_FLATS } from "./Terrain";
+import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { mulberry32, toWorld, type YardEnv } from "./coords";
+import { getYardMaterials, scalePlaneUVs } from "./materials";
 
 /** 도로 (아스팔트 + 중앙선) */
 export function Roads() {
@@ -37,20 +39,27 @@ export function Roads() {
     }
     return segs;
   }, []);
+  const mats = getYardMaterials();
+  const merged = useMemo(() => {
+    const asphalt: THREE.BufferGeometry[] = [];
+    const lanes: THREE.BufferGeometry[] = [];
+    for (const s of segments) {
+      const a = new THREE.BoxGeometry(s.len + s.width, 0.012, s.width);
+      scalePlaneUVs(a, s.len + s.width, s.width);
+      a.rotateY(s.rot);
+      a.translate(s.pos[0], 0.05, s.pos[2]);
+      asphalt.push(a);
+      const l = new THREE.BoxGeometry(s.len * 0.98, 0.004, 0.035);
+      l.rotateY(s.rot);
+      l.translate(s.pos[0], 0.061, s.pos[2]);
+      lanes.push(l);
+    }
+    return { asphalt: mergeGeometries(asphalt, false), lanes: mergeGeometries(lanes, false) };
+  }, [segments]);
   return (
     <group>
-      {segments.map((s, i) => (
-        <group key={i} position={[s.pos[0], 0.05, s.pos[2]]} rotation={[0, s.rot, 0]}>
-          <mesh receiveShadow>
-            <boxGeometry args={[s.len + s.width, 0.012, s.width]} />
-            <meshStandardMaterial color="#3d4349" roughness={1} />
-          </mesh>
-          <mesh position={[0, 0.011, 0]}>
-            <boxGeometry args={[s.len * 0.98, 0.004, 0.035]} />
-            <meshStandardMaterial color="#c8c35a" roughness={0.9} />
-          </mesh>
-        </group>
-      ))}
+      <mesh geometry={merged.asphalt} material={mats.asphalt} receiveShadow />
+      <mesh geometry={merged.lanes} material={mats.lanePaint} />
     </group>
   );
 }
@@ -99,19 +108,31 @@ export function Quays() {
   const bollardRef = useRef<THREE.InstancedMesh>(null);
   const fenderRef = useRef<THREE.InstancedMesh>(null);
 
+  const mats = getYardMaterials();
+  const merged = useMemo(() => {
+    const aprons: THREE.BufferGeometry[] = [];
+    const warns: THREE.BufferGeometry[] = [];
+    for (const a of data.aprons) {
+      const g = new THREE.BoxGeometry(a.len + 0.4, 0.03, 1.8);
+      scalePlaneUVs(g, a.len + 0.4, 1.8);
+      g.rotateY(a.rot);
+      g.translate(a.pos[0], 0.065, a.pos[2]);
+      aprons.push(g);
+      // 바다쪽 가장자리 경고 띠 (안벽 앞단)
+      const wgeo = new THREE.BoxGeometry(a.len + 0.4, 0.012, 0.08);
+      scalePlaneUVs(wgeo, a.len + 0.4, 0.08);
+      wgeo.rotateY(a.rot);
+      const px = Math.sin(a.rot + Math.PI / 2);
+      const pz = Math.cos(a.rot + Math.PI / 2);
+      wgeo.translate(a.pos[0] + px * 0.82, 0.085, a.pos[2] + pz * 0.82);
+      warns.push(wgeo);
+    }
+    return { aprons: mergeGeometries(aprons, false), warns: mergeGeometries(warns, false) };
+  }, [data.aprons]);
   return (
     <group>
-      {data.aprons.map((a, i) => (
-        <mesh
-          key={i}
-          position={[a.pos[0], 0.065, a.pos[2]]}
-          rotation={[0, a.rot, 0]}
-          receiveShadow
-        >
-          <boxGeometry args={[a.len + 0.4, 0.03, 1.8]} />
-          <meshStandardMaterial color="#a8adb2" roughness={0.95} />
-        </mesh>
-      ))}
+      <mesh geometry={merged.aprons} material={mats.concrete} receiveShadow />
+      <mesh geometry={merged.warns} material={mats.warnStripe} />
       <instancedMesh
         ref={(node) => {
           bollardRef.current = node;
@@ -214,37 +235,51 @@ export function StockYards() {
 
   return (
     <group>
-      {plates.map((p, i) => (
-        <mesh
-          key={`p${i}`}
-          position={[p.pos[0], 0.05 + p.h / 2, p.pos[2]]}
-          rotation={[0, p.rot, 0]}
-          castShadow
-          receiveShadow
-        >
-          <boxGeometry args={[p.s * 1.6, p.h, p.s * 0.6]} />
-          <meshStandardMaterial
-            color={plateColors[i % plateColors.length]}
-            roughness={0.8}
-            metalness={0.3}
-          />
-        </mesh>
-      ))}
-      {blocks.map((b, i) => (
-        <mesh
-          key={`b${i}`}
-          position={[b.pos[0], 0.05 + b.sy / 2, b.pos[2]]}
-          rotation={[0, b.rot, 0]}
-          castShadow
-        >
-          <boxGeometry args={[b.sx, b.sy, b.sz]} />
-          <meshStandardMaterial
-            color={blockColors[Math.floor(b.c * blockColors.length)]}
-            roughness={0.75}
-            metalness={0.2}
-          />
-        </mesh>
-      ))}
+      <instancedMesh
+        args={[undefined, undefined, plates.length]}
+        castShadow
+        receiveShadow
+        ref={(node) => {
+          if (!node) return;
+          const tmp = new THREE.Object3D();
+          const color = new THREE.Color();
+          plates.forEach((p, i) => {
+            tmp.position.set(p.pos[0], 0.05 + p.h / 2, p.pos[2]);
+            tmp.rotation.set(0, p.rot, 0);
+            tmp.scale.set(p.s * 1.6, p.h, p.s * 0.6);
+            tmp.updateMatrix();
+            node.setMatrixAt(i, tmp.matrix);
+            node.setColorAt(i, color.set(plateColors[i % plateColors.length]));
+          });
+          node.instanceMatrix.needsUpdate = true;
+          if (node.instanceColor) node.instanceColor.needsUpdate = true;
+        }}
+      >
+        <boxGeometry args={[1, 1, 1]} />
+        <meshStandardMaterial roughness={0.8} metalness={0.3} />
+      </instancedMesh>
+      <instancedMesh
+        args={[undefined, undefined, blocks.length]}
+        castShadow
+        ref={(node) => {
+          if (!node) return;
+          const tmp = new THREE.Object3D();
+          const color = new THREE.Color();
+          blocks.forEach((b, i) => {
+            tmp.position.set(b.pos[0], 0.05 + b.sy / 2, b.pos[2]);
+            tmp.rotation.set(0, b.rot, 0);
+            tmp.scale.set(b.sx, b.sy, b.sz);
+            tmp.updateMatrix();
+            node.setMatrixAt(i, tmp.matrix);
+            node.setColorAt(i, color.set(blockColors[Math.floor(b.c * blockColors.length)]));
+          });
+          node.instanceMatrix.needsUpdate = true;
+          if (node.instanceColor) node.instanceColor.needsUpdate = true;
+        }}
+      >
+        <boxGeometry args={[1, 1, 1]} />
+        <meshStandardMaterial roughness={0.75} metalness={0.2} />
+      </instancedMesh>
     </group>
   );
 }
@@ -421,16 +456,26 @@ export function Greenery() {
   );
 }
 
-/** 야간 조명: 공장·안벽의 나트륨등 + 크레인 LED (emissive, Bloom과 함께 사용) */
+/**
+ * 야간 조명 (A-5)
+ * - 램프 구슬: toneMapped=false emissive → Bloom luminanceThreshold(1.0)를 넘는 것만 발광
+ * - 실광원은 PointLight 6개 이하, 나머지는 바닥 "빛 웅덩이" additive 데칼로 표현
+ * - 나트륨등 ~2000K 주황 / LED ~5000K 백색, 크레인 꼭대기 항공장애등은 빨강 점멸
+ */
 export function NightLamps({ env }: { env: YardEnv }) {
   const sodiumRef = useRef<THREE.MeshStandardMaterial>(null);
   const ledRef = useRef<THREE.MeshStandardMaterial>(null);
+  const aviationRef = useRef<THREE.MeshStandardMaterial>(null);
+  const poolSodiumRef = useRef<THREE.MeshBasicMaterial>(null);
+  const poolLedRef = useRef<THREE.MeshBasicMaterial>(null);
+  const lightsRef = useRef<THREE.Group>(null);
+  const groupRef = useRef<THREE.Group>(null);
 
-  const { sodium, led } = useMemo(() => {
+  const { sodium, ledGround, ledCrane, aviation, keyLights } = useMemo(() => {
     const rng = mulberry32(31);
     const sodium: [number, number, number][] = [];
-    const led: [number, number, number][] = [];
-    // 공장동 처마 등
+    const ledGround: [number, number, number][] = [];
+    // 공장동 처마 등 (나트륨)
     for (const z of ZONES) {
       if (z.kind !== "factory") continue;
       const n = Math.max(2, Math.round(z.footprint.w));
@@ -445,7 +490,7 @@ export function NightLamps({ env }: { env: YardEnv }) {
         );
       }
     }
-    // 안벽·도로 가로등
+    // 안벽·도로 가로등 (나트륨)
     for (const quay of QUAY_LINES) {
       const [a, b] = [quay.points[0], quay.points[quay.points.length - 1]];
       const n = 8;
@@ -454,29 +499,76 @@ export function NightLamps({ env }: { env: YardEnv }) {
         sodium.push(toWorld(a.x + (b.x - a.x) * t, a.z + (b.z - a.z) * t - 1.2, 0.55));
       }
     }
-    // 크레인 상부 백색등
-    led.push(
+    // 야드 바닥 작업등 (LED 백색)
+    for (let i = 0; i < 24; i++) {
+      ledGround.push(toWorld(10 + rng() * 80, 25 + rng() * 25, 0.6 + rng() * 0.3));
+    }
+    // 크레인 거더 투광등 (LED, 웅덩이 없음)
+    const ledCrane: [number, number, number][] = [
       toWorld(24.5, 45.5, 4.8),
       toWorld(26, 62, 4.6),
       toWorld(60, 68, 1.9),
-      toWorld(88, 80, 2.4),
-      toWorld(92, 87, 2.4),
-    );
-    for (let i = 0; i < 24; i++) {
-      led.push(toWorld(10 + rng() * 80, 25 + rng() * 25, 0.6 + rng() * 0.3));
+    ];
+    // 항공장애등 (크레인 꼭대기, 빨강 점멸)
+    const aviation: [number, number, number][] = [
+      toWorld(24.5, 45.5, 5.05),
+      toWorld(26, 62, 4.85),
+      toWorld(36, 51, 2.65),
+      toWorld(42, 46, 2.65),
+      toWorld(88, 80, 2.65),
+      toWorld(92, 87, 2.65),
+      toWorld(80, 36, 2.65),
+    ];
+    // 실광원 (≤6): 핵심 작업 구역만
+    const key = (id: number) => ZONES.find((z) => z.id === id);
+    const keyLights: { pos: [number, number, number]; color: string; intensity: number }[] = [];
+    const picks: [number, string, number][] = [
+      [1, "#ffc37a", 70], // 1도크 나트륨
+      [9, "#ffc37a", 50], // 의장안벽
+      [22, "#dbe9ff", 45], // LNGC 도장 LED
+      [15, "#ffc37a", 40], // 적치장
+    ];
+    for (const [id, color, intensity] of picks) {
+      const z = key(id);
+      if (z) keyLights.push({ pos: toWorld(z.center.x, z.center.z, 4), color, intensity });
     }
-    return { sodium, led };
+    return { sodium, ledGround, ledCrane, aviation, keyLights };
   }, []);
 
-  const keyLightRef = useRef<THREE.PointLight>(null);
-  const groupRef = useRef<THREE.Group>(null);
+  // 빛 웅덩이 데칼 텍스처 (방사형 그라데이션, additive)
+  const poolTex = useMemo(() => {
+    const c = document.createElement("canvas");
+    c.width = c.height = 128;
+    const ctx = c.getContext("2d")!;
+    const g = ctx.createRadialGradient(64, 64, 2, 64, 64, 62);
+    g.addColorStop(0, "rgba(255,255,255,0.85)");
+    g.addColorStop(0.45, "rgba(255,255,255,0.28)");
+    g.addColorStop(1, "rgba(255,255,255,0)");
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, 128, 128);
+    const t = new THREE.CanvasTexture(c);
+    t.colorSpace = THREE.SRGBColorSpace;
+    return t;
+  }, []);
 
-  useFrame(() => {
-    if (sodiumRef.current) sodiumRef.current.emissiveIntensity = env.night * 5;
-    if (ledRef.current) ledRef.current.emissiveIntensity = env.night * 4;
-    if (keyLightRef.current) keyLightRef.current.intensity = env.night * 60;
+  useFrame(({ clock }) => {
+    const night = env.night;
+    // toneMapped=false이므로 Bloom 임계값(1.0)을 밤에만 넘도록
+    if (sodiumRef.current) sodiumRef.current.emissiveIntensity = night * 3.2;
+    if (ledRef.current) ledRef.current.emissiveIntensity = night * 2.6;
+    // 항공장애등: 천천히 점멸 (주기 약 1.8초)
+    if (aviationRef.current) {
+      const blink = 0.5 + 0.5 * Math.sin(clock.elapsedTime * 3.5);
+      aviationRef.current.emissiveIntensity = night * (0.6 + 2.6 * blink * blink);
+    }
+    if (poolSodiumRef.current) poolSodiumRef.current.opacity = night * 0.42;
+    if (poolLedRef.current) poolLedRef.current.opacity = night * 0.34;
+    if (lightsRef.current)
+      lightsRef.current.children.forEach((l, i) => {
+        (l as THREE.PointLight).intensity = night * keyLights[i].intensity;
+      });
     // 낮에는 램프 구슬이 공중에 떠 있는 점처럼 보이므로 통째로 숨김
-    if (groupRef.current) groupRef.current.visible = env.night > 0.04;
+    if (groupRef.current) groupRef.current.visible = night > 0.04;
   });
 
   const place = (node: THREE.InstancedMesh | null, pts: [number, number, number][]) => {
@@ -489,9 +581,29 @@ export function NightLamps({ env }: { env: YardEnv }) {
     });
     node.instanceMatrix.needsUpdate = true;
   };
+  // 웅덩이는 바닥에 눕힌 평면
+  const placePools = (
+    node: THREE.InstancedMesh | null,
+    pts: [number, number, number][],
+    radius: number,
+  ) => {
+    if (!node) return;
+    const tmp = new THREE.Object3D();
+    pts.forEach((p, i) => {
+      tmp.position.set(p[0], 0.055, p[2]);
+      tmp.rotation.set(-Math.PI / 2, 0, 0);
+      tmp.scale.setScalar(radius);
+      tmp.updateMatrix();
+      node.setMatrixAt(i, tmp.matrix);
+    });
+    node.instanceMatrix.needsUpdate = true;
+  };
+
+  const ledAll = useMemo(() => [...ledGround, ...ledCrane], [ledGround, ledCrane]);
 
   return (
     <group ref={groupRef} visible={false}>
+      {/* 램프 구슬 — Bloom 대상 */}
       <instancedMesh
         ref={(n) => place(n, sodium)}
         args={[undefined, undefined, sodium.length]}
@@ -500,27 +612,74 @@ export function NightLamps({ env }: { env: YardEnv }) {
         <meshStandardMaterial
           ref={sodiumRef}
           color="#1a1208"
-          emissive="#ff9e3d"
+          emissive="#ff9035"
           emissiveIntensity={0}
+          toneMapped={false}
         />
       </instancedMesh>
-      <instancedMesh ref={(n) => place(n, led)} args={[undefined, undefined, led.length]}>
+      <instancedMesh ref={(n) => place(n, ledAll)} args={[undefined, undefined, ledAll.length]}>
         <sphereGeometry args={[0.08, 6, 6]} />
         <meshStandardMaterial
           ref={ledRef}
           color="#10141a"
-          emissive="#eaf4ff"
+          emissive="#e8f2ff"
           emissiveIntensity={0}
+          toneMapped={false}
         />
       </instancedMesh>
-      {/* 소수의 실제 광원 (야간 핵심 영역) */}
-      <pointLight
-        ref={keyLightRef}
-        position={[...toWorld(50, 50, 6)]}
-        intensity={0}
-        distance={60}
-        color="#ffc37a"
-      />
+      {/* 항공장애등 */}
+      <instancedMesh
+        ref={(n) => place(n, aviation)}
+        args={[undefined, undefined, aviation.length]}
+      >
+        <sphereGeometry args={[0.07, 6, 6]} />
+        <meshStandardMaterial
+          ref={aviationRef}
+          color="#200404"
+          emissive="#ff2a1e"
+          emissiveIntensity={0}
+          toneMapped={false}
+        />
+      </instancedMesh>
+      {/* 바닥 빛 웅덩이 (additive 데칼) */}
+      <instancedMesh
+        ref={(n) => placePools(n, sodium, 1.5)}
+        args={[undefined, undefined, sodium.length]}
+        renderOrder={4}
+      >
+        <planeGeometry args={[1, 1]} />
+        <meshBasicMaterial
+          ref={poolSodiumRef}
+          map={poolTex}
+          color="#ff8c30"
+          transparent
+          opacity={0}
+          depthWrite={false}
+          blending={THREE.AdditiveBlending}
+        />
+      </instancedMesh>
+      <instancedMesh
+        ref={(n) => placePools(n, ledGround, 1.2)}
+        args={[undefined, undefined, ledGround.length]}
+        renderOrder={4}
+      >
+        <planeGeometry args={[1, 1]} />
+        <meshBasicMaterial
+          ref={poolLedRef}
+          map={poolTex}
+          color="#cfe2ff"
+          transparent
+          opacity={0}
+          depthWrite={false}
+          blending={THREE.AdditiveBlending}
+        />
+      </instancedMesh>
+      {/* 실광원 — 핵심 구역 4개 (총 광원 수 ≤10 유지) */}
+      <group ref={lightsRef}>
+        {keyLights.map((l, i) => (
+          <pointLight key={i} position={l.pos} intensity={0} distance={34} color={l.color} />
+        ))}
+      </group>
     </group>
   );
 }

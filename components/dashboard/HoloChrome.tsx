@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { ZONES, ZONE_KIND_COLORS, type Zone } from "@/data/zones";
+import type { TimeOfDay } from "@/components/yard3d/coords";
 import { COASTLINE } from "@/data/geography";
 import type { DashKpis } from "@/lib/dashboardStats";
 
@@ -37,6 +38,7 @@ const IC = {
   eyeOff:
     "M4 4l16 16M10.6 6.3A8.9 8.9 0 0 1 12 6c5 0 8.6 4.2 9.5 6-.3.7-1.2 2-2.6 3.2M6.9 6.9C4.8 8.2 3.3 10.3 2.5 12c.9 1.8 4.5 6 9.5 6 1.3 0 2.5-.3 3.6-.8M9.9 9.9a3 3 0 0 0 4.2 4.2",
   moon: "M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5Z",
+  dusk: "M12 13a4 4 0 0 1 4 4H8a4 4 0 0 1 4-4Zm0-9v3M5.6 7.6 7 9M18.4 7.6 17 9M3 17h2m14 0h2M2 21h20",
   sun: "M12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm0-15v2m0 16v2M4 12H2m20 0h-2M5 5l1.5 1.5M17.5 17.5 19 19M5 19l1.5-1.5M17.5 6.5 19 5",
   gauge:
     "M12 14l4-5M12 21a9 9 0 1 1 9-9M17 20a9 9 0 0 0 4-7.4",
@@ -141,20 +143,26 @@ function RailButton({
 export function NavRail({
   viewMode,
   onViewMode,
-  night,
-  onNight,
+  tod,
+  onTod,
   quality,
   onQuality,
   onHome,
 }: {
   viewMode: "heatmap" | "bars" | "off";
   onViewMode: (m: "heatmap" | "bars" | "off") => void;
-  night: boolean;
-  onNight: () => void;
+  tod: TimeOfDay;
+  onTod: () => void;
   quality: "low" | "high";
   onQuality: () => void;
   onHome: () => void;
 }) {
+  const todMeta =
+    tod === "day"
+      ? { icon: IC.sun, label: "낮" }
+      : tod === "dusk"
+        ? { icon: IC.dusk, label: "해질녘" }
+        : { icon: IC.moon, label: "밤" };
   return (
     <nav
       aria-label="보기 모드"
@@ -165,7 +173,7 @@ export function NavRail({
       <RailButton icon={IC.bars} label="3D 막대" active={viewMode === "bars"} onClick={() => onViewMode("bars")} />
       <RailButton icon={IC.eyeOff} label="오버레이" active={viewMode === "off"} onClick={() => onViewMode("off")} />
       <div className="mx-2 my-0.5 border-t border-console-border/70" />
-      <RailButton icon={night ? IC.sun : IC.moon} label={night ? "주간" : "야간"} onClick={onNight} />
+      <RailButton icon={todMeta.icon} label={todMeta.label} onClick={onTod} />
       <RailButton icon={IC.gauge} label={quality === "high" ? "고품질" : "저품질"} active={quality === "high"} onClick={onQuality} />
     </nav>
   );

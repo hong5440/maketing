@@ -4,7 +4,7 @@ import { useMemo, useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { Water } from "three/examples/jsm/objects/Water.js";
-import { DAY, NIGHT, type YardEnv } from "./coords";
+import { DAY, type YardEnv } from "./coords";
 
 /**
  * three/examples Water 셰이더 기반 바다.
@@ -89,14 +89,11 @@ export function Sea({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [quality, gl]);
 
-  const colorTmp = useMemo(() => new THREE.Color(), []);
-
   useFrame((_, delta) => {
     const u = water.material.uniforms;
     u.time.value += delta * 0.6;
-    // 낮/밤 보간
-    colorTmp.lerpColors(DAY.water, NIGHT.water, env.night);
-    (u.waterColor.value as THREE.Color).copy(colorTmp);
+    // Lighting이 보간한 시간대 수면색
+    (u.waterColor.value as THREE.Color).copy(env.waterColor);
     u.distortionScale.value = 1.05 - env.night * 0.55; // 밤의 만 안쪽은 더 잔잔하게
     if (sunRef.current) {
       (u.sunDirection.value as THREE.Vector3)

@@ -19,6 +19,7 @@ import {
   type DashFilters,
 } from "@/lib/dashboardStats";
 import type { OverlayDot } from "@/components/yard3d/Overlays";
+import type { TimeOfDay } from "@/components/yard3d/coords";
 import { AlertCard, ZoneDetail, type AlertExplainState } from "./SidePanel";
 import { Donut } from "./charts";
 import {
@@ -53,8 +54,13 @@ export function Dashboard() {
   const [loaded, setLoaded] = useState(false);
   const [filters, setFilters] = useState<DashFilters>(DEFAULT_FILTERS);
   const [viewMode, setViewMode] = useState<"heatmap" | "bars" | "off">("heatmap");
-  // 참조 디지털 트윈 룩: 야간 씬이 기본 (좌측 레일에서 주간 전환 가능)
-  const [night, setNight] = useState(true);
+  // 발표 기본값: 해 질 녘 (레일에서 낮/해질녘/밤 순환)
+  const [tod, setTod] = useState<TimeOfDay>("dusk");
+  // 개발용 노출 슬라이더 (?dev=1)
+  const [devMode] = useState(
+    () => typeof window !== "undefined" && window.location.search.includes("dev=1"),
+  );
+  const [exposure, setExposure] = useState(1);
   const [quality, setQuality] = useState<"low" | "high">("high");
   const [selectedZoneId, setSelectedZoneId] = useState<number | null>(null);
   const [selectedAlertId, setSelectedAlertId] = useState<string | null>(null);
@@ -291,17 +297,17 @@ export function Dashboard() {
     setShowQr(false);
     const timers: ReturnType<typeof setTimeout>[] = [];
     switch (demoStep) {
-      case 1: // 오프닝: 전경, 밤 → 낮, 천천히 회전
+      case 1: // 오프닝: 전경, 밤 → 해 질 녘, 천천히 회전
         setViewMode("off");
         setSelectedZoneId(null);
         setSelectedAlertId(null);
         setPlaying(false);
         setSimNowMs(range.max);
-        setNight(true);
-        timers.push(setTimeout(() => setNight(false), 2800));
+        setTod("night");
+        timers.push(setTimeout(() => setTod("dusk"), 2800));
         break;
       case 2: // 8주 타임랩스: 1도크가 붉어지는 과정
-        setNight(false);
+        setTod("dusk");
         setViewMode("heatmap");
         setSelectedZoneId(null);
         setSelectedAlertId(null);
@@ -309,7 +315,7 @@ export function Dashboard() {
         timers.push(setTimeout(() => setPlaying(true), 800));
         break;
       case 3: // 휴대폰 보고 → 지도에 점 낙하
-        setNight(false);
+        setTod("dusk");
         setPlaying(false);
         setSimNowMs(range.max);
         setViewMode("heatmap");
@@ -350,8 +356,9 @@ export function Dashboard() {
     <main className="relative h-dvh overflow-hidden">
       {/* ── 3D 디지털 트윈 (풀블리드) ───────────────── */}
       <YardScene
-        night={night}
+        timeOfDay={tod}
         quality={quality}
+        exposure={exposure}
         autoRotate={demoStep === 1 && !reduceMotion}
         selectedZoneId={selectedZoneId}
         onZoneSelect={(id) => {
@@ -377,13 +384,31 @@ export function Dashboard() {
           <NavRail
             viewMode={viewMode}
             onViewMode={setViewMode}
-            night={night}
-            onNight={() => setNight((v) => !v)}
+            tod={tod}
+            onTod={() =>
+              setTod((v) => (v === "day" ? "dusk" : v === "dusk" ? "night" : "day"))
+            }
             quality={quality}
             onQuality={() => setQuality((q) => (q === "high" ? "low" : "high"))}
             onHome={goHome}
           />
           <Slogan />
+          {devMode && (
+            <div className="holo-panel absolute bottom-24 left-3 z-20 flex items-center gap-2 px-3 py-2 text-[11px] text-console-muted">
+              노출
+              <input
+                type="range"
+                min={0.4}
+                max={2}
+                step={0.05}
+                value={exposure}
+                onChange={(e) => setExposure(Number(e.target.value))}
+                className="w-28 accent-holo"
+                aria-label="톤매핑 노출"
+              />
+              <span className="num w-8 text-console-text">{exposure.toFixed(2)}</span>
+            </div>
+          )}
           <MiniMap
             selectedZoneId={selectedZoneId}
             alertZoneIds={alertZoneIds}

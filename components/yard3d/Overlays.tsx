@@ -6,7 +6,7 @@ import * as THREE from "three";
 import { ZONES, getZone } from "@/data/zones";
 import type { HazardType } from "@/lib/domain";
 import { HAZARD_COLORS, riskColor } from "@/lib/dashboardStats";
-import { mulberry32, toWorld } from "./coords";
+import { mulberry32, rotY, toWorld } from "./coords";
 
 /**
  * 위험도 오버레이:
@@ -61,12 +61,21 @@ function RiskHeatmap({ riskByZone }: { riskByZone: Record<number, number> }) {
         ((Math.max(zone.footprint.w, zone.footprint.d) * 0.9 + 3.5) / 100) * SIZE;
       const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
       const color = riskColor(v);
-      const alpha = 0.12 + (v / 100) * 0.62;
+      // 바닥 데칼: 25~35% 불투명, 가장자리 부드럽게
+      const alpha = 0.22 + (v / 100) * 0.13;
       g.addColorStop(0, color.replace("rgb", "rgba").replace(")", `,${alpha})`));
-      g.addColorStop(0.65, color.replace("rgb", "rgba").replace(")", `,${alpha * 0.5})`));
+      g.addColorStop(0.6, color.replace("rgb", "rgba").replace(")", `,${alpha * 0.55})`));
       g.addColorStop(1, color.replace("rgb", "rgba").replace(")", ",0)"));
       ctx.fillStyle = g;
       ctx.fillRect(cx - radius, cy - radius, radius * 2, radius * 2);
+      // 위험 단계 경계: 얇은 등고선 2개
+      for (const k of [0.5, 0.82]) {
+        ctx.beginPath();
+        ctx.arc(cx, cy, radius * k, 0, Math.PI * 2);
+        ctx.strokeStyle = color.replace("rgb", "rgba").replace(")", ",0.4)");
+        ctx.lineWidth = 1.6;
+        ctx.stroke();
+      }
     }
     texture.needsUpdate = true;
   }, [riskByZone, canvas, texture]);
@@ -88,20 +97,14 @@ function RiskHeatmap({ riskByZone }: { riskByZone: Record<number, number> }) {
 /* ── 경보 기둥 ───────────────────────────────────────── */
 
 function AlertPillars({ zoneIds }: { zoneIds: number[] }) {
-  const mats = useRef<(THREE.MeshBasicMaterial | null)[]>([]);
-  const meshes = useRef<(THREE.Mesh | null)[]>([]);
+  const mats = useRef<(THREE.ShaderMaterial | null)[]>([]);
 
   useFrame(({ clock }) => {
     const t = clock.elapsedTime;
     zoneIds.forEach((_, i) => {
       const mat = mats.current[i];
-      const mesh = meshes.current[i];
-      const pulse = 0.5 + 0.5 * Math.sin(t * 3.2 + i);
-      if (mat) mat.opacity = 0.1 + pulse * 0.16;
-      if (mesh) {
-        const s = 1 + pulse * 0.1;
-        mesh.scale.set(s, 1, s);
-      }
+      // 천천히 맥동 (약 0.25Hz)
+      if (mat) mat.uniforms.uOpacity.value = 0.26 + 0.1 * Math.sin(t * 1.6 + i * 1.7);
     });
   });
 
@@ -111,27 +114,164 @@ function AlertPillars({ zoneIds }: { zoneIds: number[] }) {
         const zone = getZone(zoneId);
         if (!zone) return null;
         const [wx, , wz] = toWorld(zone.center.x, zone.center.z);
-        const radius = Math.max(1.4, Math.min(zone.footprint.w, zone.footprint.d) * 0.55);
+        const radius = Math.max(1.1, Math.min(zone.footprint.w, zone.footprint.d) * 0.48);
+        const H = 1.7; // 낮춘 높이 (~42m)
         return (
-          <mesh
-            key={zoneId}
-            position={[wx, 3.5, wz]}
-            ref={(n) => void (meshes.current[i] = n)}
-            renderOrder={6}
-          >
-            <cylinderGeometry args={[radius, radius * 1.15, 7, 24, 1, true]} />
-            <meshBasicMaterial
+          <mesh key={zoneId} position={[wx, H / 2, wz]} renderOrder={6}>
+            <cylinderGeometry args={[radius * 0.96, radius * 1.08, H, 28, 1, true]} />
+            <shaderMaterial
               ref={(n) => void (mats.current[i] = n)}
-              color="#ef4444"
               transparent
-              opacity={0.18}
-              side={THREE.DoubleSide}
               depthWrite={false}
-              toneMapped={false}
+              side={THREE.DoubleSide}
+              uniforms={{
+                uOpacity: { value: 0.3 },
+                uColor: { value: new THREE.Color("#ef4444") },
+              }}
+              vertexShader={`
+                varying float vY;
+                void main() {
+                  vY = uv.y;
+                  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                }
+              `}
+              fragmentShader={`
+                uniform float uOpacity;
+                uniform vec3 uColor;
+                varying float vY;
+                void main() {
+                  float a = uOpacity * pow(1.0 - vY, 1.7);
+                  gl_FragColor = vec4(uColor, a);
+                }
+              `}
             />
           </mesh>
         );
       })}
+    </group>
+  );
+}
+
+/** 경보/선택 구역 바닥 윤곽선 — 건물 색은 그대로, 테두리만 강조 */
+export function ZoneOutlines({
+  alertZoneIds,
+  selectedZoneId,
+}: {
+  alertZoneIds: number[];
+  selectedZoneId: number | null;
+}) {
+  const items = useMemo(() => {
+    const list: { zoneId: number; color: string }[] = alertZoneIds.map((id) => ({
+      zoneId: id,
+      color: "#ff5a4e",
+    }));
+    if (selectedZoneId != null && !alertZoneIds.includes(selectedZoneId))
+      list.push({ zoneId: selectedZoneId, color: "#3cc7ff" });
+    return list;
+  }, [alertZoneIds, selectedZoneId]);
+
+  return (
+    <group>
+      {items.map(({ zoneId, color }) => {
+        const zone = getZone(zoneId);
+        if (!zone) return null;
+        const [wx, , wz] = toWorld(zone.center.x, zone.center.z);
+        const { w, d, rotation } = zone.footprint;
+        const T = 0.07;
+        const edges: [number, number, number, number][] = [
+          [0, d / 2, w + T, T],
+          [0, -d / 2, w + T, T],
+          [w / 2, 0, T, d + T],
+          [-w / 2, 0, T, d + T],
+        ];
+        return (
+          <group
+            key={`${zoneId}-${color}`}
+            position={[wx, 0.11, wz]}
+            rotation={[0, (rotation * Math.PI) / 180, 0]}
+          >
+            {edges.map(([ex, ez, ew, ed], i) => (
+              <mesh key={i} position={[ex, 0, ez]} rotation={[-Math.PI / 2, 0, 0]} renderOrder={6}>
+                <planeGeometry args={[ew, ed]} />
+                <meshBasicMaterial
+                  color={color}
+                  transparent
+                  opacity={0.9}
+                  depthWrite={false}
+                  toneMapped={false}
+                />
+              </mesh>
+            ))}
+          </group>
+        );
+      })}
+    </group>
+  );
+}
+
+/** 크레인 하중 이동 영역 바닥 데칼 (1도크 골리앗) + 진행 방향 화살표 */
+export function CraneSweptDecal() {
+  // Cranes.tsx의 라이브 골리앗과 같은 포즈 (dock1 기준)
+  const { position, rotation, span } = useMemo(() => {
+    const dock1 = ZONES.find((z) => z.id === 1)!;
+    return {
+      position: toWorld(dock1.center.x + 1.2, dock1.center.z - 1.5),
+      rotation: rotY(dock1.footprint.rotation) + Math.PI,
+      span: 7,
+    };
+  }, []);
+  const texRef = useRef<THREE.CanvasTexture | null>(null);
+  const texture = useMemo(() => {
+    const c = document.createElement("canvas");
+    c.width = 512;
+    c.height = 256;
+    const ctx = c.getContext("2d")!;
+    ctx.clearRect(0, 0, 512, 256);
+    // 영역 채움 + 테두리
+    ctx.fillStyle = "rgba(255,170,40,0.14)";
+    ctx.fillRect(8, 8, 496, 240);
+    ctx.setLineDash([18, 12]);
+    ctx.strokeStyle = "rgba(255,170,40,0.85)";
+    ctx.lineWidth = 5;
+    ctx.strokeRect(8, 8, 496, 240);
+    // 진행 방향 화살표 (주행축 = 세로)
+    ctx.setLineDash([]);
+    ctx.fillStyle = "rgba(255,200,80,0.8)";
+    for (let y = 48; y < 256; y += 80) {
+      ctx.beginPath();
+      ctx.moveTo(256, y - 22);
+      ctx.lineTo(234, y + 10);
+      ctx.lineTo(248, y + 10);
+      ctx.lineTo(248, y + 26);
+      ctx.lineTo(264, y + 26);
+      ctx.lineTo(264, y + 10);
+      ctx.lineTo(278, y + 10);
+      ctx.closePath();
+      ctx.fill();
+    }
+    const t = new THREE.CanvasTexture(c);
+    t.colorSpace = THREE.SRGBColorSpace;
+    t.wrapS = t.wrapT = THREE.RepeatWrapping;
+    texRef.current = t;
+    return t;
+  }, []);
+
+  useFrame((_, delta) => {
+    if (texRef.current) texRef.current.offset.y -= delta * 0.06; // 느린 진행 암시
+  });
+
+  return (
+    <group position={[position[0], 0.1, position[2]]} rotation={[0, rotation, 0]}>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} renderOrder={6}>
+        <planeGeometry args={[span + 1.2, 9]} />
+        <meshBasicMaterial
+          map={texture}
+          transparent
+          depthWrite={false}
+          toneMapped={false}
+          opacity={0.85}
+        />
+      </mesh>
     </group>
   );
 }
@@ -372,6 +512,7 @@ export function RiskOverlays({ overlay }: { overlay: OverlayProps }) {
       {overlay.mode === "bars" && (
         <RiskBars countByZone={overlay.countByZone} riskByZone={overlay.riskByZone} />
       )}
+      {overlay.mode === "heatmap" && <CraneSweptDecal />}
       <AlertPillars zoneIds={overlay.alertZoneIds} />
     </group>
   );

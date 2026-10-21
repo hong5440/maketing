@@ -89,18 +89,136 @@ export function pointInPolygon(
   return inside;
 }
 
-/** 낮/밤 파라미터 보간용 공유 상태 (리렌더 없이 useFrame에서 직접 갱신) */
+/** 시간대 프리셋: t 스칼라 위의 키프레임 (0=낮 → 0.55=해질녘 → 1=밤) */
+export type TimeOfDay = "day" | "dusk" | "night";
+export const TOD_T: Record<TimeOfDay, number> = { day: 0, dusk: 0.55, night: 1 };
+
+/** 시간대 공유 상태 — 리렌더 없이 useFrame에서 직접 갱신 */
 export interface YardEnv {
-  /** 0 = 낮, 1 = 밤 */
+  /** 현재 시간대 스칼라 (0 낮 ~ 0.55 해질녘 ~ 1 밤) */
+  t: number;
+  /** 목표값 (프리셋 전환 시 변경) */
+  target: number;
+  /** 트윈 속도 (t/초) — 전환 시 2초가 되도록 Dashboard가 설정 */
+  speed: number;
+  /** 파생 야간도 0~1 (기존 소비자 호환: 창문 발광·램프·수면색) */
   night: number;
-  /** 목표값 (토글 시 변경, 2초 트윈) */
-  nightTarget: number;
+  /** 개발용 노출 배율 (?dev=1 슬라이더) */
+  exposureMul: number;
+  /** Lighting이 매 프레임 갱신하는 수면색 (Sea가 소비) */
+  waterColor: THREE.Color;
 }
 
+export function makeYardEnv(tod: TimeOfDay): YardEnv {
+  return {
+    t: TOD_T[tod],
+    target: TOD_T[tod],
+    speed: 0.5,
+    night: tod === "night" ? 1 : tod === "dusk" ? 0.35 : 0,
+    exposureMul: 1,
+    waterColor: new THREE.Color("#10425e"),
+  };
+}
+
+/** 시간대 키프레임 (태양·조명·안개·노출·수면색) */
+export interface SkyKey {
+  t: number;
+  sunEl: number;
+  sunAz: number;
+  sunInt: number;
+  sunColor: THREE.Color;
+  ambient: number;
+  hemi: number;
+  fog: THREE.Color;
+  fogDensity: number;
+  exposure: number;
+  envIntensity: number;
+  bgIntensity: number;
+  water: THREE.Color;
+}
+
+export const SKY_KEYS: SkyKey[] = [
+  {
+    t: 0,
+    sunEl: 48,
+    sunAz: 200,
+    sunInt: 3.0,
+    sunColor: new THREE.Color("#fff2dd"),
+    ambient: 0.1,
+    hemi: 0.28,
+    fog: new THREE.Color("#b9cfdf"),
+    fogDensity: 0.0052,
+    exposure: 1.0,
+    envIntensity: 0.9,
+    bgIntensity: 1.0,
+    water: new THREE.Color("#10425e"),
+  },
+  {
+    t: 0.55,
+    sunEl: 7,
+    sunAz: 250,
+    sunInt: 2.1,
+    sunColor: new THREE.Color("#ff9a4a"),
+    ambient: 0.07,
+    hemi: 0.16,
+    fog: new THREE.Color("#5d4a55"),
+    fogDensity: 0.005,
+    exposure: 1.08,
+    envIntensity: 0.75,
+    bgIntensity: 1.0,
+    water: new THREE.Color("#1c2c42"),
+  },
+  {
+    t: 1,
+    sunEl: -8,
+    sunAz: 255,
+    sunInt: 0,
+    sunColor: new THREE.Color("#405070"),
+    ambient: 0.045,
+    hemi: 0.05,
+    fog: new THREE.Color("#0a1226"),
+    fogDensity: 0.0068,
+    exposure: 1.0,
+    envIntensity: 0.3,
+    bgIntensity: 1.0,
+    water: new THREE.Color("#04101e"),
+  },
+];
+
+/** t(0~1)에서 키프레임 구간 선형 보간 — out 객체에 기록 (GC 없음) */
+export function sampleSky(t: number, out: SkyKey): SkyKey {
+  const keys = SKY_KEYS;
+  let a = keys[0];
+  let b = keys[keys.length - 1];
+  for (let i = 0; i < keys.length - 1; i++) {
+    if (t >= keys[i].t && t <= keys[i + 1].t) {
+      a = keys[i];
+      b = keys[i + 1];
+      break;
+    }
+  }
+  const k = b.t === a.t ? 0 : (t - a.t) / (b.t - a.t);
+  const lerp = (x: number, y: number) => x + (y - x) * k;
+  out.sunEl = lerp(a.sunEl, b.sunEl);
+  out.sunAz = lerp(a.sunAz, b.sunAz);
+  out.sunInt = lerp(a.sunInt, b.sunInt);
+  out.sunColor.lerpColors(a.sunColor, b.sunColor, k);
+  out.ambient = lerp(a.ambient, b.ambient);
+  out.hemi = lerp(a.hemi, b.hemi);
+  out.fog.lerpColors(a.fog, b.fog, k);
+  out.fogDensity = lerp(a.fogDensity, b.fogDensity);
+  out.exposure = lerp(a.exposure, b.exposure);
+  out.envIntensity = lerp(a.envIntensity, b.envIntensity);
+  out.bgIntensity = lerp(a.bgIntensity, b.bgIntensity);
+  out.water.lerpColors(a.water, b.water, k);
+  return out;
+}
+
+/** (하위 호환) 일부 모듈이 참조하는 낮/밤 수면색 */
 export const DAY = {
   fog: new THREE.Color("#b9cfdf"),
   water: new THREE.Color("#10425e"),
-  sunElevation: 42,
+  sunElevation: 48,
   sunAzimuth: 200,
 };
 
@@ -108,7 +226,7 @@ export const NIGHT = {
   fog: new THREE.Color("#0a1226"),
   water: new THREE.Color("#04101e"),
   sunElevation: -8,
-  sunAzimuth: 230,
+  sunAzimuth: 255,
 };
 
 export const PALETTE = {
