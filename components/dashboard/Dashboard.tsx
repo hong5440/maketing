@@ -48,10 +48,10 @@ import {
   type ContentsState,
 } from "./ContentsPanel";
 import { MEMORY_INCIDENTS, TOUR_STEPS, type MemoryIncident } from "@/lib/contents";
-import { StatsPanel } from "./StatsPanel";
 import { feelByZone } from "@/lib/heat";
 import { confinedEntries } from "@/lib/confined";
 import type { ConfinedMarker } from "@/components/yard3d/ConfinedMarkers";
+import { apiSubmitReport } from "@/lib/clientApi";
 
 const YardScene = dynamic(() => import("@/components/yard3d/YardScene"), {
   ssr: false,
@@ -67,7 +67,6 @@ export function Dashboard() {
       window.matchMedia("(prefers-reduced-motion: reduce)").matches,
   );
   const [reports, setReports] = useState<NearMissReport[]>([]);
-  const handleConfinedSelectRef = useRef<(permitId: string, zoneId: number) => void>(() => {});
   const [loaded, setLoaded] = useState(false);
   const [filters, setFilters] = useState<DashFilters>(DEFAULT_FILTERS);
   // OVERVIEW 첫 화면은 야드 위험 예보 (B-2)
@@ -318,54 +317,52 @@ export function Dashboard() {
     setShowQr(false);
     const timers: ReturnType<typeof setTimeout>[] = [];
     switch (demoStep) {
-      case 1: // ① 해질녘 전경 회전
+      case 1: // 오프닝: 전경, 밤 → 해 질 녘, 천천히 회전
         setViewMode("off");
         setSelectedZoneId(null);
         setSelectedAlertId(null);
         setPlaying(false);
+        setSimNowMs(range.max);
         setTod("night");
         timers.push(setTimeout(() => setTod("dusk"), 2800));
         break;
-      case 2: // ② 야드 위험 예보 — 14시, 간섭 3건
+      case 2: // 8주 타임랩스: 1도크가 붉어지는 과정
         setTod("dusk");
-        setViewMode("forecast");
-        setForecastHour(14);
-        setSelectedZoneId(null);
-        setSelectedAlertId(null);
-        break;
-      case 3: // ③ 1도크 크레인 내비 — 베트남어 지시 → Confirm → 겹침 인터록
-        setViewMode("off");
-        setSelectedZoneId(1);
-        setSelectedAlertId(null);
-        timers.push(
-          setTimeout(() => {
-            window.dispatchEvent(
-              new CustomEvent("demo-crane-command", {
-                detail: { text: "Nâng móc lên 2 mét", lang: "vi" },
-              }),
-            );
-          }, 2200),
-        );
-        break;
-      case 4: // ④ 22번 밀폐공간 — 산소 측정 누락
-        setViewMode("confined");
-        handleConfinedSelectRef.current("P-026", 22);
-        break;
-      case 5: // ⑤ 폭염 쉼표 — 1도크 체감온도
-        setViewMode("heat");
-        setSelectedZoneId(1);
-        setSelectedAlertId(null);
-        break;
-      case 6: // ⑥ 사고 통계 + 슬로건 피날레
         setViewMode("heatmap");
         setSelectedZoneId(null);
         setSelectedAlertId(null);
+        setSimNowMs(range.min + WEEK_MS);
+        timers.push(setTimeout(() => setPlaying(true), 800));
+        break;
+      case 3: // 휴대폰 보고 → 지도에 점 낙하
+        setTod("dusk");
+        setPlaying(false);
+        setSimNowMs(range.max);
+        setViewMode("heatmap");
+        setSelectedZoneId(null);
+        setSelectedAlertId(null);
+        break;
+      case 4: // 1도크 경보 줌인 + AI 설명 (경보 선택은 아래 별도 효과)
+        setPlaying(false);
+        setSimNowMs((t) => Math.max(t, range.max));
+        setViewMode("heatmap");
+        break;
+      case 5: // TBM (iframe 오버레이)
+      case 6: // 피날레
+        setPlaying(false);
         break;
     }
     return () => timers.forEach(clearTimeout);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [demoStep, loaded]);
 
+  // 4단계: 1도크 경보 카드 자동 선택 (+카메라 줌인 + AI 설명)
+  useEffect(() => {
+    if (demoStep !== 4) return;
+    const target = alerts.find((a) => a.zoneId === 1) ?? alerts[0];
+    if (target && selectedAlertId !== target.id) handleAlertClick(target);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [demoStep, alerts]);
 
   // ── 야드 위험 예보 (B-2) — 시연용 규칙 계산 ─────────
   const forecastFrame = useMemo(() => forecastAt(forecastHour), [forecastHour]);
@@ -416,7 +413,6 @@ export function Dashboard() {
     setSelectedZoneId(zoneId);
     setSelectedAlertId(null);
   }, []);
-  handleConfinedSelectRef.current = handleConfinedSelect;
 
   const cycleLayer = useCallback(() => {
     setViewMode((m) =>
@@ -503,12 +499,6 @@ export function Dashboard() {
               <span className="num w-8 text-console-text">{exposure.toFixed(2)}</span>
             </div>
           )}
-          <StatsPanel
-            onPick={(hazard) => {
-              setViewMode("heatmap");
-              setFilters((f) => ({ ...f, hazardType: hazard }));
-            }}
-          />
           <MiniMap
             selectedZoneId={selectedZoneId}
             alertZoneIds={alertZoneIds}
@@ -554,7 +544,6 @@ export function Dashboard() {
                   onExit={() => changeContents({ tourStep: null })}
                 />
               )}
-              {selectedZoneId === 1 && <CranePanel />}
               {viewMode === "heat" && (
                 <HeatPanel weather={weather} selectedZoneId={selectedZoneId} />
               )}
@@ -623,6 +612,7 @@ export function Dashboard() {
                 </div>
               </section>
 
+              {selectedZoneId === 1 && <CranePanel />}
               {selectedZoneId != null && contents.tourStep == null && (
                 <BriefingPanel zoneId={selectedZoneId} reports={attrFiltered} />
               )}
@@ -643,7 +633,7 @@ export function Dashboard() {
 
       {showQr && <QrPanel onClose={() => setShowQr(false)} />}
 
-      {((!demoActive && viewMode !== "forecast" && viewMode !== "confined" && viewMode !== "heat")) && (
+      {((!demoActive && viewMode !== "forecast" && viewMode !== "confined" && viewMode !== "heat") || demoStep === 2) && (
         <TimelineBar
           minMs={range.min + WEEK_MS}
           maxMs={range.max}
@@ -661,7 +651,24 @@ export function Dashboard() {
         />
       )}
 
-      {demoActive && <DemoDirector step={demoStep} captions={demoCaptions} />}
+      {demoActive && (
+        <DemoDirector
+          step={demoStep}
+          captions={demoCaptions}
+          setStep={(up) => setDemoStep((s) => up(s ?? 1))}
+          onExit={() => setDemoStep(null)}
+          toggleCaptions={() => setDemoCaptions((c) => !c)}
+          onSubmitDemoReport={() => {
+            void apiSubmitReport({
+              text:
+                "Cần cẩu đang nâng block, bu lông rơi xuống lối đi bên dưới, suýt trúng người!\n(위험유형 힌트: 낙하)",
+              zoneId: 1,
+              lang: "vi",
+              reporterAnonymous: true,
+            });
+          }}
+        />
+      )}
     </main>
   );
 }
