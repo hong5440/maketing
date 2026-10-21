@@ -55,3 +55,44 @@ before 스크린샷: `docs/before/` — OVERVIEW · 1도크 근접 · 22번 공�
 HDRI와 PBR 텍스처는 **numpy로 절차 생성**해 `public/hdri/`, `public/textures/`에 넣는다.
 라이선스 문제 없음(자체 생성물, credits.md에 명시). 추후 실제 CC0 에셋으로 교체 가능하도록
 파일 교체만으로 동작하는 구조를 유지한다.
+
+---
+
+## QA 결과 (A-wave 완료 시점)
+
+측정 환경: 컨테이너 SwiftShader(소프트웨어 GPU) — **fps 절대값은 무의미**하므로
+draw call을 성능 예산 지표로 사용. 노트북 내장 그래픽(Iris Xe급)은 통상
+500 draw call + 병합·인스턴싱 중심 씬에서 30fps 이상을 유지한다.
+
+| 지표 | A-0 (before) | A-wave 완료 (after) |
+|---|---|---|
+| draw call (OVERVIEW, High) | 1,269 | **409** |
+| draw call (OVERVIEW, Low) | — | **316** |
+| 페이지 에러 | 0 | 0 |
+
+- High: SMAA + N8AO(halfRes) + Bloom + Vignette + 그림자 2048 + Water 반사 512
+- Low: 후처리·그림자 끔, Water 반사 256, DPR 1
+- draw call에는 **Water 반사 패스(씬 2회 렌더)와 그림자 패스가 포함**된 수치
+- 주요 절감: 건물/도로/안벽 재질별 geometry 병합, 크레인 부재 InstancedMesh,
+  선박 재질 버킷 병합(QA 패스), 적치·수목·차량·램프 인스턴싱
+
+### 남은 성능 여지 (필요 시)
+
+- ReportDots 링 풀(최대 20)과 ZoneOutlines(경보당 4평면)의 병합
+- Water 반사 카메라 레이어 마스킹(반사에서 소품 제외)
+
+### 체크무늬(진단 §3) 해소 확인
+
+4 연구소·3 기술교육원은 다층 사무동 창문 띠, 7 오션플라자는 파란 유리
+커튼월(금속성↑·거칠기↓·환경반사)로 교체되어 주황/검정 체크 무늬가 사라짐
+(docs/compare-final.png 참조).
+
+### 첫 로딩 (프로덕션 빌드, 로컬 측정)
+
+| 지표 | 값 |
+|---|---|
+| DOMContentLoaded | ~50 ms |
+| 3D 캔버스 생성 | ~0.9 s |
+| 총 전송량 (첫 화면) | ~1.3 MB (HDRI는 시간대별 지연 로드) |
+
+3초 예산 대비 여유가 충분해 텍스처 압축·추가 지연 로딩은 적용하지 않았다.
