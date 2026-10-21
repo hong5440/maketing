@@ -39,6 +39,7 @@ import { ForecastHourSlider, ForecastPanel } from "./ForecastPanel";
 import { forecastAt } from "@/lib/forecast";
 import { ConfinedPanel } from "./ConfinedPanel";
 import { HeatPanel, useWeather } from "./HeatPanel";
+import { CranePanel } from "./CranePanel";
 import { feelByZone } from "@/lib/heat";
 import { confinedEntries } from "@/lib/confined";
 import type { ConfinedMarker } from "@/components/yard3d/ConfinedMarkers";
@@ -560,6 +561,7 @@ export function Dashboard() {
                 </div>
               </section>
 
+              {selectedZoneId === 1 && <CranePanel />}
               {selectedZoneId != null && (
                 <section className="holo-panel p-3">
                   <ZoneDetail

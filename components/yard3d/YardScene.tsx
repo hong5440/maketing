@@ -18,6 +18,7 @@ import { Sea } from "./Sea";
 import { Buildings } from "./Buildings";
 import { Docks } from "./Docks";
 import { Cranes } from "./Cranes";
+import { CraneNav } from "./CraneNav";
 import { Ships } from "./Ships";
 import { CityBlocks, Greenery, NightLamps, Parking, Quays, Roads, StockYards } from "./Props";
 import { Lighting } from "./Lighting";
@@ -111,6 +112,7 @@ export default function YardScene({
         <Docks />
         <Buildings env={envRef.current} />
         <Cranes />
+        <CraneNav />
         <Ships />
         <StockYards />
         <CityBlocks env={envRef.current} />
