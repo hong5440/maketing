@@ -29,6 +29,9 @@ window.PM_CONFIG = {
   // 더미 상태에서는 신청 내용이 "복사 모드"로 동작합니다(복사해서 문자·카톡으로 전달).
   CONTACT_EMAIL: 'DUMMY_CONTACT_EMAIL_REPLACE_ME@example.com',
 
+  // [응답 시간 약속] 신청 양식 안내 문구에 쓰입니다. 실제로 지킬 수 있는 시간으로 유지하세요.
+  RESPONSE_PROMISE: '영업일 기준 2일 안에',
+
   APP_NAME: '심리마케팅',
   COMPANY: '고래싸움에 성장하는 새우들',
   CEO: '홍성현',

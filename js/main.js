@@ -36,24 +36,28 @@
   }, { threshold: 0.1 });
   $$('.reveal').forEach((el) => io.observe(el));
 
-  /* ---------------- 현장 미디어 폴백 (파일 없으면 '준비 중' 표시) ---------------- */
-  $$('[data-media] img').forEach((img) => {
-    img.addEventListener('error', () => img.closest('[data-media]').classList.add('pending'));
-    if (img.complete && img.naturalWidth === 0) img.closest('[data-media]').classList.add('pending');
+  /* ---------------- 현장 이야기: 동의받은 사진·영상 파일이 실제로 있을 때만 표시 ----------------
+     assets/field/ 에 파일을 넣으면 섹션이 자동으로 나타나고, 파일이 없는 칸은 숨긴다. */
+  const fieldSec = $('#field');
+  const showField = () => { fieldSec.hidden = false; };
+  $$('[data-media]').forEach((tile) => {
+    const img = $('img', tile);
+    tile.classList.add('pending');
+    const ok = () => { tile.classList.remove('pending'); showField(); };
+    if (img.complete && img.naturalWidth > 0) ok();
+    img.addEventListener('load', ok);
   });
-  $$('[data-media-video] video').forEach((v) => {
-    const card = v.closest('[data-media-video]');
-    const markPending = () => card.classList.add('pending');
-    v.addEventListener('error', markPending);
-    v.addEventListener('stalled', markPending);
-    // 소스 로드 시도 후에도 데이터가 없으면(파일 없음) '준비 중'으로 전환
-    setTimeout(() => {
-      if (v.networkState === 3 /* NO_SOURCE */ || (v.readyState === 0 && !card.classList.contains('pending'))) markPending();
-    }, 2500);
+  $$('[data-media-video]').forEach((card) => {
+    const v = $('video', card);
+    card.classList.add('pending');
+    v.addEventListener('loadedmetadata', () => { card.classList.remove('pending'); showField(); });
     try { v.load(); } catch (e) { /* ignore */ }
   });
 
-  /* ---------------- 푸터 연락처 (이메일 설정 시 표기) ---------------- */
+  /* ---------------- 응답 시간 약속 · 푸터 연락처 ---------------- */
+  if (CFG.RESPONSE_PROMISE) {
+    $$('[data-response-promise]').forEach((el) => { el.textContent = CFG.RESPONSE_PROMISE; });
+  }
   if (CONTACT) {
     $('#footerContact').innerHTML = '<a href="mailto:' + CONTACT + '" style="color:#fff;text-decoration:underline;">' + CONTACT + '</a>';
   }
@@ -305,7 +309,7 @@
     doneEl.innerHTML = `
       <div class="fd-title">${cfg.doneTitle}</div>
       <p>${mailReady
-        ? '아래 내용으로 메일 앱이 열립니다. 전송 버튼만 누르면 접수 완료! (안 열리면 복사해서 보내 주세요)'
+        ? '아래 내용으로 메일 앱이 열립니다. 전송 버튼만 누르면 접수 완료! ' + (CFG.RESPONSE_PROMISE || '영업일 기준 2일 안에') + ' 연락드립니다. (안 열리면 복사해서 보내 주세요)'
         : '접수 이메일 주소를 설정하기 전이라, 아래 내용을 <b>복사해서 문자/카카오톡으로</b> 보내 주시면 접수됩니다.'}</p>
       <textarea readonly aria-label="제출 내용">${text.replace(/</g, '&lt;')}</textarea>
       <div class="fd-actions">

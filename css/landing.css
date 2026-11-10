@@ -477,6 +477,16 @@ input, select, textarea { font: inherit; color: inherit; }
   .who-card { padding: 30px 28px; }
 }
 
+/* ---------------- 결정 사항 반영: 수치 설명 강조 · 단계 일정 안내 · 현장 미디어 ---------------- */
+[hidden] { display: none !important; }
+.stat-big p b, .stat-big.coral p b {
+  display: inline; font-size: inherit; letter-spacing: inherit; line-height: inherit;
+  color: #fff; font-weight: 700;
+}
+.steps-note { margin-top: 16px; font-size: 14px; color: var(--muted); }
+/* 현장 이야기: 파일이 없는 칸은 숨김 (섹션은 파일이 하나라도 있을 때만 표시) */
+.photo.pending, .video-card.pending { display: none; }
+
 /* ---------------- 크루 여정 ---------------- */
 .journey { list-style: none; margin-top: 18px; display: grid; gap: 8px; counter-reset: j; }
 .journey li {
