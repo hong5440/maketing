@@ -79,6 +79,32 @@
     </div>
   </section>
 
+  <!-- ===================== 두 갈래 안내 ===================== -->
+  <section class="who" id="who" aria-label="누구를 위한 서비스인가요">
+    <div class="container who-grid">
+      <a class="who-card reveal" href="#apply-store">
+        <span class="who-tag">사장님이라면</span>
+        <strong>우리 가게에 맞는 AI 사용법을 찾고 싶다</strong>
+        <ul>
+          <li>이미 쓰는 툴부터 점검하는 현장 진단</li>
+          <li>전담 청년 크루가 옆에서 같이 실행</li>
+          <li>월 29만 원 파일럿 가격</li>
+        </ul>
+        <span class="who-go">가게 진단 신청하기 →</span>
+      </a>
+      <a class="who-card crew reveal" href="#apply-crew">
+        <span class="who-tag">청년이라면</span>
+        <strong>내 AI 실력으로 진짜 가게를 돕고 싶다</strong>
+        <ul>
+          <li>교육을 받은 뒤 가게와 매칭</li>
+          <li>활동비 지급</li>
+          <li>실제 가게가 포트폴리오로</li>
+        </ul>
+        <span class="who-go">크루 지원하기 →</span>
+      </a>
+    </div>
+  </section>
+
   <!-- ===================== 2. 문제 ===================== -->
   <section class="section dark" id="problem">
     <div class="container">
@@ -189,7 +215,7 @@
           <button class="btn btn-coral" id="toolsTryBtn">크루 진단 도구 전체 체험하기 →</button>
           <button class="btn btn-outline" data-open-auth="login">내 계정으로 로그인</button>
         </div>
-        <p class="tools-note">체험 결과는 참고용 초안입니다. 실제 서비스에서는 전담 크루가 가게 상황에 맞게 다듬어 드립니다.</p>
+        <p class="tools-note">체험 결과는 참고용 초안입니다. ○○로 표시된 자리에는 반드시 우리 가게의 <b>실제 숫자</b>를 넣어 주세요. 실제 서비스에서는 전담 크루가 가게 상황에 맞게 다듬어 드립니다.</p>
       </div>
     </div>
   </section>
@@ -219,6 +245,13 @@
           <p>연습용 과제가 아니라 진짜 가게의 변화가 포트폴리오로 남습니다. 취업·창업에 그대로 쓸 수 있습니다.</p>
         </div>
       </div>
+      <ol class="journey reveal" aria-label="크루 활동 순서">
+        <li><b>지원</b><span>지원서 작성</span></li>
+        <li><b>안내</b><span>연락·일정 안내</span></li>
+        <li><b>교육</b><span>AI 도구·현장 이해</span></li>
+        <li><b>매칭</b><span>가게와 연결</span></li>
+        <li><b>활동</b><span>진단부터 자립까지</span></li>
+      </ol>
       <div class="crew-porto reveal">
         <b>1기 크루의 실제 가게 포트폴리오</b>는 파일럿이 끝나는 대로 이 자리에 공개합니다.<br />
         지금은 함께 만들 첫 번째 주인공을 모집 중입니다.
@@ -244,6 +277,10 @@
             <li>전담 청년 크루의 실행 지원</li>
             <li>사장님 자립 교육 — 떠나는 게 목표</li>
           </ul>
+          <dl class="pc-meta">
+            <div><dt>계약</dt><dd>월 단위</dd></div>
+            <div><dt>해지·환불</dt><dd>기준을 계약서에 명시하고, 상담 때 양식을 먼저 보여드립니다</dd></div>
+          </dl>
           <a class="btn btn-coral btn-block" href="#apply-store">진단부터 신청하기</a>
         </div>
         <div class="compare reveal">
@@ -288,7 +325,7 @@
         <div class="video-card" data-media-video>
           <video controls preload="metadata" src="assets/field/wondong-interview.mp4" aria-label="원동마을 100세 할머니 인터뷰 영상"></video>
           <div class="vc-pending">🎬 인터뷰 영상 준비 중<br />원동마을 100세 할머니의 이야기를 곧 전해 드릴게요.</div>
-          <div class="vc-caption">원동마을 100세 할머니 인터뷰 — "기계는 몰라도, 사람이 오니 좋지."</div>
+          <div class="vc-caption">원동마을 100세 할머니 인터뷰</div>
         </div>
       </div>
       <p class="field-note">※ 모든 현장 사진과 영상은 나오는 분들의 동의를 받은 것만 게시합니다.</p>
@@ -315,7 +352,7 @@
         </div>
       </div>
       <div class="people-note reveal">
-        위 숫자는 저희가 <b>보유한 인력이 아니라, 모집·협업을 요청할 수 있는 "연결된 채널"의 인원 규모</b>입니다.
+        위 숫자는 <b>2026년 11월 기준</b>이며, 저희가 <b>보유한 인력이 아니라 모집·협업을 요청할 수 있는 "연결된 채널"의 인원 규모</b>입니다.
         또한 체험단 리뷰를 운영할 때 <b>대가를 받은 리뷰는 반드시 표기합니다.</b>
       </div>
     </div>
@@ -330,19 +367,23 @@
       </div>
       <div class="faq reveal">
         <details>
-          <summary>광고대행사와 뭐가 다른가요?</summary>
+          <summary>광고대행사랑 뭐가 달라요?</summary>
           <div class="faq-body">대행사는 <b>채널 하나를 대신 운영</b>하고, 계약이 끝나면 아무것도 남지 않는 경우가 많습니다. 저희는 가게 전체를 진단해 <b>이미 쓰고 계신 툴부터</b> 살리고, 전담 청년 크루가 옆에서 같이 실행하면서 <b>사장님이 직접 할 수 있게 만드는 것(자립)</b>이 목표입니다. 저희가 더 이상 필요 없어지는 게 성공입니다.</div>
         </details>
         <details>
-          <summary>체험단 리뷰는 믿을 수 있나요? 대가 표기는요?</summary>
+          <summary>AI를 하나도 몰라도 되나요?</summary>
+          <div class="faq-body">네, 괜찮습니다. 그래서 크루가 있습니다. 어려운 설정은 크루가 옆에서 같이 하고, 사장님은 <b>매일 쓰는 방법만</b> 익히시면 됩니다. 혼자서도 쓸 수 있게 되는 것이 이 서비스의 마지막 단계(자립)입니다.</div>
+        </details>
+        <details>
+          <summary>체험단 리뷰, 대가를 받았다는 표시는 하나요?</summary>
           <div class="faq-body">체험단을 연결하는 경우, 공정거래위원회 추천·보증 심사지침에 따라 <b>경제적 대가를 받은 리뷰에는 그 사실을 반드시 표기합니다.</b> 표기 없는 "몰래 리뷰"는 운영하지 않으며, 가게에도 권하지 않습니다.</div>
         </details>
         <details>
-          <summary>계약과 해지는 어떻게 되나요?</summary>
+          <summary>계약하면 오래 묶이나요? 해지는요?</summary>
           <div class="faq-body">파일럿은 <b>월 단위 계약</b>으로 운영합니다. 해지 절차와 환불 기준은 계약서에 명시하며, 상담 시 계약서 양식을 먼저 보여드립니다. 장기 약정을 강요하지 않습니다.</div>
         </details>
         <details>
-          <summary>신청서에 적은 개인정보는 어떻게 처리되나요?</summary>
+          <summary>신청서에 적은 개인정보는 어떻게 되나요?</summary>
           <div class="faq-body">신청서의 정보(상호/이름, 연락처, 상담 내용)는 <b>진단 상담과 크루 매칭 연락 목적으로만</b> 사용합니다. 제3자에게 제공하지 않으며, 목적 달성 후 지체 없이 파기합니다(최대 6개월 이내). 동의는 언제든 철회할 수 있습니다.</div>
         </details>
       </div>
@@ -357,12 +398,18 @@
         <h2>사장님도, 청년도<br />여기서 시작하세요</h2>
         <p class="lead">신청서를 보내 주시면 순서대로 연락드립니다. 파일럿 기간이라 자리가 제한되어 있어요.</p>
       </div>
+      <ol class="flow reveal" aria-label="신청 후 진행 과정">
+        <li><span class="flow-n">1</span><div><b>신청서 작성</b><p>아래 양식에 기본 정보만 적어 주세요. 2분이면 됩니다.</p></div></li>
+        <li><span class="flow-n">2</span><div><b>연락·일정 조율</b><p>남겨 주신 연락처로 연락드려 일정을 정합니다.</p></div></li>
+        <li><span class="flow-n">3</span><div><b>안내받고 결정</b><p>진단 결과와 처방, 비용을 안내받은 뒤 진행 여부를 정하시면 됩니다.</p></div></li>
+      </ol>
       <div class="apply-grid">
 
         <!-- 가게용 -->
         <form class="form-card reveal" id="formStore" novalidate>
           <h3 id="apply-store">🏪 우리 가게 AI 진단 신청</h3>
           <p class="form-sub">소상공인 사장님용 — 진단 후 처방과 가격을 안내드립니다.</p>
+          <div class="form-progress"><div class="fp-bar"><i id="storeProgBar"></i></div><span id="storeProgTxt">필수 항목 0 / 6</span></div>
           <div class="field">
             <label for="storeName">가게 이름 <span class="req" aria-hidden="true">*</span></label>
             <input type="text" id="storeName" autocomplete="organization" placeholder="예) 원동할매반찬" required />
@@ -425,6 +472,7 @@
         <form class="form-card crew-form reveal" id="formCrew" novalidate>
           <h3 id="apply-crew">🧑‍💻 청년 AI 크루 지원</h3>
           <p class="form-sub">부산 대학생·청년용 — 교육 후 가게와 매칭됩니다. 활동비 지급.</p>
+          <div class="form-progress"><div class="fp-bar"><i id="crewProgBar"></i></div><span id="crewProgTxt">필수 항목 0 / 5</span></div>
           <div class="field">
             <label for="crewName">이름 <span class="req">*</span></label>
             <input type="text" id="crewName" autocomplete="name" placeholder="예) 김새우" required />
@@ -571,6 +619,11 @@
       <button class="btn btn-coral btn-block" id="sdSubmit" type="button">이 닉네임으로 시작하기</button>
       <p class="demo-mode-note">실서비스 연동: js/config.js의 더미 키를 실제 키로 교체하면 자동 전환됩니다. (SETUP_GUIDE.md)</p>
     </div>
+  </div>
+
+  <div class="sticky-cta" id="stickyCta" aria-label="빠른 신청">
+    <a class="btn btn-coral" href="#apply-store">가게 진단 신청</a>
+    <a class="btn btn-navy" href="#apply-crew">크루 지원</a>
   </div>
 
   <div class="toast-wrap" id="toastWrap"></div>

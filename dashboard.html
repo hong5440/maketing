@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>크루 진단 도구 — 심리마케팅</title>
-  <meta name="theme-color" content="#07070f" />
+  <meta name="theme-color" content="#0B2A3A" />
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
   <link rel="stylesheet" href="css/style.css" />
@@ -15,9 +15,7 @@
   <!-- ===================== 상단바 ===================== -->
   <header class="topbar">
     <a class="logo" href="index.html">
-      <span class="logo-mark" style="width:30px;height:30px;border-radius:9px;">
-        <svg width="17" height="17" viewBox="0 0 64 64" fill="none"><path d="M32 12c-8 0-14.5 6-14.5 13.6 0 4.4 2.1 8.2 5.5 10.6V46a3 3 0 0 0 3 3h12a3 3 0 0 0 3-3v-9.8c3.4-2.4 5.5-6.2 5.5-10.6C46.5 18 40 12 32 12Z" stroke="#fff" stroke-width="4" stroke-linejoin="round"/><path d="M26.5 26.5c1.8-2.5 4.4-2.5 5.5 0 1.1-2.5 3.7-2.5 5.5 0" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>
-      </span>
+      <svg width="28" height="28" viewBox="0 0 64 64" aria-hidden="true"><rect x="3" y="3" width="27" height="27" rx="9" fill="#ffffff"/><rect x="34" y="3" width="27" height="27" rx="9" fill="#F86058"/><rect x="3" y="34" width="27" height="27" rx="9" fill="#ffffff"/><rect x="34" y="34" width="27" height="27" rx="9" fill="#ffffff"/></svg>
       심리마케팅 <span class="logo-badge">진단 도구</span>
     </a>
     <div class="topbar-right">
@@ -49,9 +47,9 @@
     <button class="side-item" data-goto="history"><span class="ic">🕐</span> 히스토리</button>
     <button class="side-item" data-goto="settings"><span class="ic">⚙️</span> 설정</button>
     <div class="side-plan">
-      <b>무료 플랜</b>
-      <p>이번 달 <span id="planUsage">0</span> / 30회 사용 중</p>
-      <button class="btn btn-primary btn-sm">프로로 업그레이드</button>
+      <b>체험 중이신가요?</b>
+      <p>이번 달 <span id="planUsage">0</span>회 생성. 결과는 참고용 초안이며, 실제 서비스에서는 크루가 가게에 맞게 다듬습니다.</p>
+      <a class="btn btn-primary btn-sm" href="index.html#apply-store">가게 진단 신청</a>
     </div>
   </aside>
 
@@ -66,7 +64,7 @@
       </div>
 
       <div class="stat-grid">
-        <div class="stat-card"><div class="sc-label">📈 이번 달 생성</div><div class="sc-value" id="stMonth">0</div><div class="sc-sub">무료 플랜 월 30회</div></div>
+        <div class="stat-card"><div class="sc-label">📈 이번 달 생성</div><div class="sc-value" id="stMonth">0</div><div class="sc-sub">이번 달 체험 생성</div></div>
         <div class="stat-card"><div class="sc-label">🗂️ 누적 생성</div><div class="sc-value" id="stTotal">0</div><div class="sc-sub">가입 후 전체</div></div>
         <div class="stat-card"><div class="sc-label">⏱️ 절약한 시간</div><div class="sc-value" id="stTime">0분</div><div class="sc-sub">건당 약 47분 기준</div></div>
         <div class="stat-card"><div class="sc-label">💾 저장된 결과</div><div class="sc-value" id="stSaved">0</div><div class="sc-sub">히스토리 보관</div></div>

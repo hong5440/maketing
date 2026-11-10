@@ -329,6 +329,44 @@
   $('#formStore').addEventListener('submit', (e) => { e.preventDefault(); handleSubmit('store'); });
   $('#formCrew').addEventListener('submit', (e) => { e.preventDefault(); handleSubmit('crew'); });
 
+  /* ---------------- 신청서 진행률 (필수 항목 n / n) ---------------- */
+  function bindProgress(kind, barSel, txtSel) {
+    const cfg = FORMS[kind];
+    const form = $(cfg.form);
+    const total = cfg.required.length + 1; // 필수 입력 + 개인정보 동의
+    const update = () => {
+      let n = cfg.required.filter(([sel]) => $(sel).value.trim()).length;
+      if ($(cfg.consent).checked) n += 1;
+      $(barSel).style.width = Math.round((n / total) * 100) + '%';
+      $(txtSel).textContent = n === total ? '필수 항목 모두 작성 ✓' : `필수 항목 ${n} / ${total}`;
+      $(txtSel).parentElement.classList.toggle('done', n === total);
+    };
+    form.addEventListener('input', update);
+    form.addEventListener('change', update);
+    update();
+  }
+  bindProgress('store', '#storeProgBar', '#storeProgTxt');
+  bindProgress('crew', '#crewProgBar', '#crewProgTxt');
+
+  /* ---------------- 모바일 하단 고정 신청 바 ----------------
+     첫 화면·신청 양식·바닥글이 보일 때는 숨기고, 그 사이에서만 보여 준다. */
+  const sticky = $('#stickyCta');
+  const inView = { hero: true, apply: false, footer: false };
+  const syncSticky = () => {
+    const show = !inView.hero && !inView.apply && !inView.footer;
+    sticky.classList.toggle('show', show);
+    document.body.classList.toggle('has-sticky', show);
+  };
+  const stickyIo = new IntersectionObserver((entries) => {
+    entries.forEach((e) => { inView[e.target.dataset.sticky] = e.isIntersecting; });
+    syncSticky();
+  }, { threshold: 0.02 });
+  [['#top', 'hero'], ['#apply', 'apply'], ['.footer', 'footer']].forEach(([sel, key]) => {
+    const el = $(sel);
+    el.dataset.sticky = key;
+    stickyIo.observe(el);
+  });
+
   /* ---------------- 카카오 인증 복귀(?code=...) 처리 ---------------- */
   (async () => {
     try {

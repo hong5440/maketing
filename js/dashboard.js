@@ -205,6 +205,7 @@
           ${result.meta && result.meta.badge ? `<span class="score-ring">★ ${esc(result.meta.badge)}</span>` : ''}
         </div>
         <div class="rh-meta">${dateStr} · ${m.name}${opts.fromHistory ? ' · 히스토리에서 불러옴' : ' · 히스토리에 저장됨'}</div>
+        <div class="rh-meta">※ 참고용 초안입니다. ○○ 자리에는 실제 숫자를 넣고, 사실과 다른 내용은 고쳐서 사용하세요.</div>
         <div class="result-actions">
           <button class="btn btn-primary btn-sm" data-act="copyall">📋 전체 복사</button>
           ${opts.fromHistory

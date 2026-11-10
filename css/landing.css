@@ -447,3 +447,96 @@ input, select, textarea { font: inherit; color: inherit; }
 .toast.ok::before { content: '✓'; color: var(--coral); font-weight: 800; }
 .toast.err::before { content: '!'; color: #ffb4af; font-weight: 800; }
 @keyframes toastUp { from { opacity: 0; transform: translateY(14px); } }
+
+/* ================================================================
+   벤치마킹 반영 (2026-11): 두 갈래 안내 · 크루 여정 · 가격 메타 ·
+   신청 진행 과정 · 신청서 진행률 · 모바일 하단 고정 신청 바
+   ================================================================ */
+
+/* ---------------- 두 갈래 안내 ---------------- */
+.who { padding: 4px 0 56px; }
+.who-grid { display: grid; gap: 14px; }
+.who-card {
+  display: flex; flex-direction: column; gap: 10px;
+  background: var(--paper); border: 1.5px solid var(--line-strong); border-radius: var(--r-lg);
+  padding: 24px 22px; transition: transform 0.18s, box-shadow 0.2s, border-color 0.2s;
+}
+.who-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); border-color: var(--navy); }
+.who-card.crew { border-color: rgba(248, 96, 88, 0.5); }
+.who-card.crew:hover { border-color: var(--coral); }
+.who-tag { align-self: flex-start; font-size: 13.5px; font-weight: 800; color: #fff; background: var(--navy); border-radius: 99px; padding: 5px 13px; }
+.who-card.crew .who-tag { background: var(--coral); color: var(--navy); }
+.who-card strong { font-size: 20px; font-weight: 800; line-height: 1.4; letter-spacing: -0.02em; }
+.who-card ul { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.who-card li { display: flex; gap: 8px; font-size: 15.5px; color: var(--muted); }
+.who-card li::before { content: '✓'; color: var(--coral-ink); font-weight: 800; }
+.who-go { margin-top: 6px; font-weight: 800; font-size: 16px; color: var(--coral-ink); }
+@media (min-width: 768px) {
+  .who { padding-bottom: 84px; }
+  .who-grid { grid-template-columns: 1fr 1fr; gap: 18px; }
+  .who-card { padding: 30px 28px; }
+}
+
+/* ---------------- 크루 여정 ---------------- */
+.journey { list-style: none; margin-top: 18px; display: grid; gap: 8px; counter-reset: j; }
+.journey li {
+  counter-increment: j; display: flex; align-items: center; gap: 12px;
+  background: var(--ivory); border: 1px solid var(--line); border-radius: 14px; padding: 13px 16px;
+}
+.journey li::before {
+  content: counter(j); width: 30px; height: 30px; border-radius: 10px; flex: none;
+  background: var(--navy); color: #fff; display: grid; place-items: center; font-weight: 800; font-size: 14px;
+}
+.journey li:last-child::before { background: var(--coral); color: var(--navy); }
+.journey b { font-size: 16px; }
+.journey span { font-size: 14px; color: var(--muted); margin-left: auto; text-align: right; }
+@media (min-width: 900px) {
+  .journey { grid-template-columns: repeat(5, 1fr); }
+  .journey li { flex-direction: column; align-items: flex-start; gap: 6px; padding: 16px; }
+  .journey span { margin-left: 0; text-align: left; }
+}
+
+/* ---------------- 가격 박스: 계약·해지 안내 ---------------- */
+.pc-meta {
+  margin-top: 18px; border-top: 1px solid var(--navy-3); padding-top: 14px;
+  display: flex; flex-direction: column; gap: 8px; position: relative; z-index: 1;
+}
+.pc-meta div { display: flex; gap: 12px; font-size: 14px; }
+.pc-meta dt { flex: none; width: 74px; color: #8fa9b6; font-weight: 700; }
+.pc-meta dd { color: #e9f0f4; line-height: 1.55; }
+
+/* ---------------- 신청 후 진행 과정 ---------------- */
+.flow { list-style: none; display: grid; gap: 10px; margin-bottom: 26px; }
+.flow li {
+  display: flex; gap: 14px; align-items: flex-start;
+  background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-md); padding: 16px 18px;
+}
+.flow-n { flex: none; width: 34px; height: 34px; border-radius: 11px; background: var(--coral); color: var(--navy); font-weight: 800; display: grid; place-items: center; }
+.flow b { font-size: 16.5px; }
+.flow p { font-size: 14.5px; color: var(--muted); margin-top: 2px; line-height: 1.6; }
+@media (min-width: 900px) { .flow { grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 34px; } }
+
+/* ---------------- 신청서 진행률 ---------------- */
+.form-progress { display: flex; align-items: center; gap: 12px; margin: -6px 0 20px; }
+.fp-bar { flex: 1; height: 8px; border-radius: 99px; background: var(--tint); border: 1px solid var(--line); overflow: hidden; }
+.fp-bar i { display: block; height: 100%; width: 0%; background: var(--coral); border-radius: 99px; transition: width 0.3s ease; }
+.form-progress span { font-size: 13.5px; font-weight: 800; color: var(--muted); white-space: nowrap; }
+.form-progress.done span { color: var(--coral-ink); }
+
+/* ---------------- 모바일 하단 고정 신청 바 ---------------- */
+.sticky-cta {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 95;
+  display: grid; grid-template-columns: 1.3fr 1fr; gap: 10px;
+  padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px));
+  background: rgba(253, 251, 247, 0.96); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid var(--line);
+  transform: translateY(110%); visibility: hidden;
+  transition: transform 0.28s ease, visibility 0s linear 0.28s;
+}
+.sticky-cta.show { transform: none; visibility: visible; transition: transform 0.28s ease; }
+.sticky-cta .btn { min-height: 50px; padding: 10px 12px; font-size: 16px; box-shadow: none; }
+body.has-sticky .toast-wrap { bottom: 88px; }
+@media (min-width: 900px) {
+  .sticky-cta { display: none; }
+  body.has-sticky .toast-wrap { bottom: 24px; }
+}
