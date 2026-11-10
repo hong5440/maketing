@@ -25,8 +25,14 @@ window.PM_CONFIG = {
   GEMINI_API_KEY: 'DUMMY_GEMINI_API_KEY_REPLACE_ME',
   GEMINI_MODEL: 'gemini-2.5-flash', // 호출 실패 시 gemini-flash-latest로 자동 재시도
 
-  APP_NAME: '심리 마케팅',
-  VERSION: '2.0.0',
+  // [신청 접수 이메일] 가게/크루 신청서가 도착할 이메일 주소로 교체하세요.
+  // 더미 상태에서는 신청 내용이 "복사 모드"로 동작합니다(복사해서 문자·카톡으로 전달).
+  CONTACT_EMAIL: 'DUMMY_CONTACT_EMAIL_REPLACE_ME@example.com',
+
+  APP_NAME: '심리마케팅',
+  COMPANY: '고래싸움에 성장하는 새우들',
+  CEO: '홍성현',
+  VERSION: '3.0.0',
 };
 
 /* ----------------------------------------------------------------
@@ -36,7 +42,7 @@ window.PM_CONFIG = {
    ---------------------------------------------------------------- */
 (function () {
   var isDummy = function (v) { return !v || /DUMMY|REPLACE|YOUR_/i.test(String(v)); };
-  ['KAKAO_REST_API_KEY', 'GOOGLE_CLIENT_ID', 'GEMINI_API_KEY'].forEach(function (k) {
+  ['KAKAO_REST_API_KEY', 'GOOGLE_CLIENT_ID', 'GEMINI_API_KEY', 'CONTACT_EMAIL'].forEach(function (k) {
     if (isDummy(window.PM_CONFIG[k])) window.PM_CONFIG[k] = '';
   });
 })();
