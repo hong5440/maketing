@@ -86,6 +86,7 @@
   - PNG(약 1,200px)·SVG 저장, 한글 도메인은 표준 표기(xn--)로 자동 변환
   - QR 생성 라이브러리: `js/vendor/qrcode-generator.js` (Kazuhiko Arase, MIT)
 - `js/forms.js` — 신청 양식 공용 모듈. 본 홈페이지와 접수 랜딩이 같은 양식·같은 접수 방식(구글 설문지 / 이메일)을 사용
+- `qr-codes/` — 실제 도메인(www.심리마케팅.com = www.xn--oy2b2b820bprm90e.com)으로 만든 QR 파일. 공용·사장님용·청년용 각 PNG(1,215px)·SVG와 한눈에 보기 이미지. 배포 ZIP에는 넣지 않음. 도메인이 바뀌면 `qr.html`에서 다시 만들어야 함
 
 ## 아직 대표만 채울 수 있는 것
 - 전화번호 등 이메일 외 연락처 (지금은 이메일만 표시)
