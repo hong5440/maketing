@@ -487,6 +487,15 @@ input, select, textarea { font: inherit; color: inherit; }
 /* 현장 이야기: 파일이 없는 칸은 숨김 (섹션은 파일이 하나라도 있을 때만 표시) */
 .photo.pending, .video-card.pending { display: none; }
 
+/* ---------------- 구글 설문지 접수 모드 ----------------
+   설문지 링크가 설정된 양식은 제목·설명·설문지 안내만 남기고 입력칸을 숨긴다 */
+.form-card.gform-mode > :not(h3):not(.form-sub):not(.gform-box) { display: none; }
+.gf-lead { font-size: 15.5px; }
+.gf-list { list-style: none; margin: 12px 0 18px; display: flex; flex-direction: column; gap: 7px; }
+.gf-list li { display: flex; gap: 8px; font-size: 15px; color: var(--muted); }
+.gf-list li::before { content: '✓'; color: var(--coral-ink); font-weight: 800; }
+.gf-note { margin-top: 12px; font-size: 13.5px; color: var(--muted); line-height: 1.65; }
+
 /* ---------------- 크루 여정 ---------------- */
 .journey { list-style: none; margin-top: 18px; display: grid; gap: 8px; counter-reset: j; }
 .journey li {

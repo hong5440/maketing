@@ -25,7 +25,13 @@ window.PM_CONFIG = {
   GEMINI_API_KEY: 'DUMMY_GEMINI_API_KEY_REPLACE_ME',
   GEMINI_MODEL: 'gemini-2.5-flash', // 호출 실패 시 gemini-flash-latest로 자동 재시도
 
-  // [신청 접수 이메일] 가게/크루 신청서가 도착하는 주소. 바닥글 문의처에도 표시됩니다.
+  // [구글 설문지 접수] 설문지의 "응답자 링크"를 넣으면 해당 신청 양식이 설문지 연결로 바뀝니다.
+  //  예) 'https://docs.google.com/forms/d/e/xxxx/viewform' 또는 'https://forms.gle/xxxx'
+  //  더미 상태(또는 빈 값)에서는 아래 이메일 접수 방식으로 동작합니다. (만드는 법: GOOGLE_FORM_GUIDE.md)
+  GOOGLE_FORM_STORE_URL: 'DUMMY_GOOGLE_FORM_STORE_URL_REPLACE_ME',  // 가게용 (우리 가게 AI 진단 신청)
+  GOOGLE_FORM_CREW_URL: 'DUMMY_GOOGLE_FORM_CREW_URL_REPLACE_ME',    // 청년용 (청년 AI 크루 지원)
+
+  // [신청 접수 이메일] 설문지 링크가 없을 때 신청서가 도착하는 주소. 바닥글 문의처에도 표시됩니다.
   // 비워 두면 신청 내용이 "복사 모드"로 동작합니다(복사해서 문자·카톡으로 전달).
   CONTACT_EMAIL: 'hon5440@gmail.com',
 
@@ -45,7 +51,8 @@ window.PM_CONFIG = {
    ---------------------------------------------------------------- */
 (function () {
   var isDummy = function (v) { return !v || /DUMMY|REPLACE|YOUR_/i.test(String(v)); };
-  ['KAKAO_REST_API_KEY', 'GOOGLE_CLIENT_ID', 'GEMINI_API_KEY', 'CONTACT_EMAIL'].forEach(function (k) {
+  ['KAKAO_REST_API_KEY', 'GOOGLE_CLIENT_ID', 'GEMINI_API_KEY', 'CONTACT_EMAIL',
+    'GOOGLE_FORM_STORE_URL', 'GOOGLE_FORM_CREW_URL'].forEach(function (k) {
     if (isDummy(window.PM_CONFIG[k])) window.PM_CONFIG[k] = '';
   });
 })();

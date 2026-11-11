@@ -34,7 +34,8 @@
 ## 파일과 키 (넣으면 자동 반영)
 - 현장 사진/할머니 인터뷰 영상 파일 → `assets/field/`에 업로드 (동의 완료분만)
   - busan-01.jpg / busan-02.jpg / wondong-01.jpg / wondong-interview.mp4
-- 신청 접수 이메일 → `js/config.js`의 `CONTACT_EMAIL` (2026-11-11 설정 완료. 신청서 제출 시 이 주소로 메일 초안이 열리고, 바닥글 문의처에도 표시됨)
+- 구글 설문지 접수 → `js/config.js`의 `GOOGLE_FORM_STORE_URL`, `GOOGLE_FORM_CREW_URL`에 설문지 응답자 링크를 넣으면 해당 양식이 설문지 연결로 바뀜 (만드는 법: GOOGLE_FORM_GUIDE.md). 링크를 넣기 전에는 아래 이메일 접수로 동작
+- 신청 접수 이메일 → `js/config.js`의 `CONTACT_EMAIL` (2026-11-11 설정 완료. 설문지 링크가 없을 때 이 주소로 메일 초안이 열리고, 바닥글 문의처에도 표시됨)
 - 소셜 로그인 실연동 시 키 교체(SETUP_GUIDE.md)
 
 ## 벤치마킹 반영 (2026-11-10 추가)

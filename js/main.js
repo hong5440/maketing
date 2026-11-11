@@ -333,6 +333,24 @@
   $('#formStore').addEventListener('submit', (e) => { e.preventDefault(); handleSubmit('store'); });
   $('#formCrew').addEventListener('submit', (e) => { e.preventDefault(); handleSubmit('crew'); });
 
+  /* ---------------- 구글 설문지 접수 ----------------
+     js/config.js에 설문지 링크가 있으면 그 양식은 입력칸 대신 설문지 연결 버튼을 보여 준다.
+     링크가 없으면 위의 이메일(또는 복사) 접수 방식 그대로 동작한다. */
+  const GFORM_URL = /^https:\/\/(docs\.google\.com\/forms\/|forms\.gle\/)/;
+  function enableGform(formSel, boxSel, linkSel, url) {
+    if (!url) return false;
+    if (!GFORM_URL.test(url)) {
+      console.warn('[심리마케팅] 구글 설문지 링크 형식이 아니어서 무시합니다:', url);
+      return false;
+    }
+    $(linkSel).href = url;
+    $(boxSel).hidden = false;
+    $(formSel).classList.add('gform-mode');
+    return true;
+  }
+  enableGform('#formStore', '#storeGform', '#storeGformLink', CFG.GOOGLE_FORM_STORE_URL);
+  enableGform('#formCrew', '#crewGform', '#crewGformLink', CFG.GOOGLE_FORM_CREW_URL);
+
   /* ---------------- 신청서 진행률 (필수 항목 n / n) ---------------- */
   function bindProgress(kind, barSel, txtSel) {
     const cfg = FORMS[kind];

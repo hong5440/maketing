@@ -402,7 +402,7 @@
         <p class="lead">신청서를 보내 주시면 <b data-response-promise>영업일 기준 2일 안에</b> 연락드립니다. 파일럿 기간이라 자리가 제한되어 있어요.</p>
       </div>
       <ol class="flow reveal" aria-label="신청 후 진행 과정">
-        <li><span class="flow-n">1</span><div><b>신청서 작성</b><p>아래 양식에 기본 정보만 적어 주세요. 2분이면 됩니다.</p></div></li>
+        <li><span class="flow-n">1</span><div><b>신청서 작성</b><p>신청서에 기본 정보만 적어 주세요. 2분이면 됩니다.</p></div></li>
         <li><span class="flow-n">2</span><div><b>연락·일정 조율</b><p><span data-response-promise>영업일 기준 2일 안에</span> 남겨 주신 연락처로 연락드려 일정을 정합니다.</p></div></li>
         <li><span class="flow-n">3</span><div><b>안내받고 결정</b><p>진단 결과와 처방, 비용을 안내받은 뒤 진행 여부를 정하시면 됩니다.</p></div></li>
       </ol>
@@ -412,6 +412,18 @@
         <form class="form-card reveal" id="formStore" novalidate>
           <h3 id="apply-store">🏪 우리 가게 AI 진단 신청</h3>
           <p class="form-sub">소상공인 사장님용 — 진단 후 처방과 가격을 안내드립니다.</p>
+          <!-- 구글 설문지 접수: js/config.js에 링크가 있으면 이 안내가 보이고 아래 입력칸은 숨겨집니다 -->
+          <div class="gform-box" id="storeGform" hidden>
+            <p class="gf-lead">신청은 <b>구글 설문지</b>로 받습니다. 아래 내용을 여쭤봅니다.</p>
+            <ul class="gf-list">
+              <li>가게 이름 · 업종 · 위치</li>
+              <li>지금 쓰고 있는 툴</li>
+              <li>지금 가장 큰 고민</li>
+              <li>연락처</li>
+            </ul>
+            <a class="btn btn-coral btn-block" id="storeGformLink" target="_blank" rel="noopener">진단 신청서 작성하기 ↗</a>
+            <p class="gf-note">새 창에서 구글 설문지가 열립니다. 개인정보 수집·이용 동의는 설문지 첫 화면에서 받습니다.</p>
+          </div>
           <div class="form-progress"><div class="fp-bar"><i id="storeProgBar"></i></div><span id="storeProgTxt">필수 항목 0 / 6</span></div>
           <div class="field">
             <label for="storeName">가게 이름 <span class="req" aria-hidden="true">*</span></label>
@@ -475,6 +487,17 @@
         <form class="form-card crew-form reveal" id="formCrew" novalidate>
           <h3 id="apply-crew">🧑‍💻 청년 AI 크루 지원</h3>
           <p class="form-sub">부산 대학생·청년용 — 교육 후 가게와 매칭됩니다. 활동비 지급.</p>
+          <div class="gform-box" id="crewGform" hidden>
+            <p class="gf-lead">지원은 <b>구글 설문지</b>로 받습니다. 아래 내용을 여쭤봅니다.</p>
+            <ul class="gf-list">
+              <li>이름 · 학교/전공</li>
+              <li>다룰 수 있는 AI·디지털 도구</li>
+              <li>활동 가능 시간</li>
+              <li>연락처</li>
+            </ul>
+            <a class="btn btn-navy btn-block" id="crewGformLink" target="_blank" rel="noopener">크루 지원서 작성하기 ↗</a>
+            <p class="gf-note">새 창에서 구글 설문지가 열립니다. 개인정보 수집·이용 동의는 설문지 첫 화면에서 받습니다.</p>
+          </div>
           <div class="form-progress"><div class="fp-bar"><i id="crewProgBar"></i></div><span id="crewProgTxt">필수 항목 0 / 5</span></div>
           <div class="field">
             <label for="crewName">이름 <span class="req">*</span></label>
