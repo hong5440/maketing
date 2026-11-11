@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>접수 랜딩 QR코드 — 심리마케팅</title>
+  <meta name="robots" content="noindex" />
+  <meta name="theme-color" content="#0B2A3A" />
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+  <link rel="stylesheet" href="css/landing.css" />
+</head>
+<body class="qr-page">
+  <a class="skip-link" href="#main">본문으로 바로가기</a>
+
+  <header class="nav nav-apply" id="nav">
+    <div class="container nav-inner">
+      <a class="brand" href="index.html" aria-label="심리마케팅 홈으로">
+        <svg class="logo4" viewBox="0 0 64 64" aria-hidden="true"><rect x="3" y="3" width="27" height="27" rx="9" fill="#0B2A3A"/><rect x="34" y="3" width="27" height="27" rx="9" fill="#F86058"/><rect x="3" y="34" width="27" height="27" rx="9" fill="#0B2A3A"/><rect x="34" y="34" width="27" height="27" rx="9" fill="#0B2A3A"/></svg>
+        심리마케팅 <small>QR</small>
+      </a>
+      <div class="nav-right">
+        <a class="btn btn-ghost btn-sm" href="apply.html">신청 페이지 열기</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main" class="qr-main">
+    <div class="container">
+      <h1 class="qr-h1">접수 랜딩 QR코드</h1>
+      <p class="qr-lead">휴대폰 카메라로 찍으면 신청 페이지가 바로 열리는 QR코드입니다. 명함·전단지·포스터에 넣어 쓰세요.</p>
+
+      <div class="qr-base">
+        <label for="qrBase">QR에 담을 사이트 주소</label>
+        <div class="qr-base-row">
+          <input type="url" id="qrBase" inputmode="url" spellcheck="false" autocomplete="off" placeholder="https://내주소.pages.dev" />
+          <button type="button" class="btn btn-navy btn-sm" id="qrApply">이 주소로 만들기</button>
+        </div>
+        <p class="qr-hint" id="qrHint">지금 열려 있는 주소 기준으로 자동 입력됩니다. 다른 도메인으로 만들려면 주소를 바꾼 뒤 버튼을 누르세요.</p>
+        <p class="qr-warn" id="qrWarn" hidden></p>
+      </div>
+
+      <div class="qr-grid" id="qrGrid"><!-- js/qr.js가 그린다 --></div>
+
+      <div class="qr-tips">
+        <b>인쇄할 때</b>
+        <ul>
+          <li>QR코드 주변의 흰 여백을 잘라내지 마세요. 여백이 없으면 인식이 안 될 수 있습니다.</li>
+          <li>인쇄 크기는 가로세로 2cm 이상을 권합니다. 포스터처럼 멀리서 찍는 경우 더 크게 넣으세요.</li>
+          <li>인쇄소에 넘기기 전에 휴대폰으로 꼭 한 번 찍어서 신청 페이지가 열리는지 확인하세요.</li>
+          <li>사이트 주소(도메인)를 바꾸면 QR코드도 다시 만들어야 합니다.</li>
+        </ul>
+      </div>
+    </div>
+  </main>
+
+  <div class="toast-wrap" id="toastWrap"></div>
+
+  <script src="js/config.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/vendor/qrcode-generator.js"></script>
+  <script src="js/qr.js"></script>
+</body>
+</html>

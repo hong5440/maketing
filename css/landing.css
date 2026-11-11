@@ -496,6 +496,87 @@ input, select, textarea { font: inherit; color: inherit; }
 .gf-list li::before { content: '✓'; color: var(--coral-ink); font-weight: 800; }
 .gf-note { margin-top: 12px; font-size: 13.5px; color: var(--muted); line-height: 1.65; }
 
+/* ================================================================
+   접수 전용 랜딩 (apply.html) — 본 홈페이지와 다른 자체 내비게이션
+   ================================================================ */
+.nav-apply .brand small { background: var(--navy); color: #fff; }
+.nav-apply-links { display: none; align-items: center; gap: 6px; }
+.nav-apply-links a {
+  display: inline-flex; align-items: center; min-height: 44px; padding: 9px 16px; border-radius: 99px;
+  font-size: 15px; font-weight: 800; color: var(--muted); transition: background 0.15s, color 0.15s;
+}
+.nav-apply-links a:hover { color: var(--navy); }
+.nav-apply-links a.on { background: var(--navy); color: #fff; }
+@media (min-width: 720px) { .nav-apply-links { display: flex; } }
+
+.container.apply-narrow { max-width: 680px; }
+.apply-hero {
+  padding: calc(var(--nav-h) + 30px) 0 18px;
+  background: radial-gradient(480px 260px at 92% 0%, rgba(248, 96, 88, 0.12), transparent 70%);
+}
+.apply-hero .hero-badge { margin-bottom: 16px; }
+.apply-hero h1 { font-size: clamp(30px, 8.4vw, 46px); font-weight: 800; line-height: 1.25; letter-spacing: -0.035em; }
+.apply-hero h1 .coral { color: var(--coral-ink); }
+.apply-hero .hero-sub { margin-top: 12px; max-width: none; }
+
+/* 신청 종류 선택 (사장님 / 청년) */
+.seg {
+  margin-top: 22px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+  background: var(--tint); border: 1px solid var(--line); border-radius: 18px; padding: 6px;
+}
+.seg button {
+  min-height: 66px; border-radius: 13px; padding: 8px 6px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  font-weight: 800; font-size: 17px; color: var(--muted); transition: background 0.15s, color 0.15s;
+}
+.seg button small { font-size: 12.5px; font-weight: 700; }
+.seg button[aria-selected="true"] { background: var(--navy); color: #fff; box-shadow: 0 6px 18px rgba(11, 42, 58, 0.25); }
+
+.apply-body { padding: 10px 0 64px; }
+.apply-facts { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.apply-facts li {
+  font-size: 14px; font-weight: 700; color: var(--navy);
+  background: var(--tint); border: 1px solid var(--line); border-radius: 99px; padding: 8px 14px;
+}
+.apply-h2 { margin: 36px 0 14px; font-size: 21px; font-weight: 800; letter-spacing: -0.02em; }
+.flow.flow-stack { grid-template-columns: 1fr; margin-bottom: 0; }
+.apply-more { margin-top: 26px; text-align: center; color: var(--muted); font-size: 15px; }
+.apply-more a { color: var(--coral-ink); font-weight: 800; white-space: nowrap; }
+.footer-slim { padding: 34px 0 44px; }
+
+/* ================================================================
+   접수 랜딩 QR코드 (qr.html)
+   ================================================================ */
+.qr-main { padding: calc(var(--nav-h) + 30px) 0 64px; }
+.qr-h1 { font-size: clamp(28px, 7vw, 40px); font-weight: 800; letter-spacing: -0.03em; }
+.qr-lead { margin-top: 10px; color: var(--muted); max-width: 620px; }
+.qr-base { margin-top: 24px; background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-md); padding: 18px; }
+.qr-base label { display: block; font-size: 14.5px; font-weight: 800; margin-bottom: 8px; }
+.qr-base-row { display: flex; flex-direction: column; gap: 8px; }
+.qr-base-row input {
+  flex: 1; min-width: 0; min-height: 50px; background: var(--ivory);
+  border: 1.5px solid var(--line-strong); border-radius: 12px; padding: 12px 14px; font-size: 16px;
+}
+.qr-base-row input:focus { outline: none; border-color: var(--coral); box-shadow: 0 0 0 3px rgba(248, 96, 88, 0.16); }
+.qr-hint { margin-top: 10px; font-size: 13.5px; color: var(--muted); }
+.qr-warn { margin-top: 10px; font-size: 14px; font-weight: 700; color: var(--coral-ink); background: var(--coral-soft); border-radius: 10px; padding: 10px 12px; }
+.qr-grid { margin-top: 20px; display: grid; gap: 16px; }
+.qr-card { background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 22px; text-align: center; }
+.qr-card h2 { font-size: 19px; font-weight: 800; }
+.qr-desc { margin-top: 4px; font-size: 14px; color: var(--muted); }
+.qr-canvas-wrap { margin: 14px auto 0; width: min(260px, 100%); }
+.qr-canvas-wrap canvas { width: 100%; height: auto; display: block; border-radius: 12px; border: 1px solid var(--line); image-rendering: pixelated; }
+.qr-url { margin-top: 12px; font-size: 13px; color: var(--muted); word-break: break-all; }
+.qr-actions { margin-top: 14px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.qr-tips { margin-top: 26px; background: var(--tint); border: 1px solid var(--line); border-radius: var(--r-md); padding: 18px 20px; font-size: 14.5px; }
+.qr-tips ul { margin: 8px 0 0 18px; color: var(--muted); display: flex; flex-direction: column; gap: 5px; }
+@media (min-width: 720px) { .qr-base-row { flex-direction: row; } }
+@media (min-width: 900px) { .qr-grid { grid-template-columns: repeat(3, 1fr); } .qr-desc { min-height: 44px; } }
+@media print {
+  .nav, .qr-base, .qr-actions, .qr-tips, .toast-wrap, .skip-link { display: none !important; }
+  .qr-main { padding-top: 0; }
+}
+
 /* ---------------- 크루 여정 ---------------- */
 .journey { list-style: none; margin-top: 18px; display: grid; gap: 8px; counter-reset: j; }
 .journey li {
