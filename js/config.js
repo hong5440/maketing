@@ -25,9 +25,9 @@ window.PM_CONFIG = {
   GEMINI_API_KEY: 'DUMMY_GEMINI_API_KEY_REPLACE_ME',
   GEMINI_MODEL: 'gemini-2.5-flash', // 호출 실패 시 gemini-flash-latest로 자동 재시도
 
-  // [신청 접수 이메일] 가게/크루 신청서가 도착할 이메일 주소로 교체하세요.
-  // 더미 상태에서는 신청 내용이 "복사 모드"로 동작합니다(복사해서 문자·카톡으로 전달).
-  CONTACT_EMAIL: 'DUMMY_CONTACT_EMAIL_REPLACE_ME@example.com',
+  // [신청 접수 이메일] 가게/크루 신청서가 도착하는 주소. 바닥글 문의처에도 표시됩니다.
+  // 비워 두면 신청 내용이 "복사 모드"로 동작합니다(복사해서 문자·카톡으로 전달).
+  CONTACT_EMAIL: 'hon5440@gmail.com',
 
   // [응답 시간 약속] 신청 양식 안내 문구에 쓰입니다. 실제로 지킬 수 있는 시간으로 유지하세요.
   RESPONSE_PROMISE: '영업일 기준 2일 안에',

@@ -309,7 +309,7 @@
     doneEl.innerHTML = `
       <div class="fd-title">${cfg.doneTitle}</div>
       <p>${mailReady
-        ? '아래 내용으로 메일 앱이 열립니다. 전송 버튼만 누르면 접수 완료! ' + (CFG.RESPONSE_PROMISE || '영업일 기준 2일 안에') + ' 연락드립니다. (안 열리면 복사해서 보내 주세요)'
+        ? '아래 내용으로 메일 앱이 열립니다. <b>메일의 전송 버튼을 눌러야 접수가 완료</b>됩니다. ' + (CFG.RESPONSE_PROMISE || '영업일 기준 2일 안에') + ' 연락드립니다.<br />메일 앱이 열리지 않으면 내용을 복사해 <b>' + CONTACT + '</b> 으로 보내 주세요.'
         : '접수 이메일 주소를 설정하기 전이라, 아래 내용을 <b>복사해서 문자/카카오톡으로</b> 보내 주시면 접수됩니다.'}</p>
       <textarea readonly aria-label="제출 내용">${text.replace(/</g, '&lt;')}</textarea>
       <div class="fd-actions">
@@ -324,7 +324,7 @@
     PMUI.copyText(text); // 안전망: 자동 복사도 함께
     if (mailReady) {
       location.href = 'mailto:' + CONTACT + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(text);
-      PMUI.toast('메일 초안을 열었어요. 전송만 누르면 접수 완료!');
+      PMUI.toast('메일 초안을 열었어요. 전송을 눌러야 접수됩니다!');
     } else {
       PMUI.toast('신청 내용이 복사되었습니다. 문자/카톡으로 보내 주세요!');
     }
